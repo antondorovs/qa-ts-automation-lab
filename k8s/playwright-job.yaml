@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: playwright-tests
+spec:
+  template:
+    spec:
+      containers:
+        - name: playwright-tests
+          image: qa-learning-lab:latest
+          command: ["npm", "test"]
+      restartPolicy: Never

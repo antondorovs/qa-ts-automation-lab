@@ -1,0 +1,9 @@
+{
+    "name": "Anton QA",
+    "job": "Full Stack QA Engineer",
+    "skills": [
+        "API testing",
+        "SQL validation",
+        "Playwright automation"
+    ]
+}
