@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { env } from '../utils/env';
 
-test('login api should return unauthorized without valid credentials', async ({ request }) => {
-    const response = await request.post('https://reqres.in/api/login', {
+test('login api should return unauthorized with invalid credentials', async ({ request }) => {
+    const response = await request.post(`${env.baseUrl}/api/login`, {
         data: {
-            email: 'eve.holt@reqres.in',
+            email: env.email,
             password: 'wrong-password'
         }
     });

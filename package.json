@@ -4,10 +4,10 @@
   "description": "QA automation, API testing, SQL and backend practice",
   "main": "index.js",
   "scripts": {
-  "test": "playwright test",
-  "test:headed": "playwright test --headed",
-  "test:report": "playwright show-report"
-},
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/antondorovs/qa-learning-lab.git"
@@ -22,5 +22,8 @@
   "homepage": "https://github.com/antondorovs/qa-learning-lab#readme",
   "devDependencies": {
     "@playwright/test": "^1.59.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
   }
 }
