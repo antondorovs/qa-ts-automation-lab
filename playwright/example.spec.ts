@@ -1,7 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { ExamplePage } from './pages/example.page';
+import { IANA_EXAMPLE_URL, mockExampleDomain } from './fixtures/example-domain.fixture';
 
 test.describe('Example Domain smoke checks', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockExampleDomain(page);
+  });
+
   test('main content should be visible and stable', async ({ page }) => {
     const examplePage = new ExamplePage(page);
 
@@ -16,7 +21,7 @@ test.describe('Example Domain smoke checks', () => {
     await examplePage.open();
     await examplePage.openLearnMore();
 
-    await expect(page).toHaveURL(/iana\.org\/help\/example-domains/);
+    await expect(page).toHaveURL(IANA_EXAMPLE_URL);
     await expect(page.getByRole('heading', { name: 'Example Domains' })).toBeVisible();
   });
 });

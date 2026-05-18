@@ -1,4 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
+import { IANA_EXAMPLE_URL } from '../fixtures/example-domain.fixture';
 
 export class ExamplePage {
   readonly page: Page;
@@ -17,7 +18,7 @@ export class ExamplePage {
 
   async expectLoaded() {
     await expect(this.heading).toBeVisible();
-    await expect(this.learnMoreLink).toHaveAttribute('href', 'https://iana.org/domains/example');
+    await expect(this.learnMoreLink).toHaveAttribute('href', IANA_EXAMPLE_URL);
   }
 
   async openLearnMore() {
