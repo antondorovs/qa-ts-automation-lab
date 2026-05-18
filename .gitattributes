@@ -1,0 +1,13 @@
+# Keep generated reports and fixtures out of GitHub language statistics.
+*.html linguist-generated=true
+playwright-report/** linguist-generated=true
+test-results/** linguist-generated=true
+coverage/** linguist-generated=true
+dist/** linguist-generated=true
+
+# Count QA examples as source material in this learning repository.
+*.ts linguist-detectable=true
+*.js linguist-detectable=true
+*.sql linguist-detectable=true
+*.yml linguist-detectable=true
+*.yaml linguist-detectable=true

@@ -1,0 +1,20 @@
+services:
+  qa-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      BASE_URL: https://example.com
+      TEST_USER_EMAIL: qa.learner@example.com
+    command: npm test
+
+  postgres-practice:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: qa_learning_lab
+      POSTGRES_USER: qa_user
+      POSTGRES_PASSWORD: qa_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql/api_testing_dataset.sql:/docker-entrypoint-initdb.d/01-api-testing-dataset.sql:ro
