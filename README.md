@@ -51,3 +51,9 @@ GitHub language statistics note:
 - TypeScript and JavaScript examples are used for Playwright/API automation
 - SQL files contain database practice and QA reporting examples
 - YAML files contain CI/CD and Kubernetes examples
+
+Current practice focus:
+- TypeScript: Playwright API/UI automation and page object examples
+- JavaScript: reusable QA helpers, metrics, assertions, and bug report utilities
+- SQL: datasets, reporting queries, window functions, and release quality dashboards
+- YAML/Docker: CI jobs, Kubernetes manifests, and local service setup

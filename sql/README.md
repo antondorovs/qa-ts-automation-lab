@@ -12,3 +12,5 @@ Topics:
 - QA reporting queries
 - test run datasets
 - release readiness analysis
+- window functions
+- release quality dashboards
