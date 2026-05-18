@@ -47,6 +47,11 @@ Useful commands:
 - npm run test:chromium -> run all tests in Chromium
 - npm run test:report -> open the Playwright report
 
+Environment:
+- `.env.example` contains safe public API practice values
+- local `.env` is ignored and can override API settings
+- CI workflows define the same public practice values explicitly
+
 GitHub language statistics note:
 - Generated HTML reports are ignored with `.gitignore` and `.gitattributes`
 - TypeScript and JavaScript examples are used for Playwright/API automation

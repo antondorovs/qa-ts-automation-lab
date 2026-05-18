@@ -10,6 +10,10 @@ jobs:
   api-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      BASE_URL: https://reqres.in
+      API_EMAIL: eve.holt@reqres.in
+      API_PASSWORD: cityslicka
 
     steps:
       - name: Checkout repository
@@ -25,4 +29,4 @@ jobs:
         run: npm ci
 
       - name: Run API tests
-        run: npx playwright test api --project=chromium
+        run: npm run test:api -- --project=chromium
