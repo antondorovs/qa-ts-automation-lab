@@ -8,7 +8,7 @@ export class ExamplePage {
   constructor(page: Page) {
     this.page = page;
     this.heading = page.getByRole('heading', { name: 'Example Domain' });
-    this.learnMoreLink = page.getByRole('link', { name: 'More information...' });
+    this.learnMoreLink = page.getByRole('link', { name: 'Learn more' });
   }
 
   async open() {
@@ -17,7 +17,7 @@ export class ExamplePage {
 
   async expectLoaded() {
     await expect(this.heading).toBeVisible();
-    await expect(this.learnMoreLink).toHaveAttribute('href', 'https://www.iana.org/domains/example');
+    await expect(this.learnMoreLink).toHaveAttribute('href', 'https://iana.org/domains/example');
   }
 
   async openLearnMore() {

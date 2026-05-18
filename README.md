@@ -44,6 +44,7 @@ Useful commands:
 - npm test -> run all Playwright tests
 - npm run test:api -> run API tests
 - npm run test:ui -> run UI tests
+- npm run test:chromium -> run all tests in Chromium
 - npm run test:report -> open the Playwright report
 
 GitHub language statistics note:

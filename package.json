@@ -7,6 +7,7 @@
     "test": "playwright test",
     "test:api": "playwright test api",
     "test:ui": "playwright test playwright",
+    "test:chromium": "playwright test --project=chromium",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report"
   },

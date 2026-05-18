@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: qa-learning-lab-nightly
+  labels:
+    app: qa-learning-lab
+    purpose: nightly-regression
+spec:
+  schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: qa-learning-lab
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: playwright
+              image: qa-learning-lab/playwright-runner:latest
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: BASE_URL
+                  value: "https://example.com"
+                - name: CI
+                  value: "true"
+              resources:
+                requests:
+                  cpu: "500m"
+                  memory: "1Gi"
+                limits:
+                  cpu: "1"
+                  memory: "2Gi"

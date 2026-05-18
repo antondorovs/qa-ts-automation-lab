@@ -16,7 +16,7 @@ test.describe('Example Domain smoke checks', () => {
     await examplePage.open();
     await examplePage.openLearnMore();
 
-    await expect(page).toHaveURL(/iana\.org\/domains\/example/);
-    await expect(page.getByRole('heading', { name: /IANA-managed Reserved Domains/i })).toBeVisible();
+    await expect(page).toHaveURL(/iana\.org\/help\/example-domains/);
+    await expect(page.getByRole('heading', { name: 'Example Domains' })).toBeVisible();
   });
 });
