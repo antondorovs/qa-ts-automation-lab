@@ -36,9 +36,11 @@ Project structure:
 - playwright/ -> UI automation tests
 - sql/ -> SQL practice examples
 - k8s/ -> Kubernetes manifests
+- docker/ -> Docker runner examples
 - bug-reports/ -> bug report examples
 - test-cases/ -> test case examples
 - notes/ -> QA notes and learning materials
+- docs/ -> human-facing project documentation
 
 Useful commands:
 - npm test -> run all Playwright tests
@@ -51,6 +53,9 @@ Environment:
 - `.env.example` contains safe public API practice values
 - local `.env` is ignored and can override API settings
 - CI workflows define the same public practice values explicitly
+
+Documentation:
+- `docs/README.md` is the entry point for broader human-facing documentation
 
 GitHub language statistics note:
 - Generated HTML reports are ignored with `.gitignore` and `.gitattributes`
