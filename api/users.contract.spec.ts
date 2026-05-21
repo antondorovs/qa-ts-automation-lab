@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { JsonPlaceholderClient } from './clients/jsonplaceholder.client';
-import { expectArrayLengthAtLeast, expectPostShape, expectUserShape } from './utils/schema-validator';
+import { expectArrayLengthAtLeast, expectCommentShape, expectPostShape, expectUserShape } from './utils/schema-validator';
 
 test.describe('JSONPlaceholder users contract', () => {
   test.use({ baseURL: 'https://jsonplaceholder.typicode.com' });
@@ -50,6 +50,34 @@ test.describe('JSONPlaceholder users contract', () => {
 
     expectPostShape(post);
     expect(post).toMatchObject(payload);
+  });
+
+  test('GET /comments filtered by postId should return comment contracts for that post', async ({ request }) => {
+    const client = new JsonPlaceholderClient(request);
+    const response = await client.getCommentsByPost(1);
+    const comments = await response.json();
+
+    expectArrayLengthAtLeast(comments, 5, 'comments collection');
+    for (const comment of comments.slice(0, 5)) {
+      expectCommentShape(comment);
+      expect(comment.postId).toBe(1);
+    }
+  });
+
+  test('POST /comments should echo created comment payload fields', async ({ request }) => {
+    const client = new JsonPlaceholderClient(request);
+    const payload = {
+      postId: 1,
+      name: 'QA regression comment',
+      email: 'qa.regression@example.com',
+      body: 'Practice comment creation flow with Playwright request context',
+    };
+
+    const response = await client.createComment(payload);
+    const comment = await response.json();
+
+    expectCommentShape(comment);
+    expect(comment).toMatchObject(payload);
   });
 
   test('unknown endpoint should return 404', async ({ request }) => {

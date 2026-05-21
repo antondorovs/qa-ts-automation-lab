@@ -32,6 +32,14 @@ export function expectPostShape(body: JsonObject) {
   expectStringField(body, 'body');
 }
 
+export function expectCommentShape(body: JsonObject) {
+  expectNumberField(body, 'id');
+  expectNumberField(body, 'postId');
+  expectStringField(body, 'name');
+  expectEmailField(body);
+  expectStringField(body, 'body');
+}
+
 export function expectArrayLengthAtLeast(items: unknown[], minLength: number, context: string) {
   expect(Array.isArray(items), `${context} should be an array`).toBe(true);
   expect(items.length, `${context} should contain at least ${minLength} items`).toBeGreaterThanOrEqual(minLength);

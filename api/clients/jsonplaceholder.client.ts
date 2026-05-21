@@ -14,6 +14,13 @@ export type PostPayload = {
   userId: number;
 };
 
+export type CommentPayload = {
+  postId: number;
+  name: string;
+  email: string;
+  body: string;
+};
+
 export class JsonPlaceholderClient {
   constructor(private readonly request: APIRequestContext) {}
 
@@ -46,6 +53,20 @@ export class JsonPlaceholderClient {
   async createPost(payload: PostPayload) {
     const response = await this.request.post('/posts', { data: payload });
     expect(response.status(), 'POST /posts').toBe(201);
+    return response;
+  }
+
+  async getCommentsByPost(postId: number) {
+    const response = await this.request.get('/comments', {
+      params: { postId: String(postId) },
+    });
+    expect(response.status(), `GET /comments?postId=${postId}`).toBe(200);
+    return response;
+  }
+
+  async createComment(payload: CommentPayload) {
+    const response = await this.request.post('/comments', { data: payload });
+    expect(response.status(), 'POST /comments').toBe(201);
     return response;
   }
 
