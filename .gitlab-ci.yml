@@ -63,5 +63,5 @@ quality-summary:
     - api-tests
     - ui-tests
   script:
-    - node utils/test-data-builder.js || true
-    - echo "QA Learning Lab pipeline finished"
+    - npx playwright test --list --project=chromium
+    - echo "QA TypeScript Automation Lab pipeline finished"

@@ -1,4 +1,19 @@
-function assertStatus(response, expectedStatus) {
+export type HeaderValue = string | number | boolean | string[] | number[] | boolean[];
+
+export type ApiLikeResponse = {
+  status: number;
+  headers?: Record<string, HeaderValue>;
+};
+
+export type JsonObject = Record<string, unknown>;
+
+export type AssertionResult = {
+  name: string;
+  status: 'passed' | 'failed';
+  message?: string;
+};
+
+export function assertStatus(response: ApiLikeResponse, expectedStatus: number): void {
   const actualStatus = response.status;
 
   if (actualStatus !== expectedStatus) {
@@ -6,7 +21,7 @@ function assertStatus(response, expectedStatus) {
   }
 }
 
-function assertHeader(response, headerName) {
+export function assertHeader(response: ApiLikeResponse, headerName: string): string {
   const normalizedName = headerName.toLowerCase();
   const headers = normalizeHeaders(response.headers || {});
 
@@ -17,7 +32,7 @@ function assertHeader(response, headerName) {
   return headers[normalizedName];
 }
 
-function assertJsonContentType(response) {
+export function assertJsonContentType(response: ApiLikeResponse): void {
   const contentType = assertHeader(response, 'content-type');
 
   if (!contentType.includes('application/json')) {
@@ -25,7 +40,7 @@ function assertJsonContentType(response) {
   }
 }
 
-function assertBodyContainsFields(body, fields) {
+export function assertBodyContainsFields(body: JsonObject, fields: string[]): void {
   const missingFields = fields.filter((field) => body[field] === undefined || body[field] === null);
 
   if (missingFields.length > 0) {
@@ -33,19 +48,19 @@ function assertBodyContainsFields(body, fields) {
   }
 }
 
-function assertStringField(body, fieldName) {
+export function assertStringField(body: JsonObject, fieldName: string): void {
   assertBodyContainsFields(body, [fieldName]);
 
   if (typeof body[fieldName] !== 'string') {
     throw new Error(`Expected "${fieldName}" to be a string`);
   }
 
-  if (body[fieldName].trim().length === 0) {
+  if (String(body[fieldName]).trim().length === 0) {
     throw new Error(`Expected "${fieldName}" to be non-empty`);
   }
 }
 
-function assertNumberField(body, fieldName) {
+export function assertNumberField(body: JsonObject, fieldName: string): void {
   assertBodyContainsFields(body, [fieldName]);
 
   if (typeof body[fieldName] !== 'number') {
@@ -53,15 +68,15 @@ function assertNumberField(body, fieldName) {
   }
 }
 
-function assertEmailField(body, fieldName = 'email') {
+export function assertEmailField(body: JsonObject, fieldName = 'email'): void {
   assertStringField(body, fieldName);
 
-  if (!body[fieldName].includes('@')) {
+  if (!String(body[fieldName]).includes('@')) {
     throw new Error(`Expected "${fieldName}" to look like an email`);
   }
 }
 
-function assertPaginationShape(body) {
+export function assertPaginationShape(body: JsonObject): void {
   assertNumberField(body, 'page');
   assertNumberField(body, 'limit');
   assertNumberField(body, 'total');
@@ -71,7 +86,7 @@ function assertPaginationShape(body) {
   }
 }
 
-function assertProblemDetails(body) {
+export function assertProblemDetails(body: JsonObject): void {
   assertStringField(body, 'title');
   assertNumberField(body, 'status');
 
@@ -80,14 +95,14 @@ function assertProblemDetails(body) {
   }
 }
 
-function normalizeHeaders(headers) {
-  return Object.entries(headers).reduce((accumulator, [name, value]) => {
+export function normalizeHeaders(headers: Record<string, HeaderValue>): Record<string, string> {
+  return Object.entries(headers).reduce<Record<string, string>>((accumulator, [name, value]) => {
     accumulator[name.toLowerCase()] = Array.isArray(value) ? value.join(', ') : String(value);
     return accumulator;
   }, {});
 }
 
-function buildAssertionResult(name, callback) {
+export function buildAssertionResult(name: string, callback: () => void): AssertionResult {
   try {
     callback();
     return { name, status: 'passed' };
@@ -95,21 +110,7 @@ function buildAssertionResult(name, callback) {
     return {
       name,
       status: 'failed',
-      message: error.message,
+      message: error instanceof Error ? error.message : String(error),
     };
   }
 }
-
-module.exports = {
-  assertBodyContainsFields,
-  assertEmailField,
-  assertHeader,
-  assertJsonContentType,
-  assertNumberField,
-  assertPaginationShape,
-  assertProblemDetails,
-  assertStatus,
-  assertStringField,
-  buildAssertionResult,
-  normalizeHeaders,
-};

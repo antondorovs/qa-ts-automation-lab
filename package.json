@@ -1,28 +1,28 @@
 {
-  "name": "qa-learning-lab",
+  "name": "qa-ts-automation-lab",
   "version": "1.0.0",
-  "description": "QA automation, API testing, SQL and backend practice",
-  "main": "index.js",
+  "description": "TypeScript-first QA automation, API testing, SQL and backend practice",
   "scripts": {
     "test": "playwright test",
     "test:api": "playwright test api",
     "test:ui": "playwright test playwright",
     "test:chromium": "playwright test --project=chromium",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:contract": "playwright test --grep @contract",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antondorovs/qa-learning-lab.git"
+    "url": "git+https://github.com/antondorovs/qa-ts-automation-lab.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/antondorovs/qa-learning-lab/issues"
+    "url": "https://github.com/antondorovs/qa-ts-automation-lab/issues"
   },
-  "homepage": "https://github.com/antondorovs/qa-learning-lab#readme",
+  "homepage": "https://github.com/antondorovs/qa-ts-automation-lab#readme",
   "devDependencies": {
     "@playwright/test": "^1.59.1"
   },

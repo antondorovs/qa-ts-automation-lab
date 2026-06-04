@@ -1,4 +1,45 @@
-function buildBugReport(input) {
+export type BugSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type BugPriority = 'low' | 'normal' | 'high' | 'urgent';
+
+export type BugReportInput = {
+  title: string;
+  expectedResult: string;
+  actualResult: string;
+  severity?: BugSeverity;
+  priority?: BugPriority;
+  environment?: string;
+  area?: string;
+  preconditions?: string | string[];
+  stepsToReproduce?: string | string[];
+  evidence?: string | string[];
+};
+
+export type BugReport = {
+  title: string;
+  severity: BugSeverity;
+  priority: BugPriority;
+  environment: string;
+  preconditions: string[];
+  stepsToReproduce: string[];
+  expectedResult: string;
+  actualResult: string;
+  evidence: string[];
+  labels: string[];
+};
+
+export type ApiFailureInput = {
+  endpoint: string;
+  expected: string;
+  actual: string;
+  status: number;
+  baseUrl: string;
+  method?: string;
+  environment?: string;
+  role?: string;
+  evidence?: string | string[];
+};
+
+export function buildBugReport(input: BugReportInput): BugReport {
   return {
     title: input.title,
     severity: input.severity || 'medium',
@@ -13,7 +54,7 @@ function buildBugReport(input) {
   };
 }
 
-function buildLabels(input) {
+function buildLabels(input: BugReportInput): string[] {
   const labels = new Set(['bug']);
 
   if (input.area) {
@@ -31,7 +72,7 @@ function buildLabels(input) {
   return Array.from(labels);
 }
 
-function normalizeList(value) {
+function normalizeList(value?: string | string[]): string[] {
   if (!value) {
     return [];
   }
@@ -43,7 +84,7 @@ function normalizeList(value) {
   return [value];
 }
 
-function renderMarkdown(report) {
+export function renderMarkdown(report: BugReport): string {
   const sections = [
     `# ${report.title}`,
     `Severity: ${report.severity}`,
@@ -60,19 +101,17 @@ function renderMarkdown(report) {
   return sections.filter(Boolean).join('\n\n');
 }
 
-function renderList(title, items, ordered = false) {
+function renderList(title: string, items: string[], ordered = false): string {
   if (!items.length) {
     return '';
   }
 
-  const list = items
-    .map((item, index) => (ordered ? `${index + 1}. ${item}` : `- ${item}`))
-    .join('\n');
+  const list = items.map((item, index) => (ordered ? `${index + 1}. ${item}` : `- ${item}`)).join('\n');
 
   return `## ${title}\n${list}`;
 }
 
-function buildApiBugFromFailure(failure) {
+export function buildApiBugFromFailure(failure: ApiFailureInput): BugReport {
   return buildBugReport({
     title: `${failure.method || 'REQUEST'} ${failure.endpoint} returns unexpected response`,
     severity: failure.status >= 500 ? 'high' : 'medium',
@@ -93,9 +132,3 @@ function buildApiBugFromFailure(failure) {
     evidence: failure.evidence,
   });
 }
-
-module.exports = {
-  buildApiBugFromFailure,
-  buildBugReport,
-  renderMarkdown,
-};

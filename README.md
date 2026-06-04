@@ -1,6 +1,6 @@
-# QA Learning Lab
+# QA TypeScript Automation Lab
 
-QA Learning Lab is my personal practice repository for improving skills in manual and automated software testing.
+QA TypeScript Automation Lab is my personal practice repository for improving skills in manual and automated software testing with a TypeScript-first automation stack.
 
 This project combines practical examples of:
 - Playwright automation
@@ -22,7 +22,6 @@ Main goals of this repository:
 
 Tech stack:
 - TypeScript
-- JavaScript
 - Playwright
 - SQL
 - Docker
@@ -47,6 +46,8 @@ Useful commands:
 - npm run test:api -> run API tests
 - npm run test:ui -> run UI tests
 - npm run test:chromium -> run all tests in Chromium
+- npm run test:smoke -> run smoke-tagged tests
+- npm run test:contract -> run contract-tagged tests
 - npm run test:report -> open the Playwright report
 
 Environment:
@@ -59,12 +60,13 @@ Documentation:
 
 GitHub language statistics note:
 - Generated HTML reports are ignored with `.gitignore` and `.gitattributes`
-- TypeScript and JavaScript examples are used for Playwright/API automation
+- TypeScript is the primary source language for Playwright/API automation
+- JavaScript source files should not be added; existing helpers should be converted to TypeScript when touched
 - SQL files contain database practice and QA reporting examples
 - YAML files contain CI/CD and Kubernetes examples
 
 Current practice focus:
 - TypeScript: Playwright API/UI automation and page object examples
-- JavaScript: reusable QA helpers, metrics, assertions, and bug report utilities
+- TypeScript utilities: reusable QA helpers, metrics, assertions, and bug report builders
 - SQL: datasets, reporting queries, window functions, and release quality dashboards
 - YAML/Docker: CI jobs, Kubernetes manifests, and local service setup

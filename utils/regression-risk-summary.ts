@@ -1,11 +1,38 @@
-const DEFAULT_WEIGHTS = {
+export type RegressionRisk = 'low' | 'medium' | 'high';
+
+export type RegressionRiskWeights = {
+  failed: number;
+  flaky: number;
+  slow: number;
+  skipped: number;
+};
+
+export type RegressionSignals = {
+  failed?: number;
+  flaky?: number;
+  slow?: number;
+  skipped?: number;
+};
+
+export type RegressionRiskOptions = {
+  weights?: RegressionRiskWeights;
+};
+
+export type RegressionRiskSummary = {
+  risk: RegressionRisk;
+  score: number;
+  recommendation: string;
+  signals: Required<RegressionSignals>;
+};
+
+const DEFAULT_WEIGHTS: RegressionRiskWeights = {
   failed: 5,
   flaky: 3,
   slow: 2,
   skipped: 1,
 };
 
-function calculateRiskScore(summary, weights = DEFAULT_WEIGHTS) {
+export function calculateRiskScore(summary: RegressionSignals, weights: RegressionRiskWeights = DEFAULT_WEIGHTS): number {
   return (
     (summary.failed || 0) * weights.failed +
     (summary.flaky || 0) * weights.flaky +
@@ -14,7 +41,7 @@ function calculateRiskScore(summary, weights = DEFAULT_WEIGHTS) {
   );
 }
 
-function classifyRisk(score) {
+export function classifyRisk(score: number): RegressionRisk {
   if (score >= 15) {
     return 'high';
   }
@@ -26,7 +53,10 @@ function classifyRisk(score) {
   return 'low';
 }
 
-function buildRegressionRiskSummary(summary, options = {}) {
+export function buildRegressionRiskSummary(
+  summary: RegressionSignals,
+  options: RegressionRiskOptions = {},
+): RegressionRiskSummary {
   const score = calculateRiskScore(summary, options.weights);
   const risk = classifyRisk(score);
 
@@ -43,7 +73,7 @@ function buildRegressionRiskSummary(summary, options = {}) {
   };
 }
 
-function buildRecommendation(risk) {
+function buildRecommendation(risk: RegressionRisk): string {
   if (risk === 'high') {
     return 'Block release and investigate failures before continuing.';
   }
@@ -54,9 +84,3 @@ function buildRecommendation(risk) {
 
   return 'Release risk is low based on current QA signals.';
 }
-
-module.exports = {
-  buildRegressionRiskSummary,
-  calculateRiskScore,
-  classifyRisk,
-};

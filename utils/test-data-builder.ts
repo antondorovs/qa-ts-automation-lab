@@ -15,7 +15,7 @@ const defaultUser: UserPayload = {
   username: 'qa_learner',
   email: 'qa.learner@example.com',
   phone: '+3725550100',
-  website: 'qa-learning-lab.example',
+  website: 'qa-ts-automation-lab.example',
 };
 
 const defaultPost: PostPayload = {

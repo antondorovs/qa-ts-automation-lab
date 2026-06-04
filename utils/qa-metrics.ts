@@ -1,19 +1,92 @@
-const STATUS = {
+export const STATUS = {
   PASSED: 'passed',
   FAILED: 'failed',
   SKIPPED: 'skipped',
   FLAKY: 'flaky',
+} as const;
+
+export type QaStatus = (typeof STATUS)[keyof typeof STATUS];
+
+export type QaTestResult = {
+  testName: string;
+  status: QaStatus;
+  suite?: string;
+  durationMs?: number;
+  error?: string;
 };
 
-function countBy(items, keySelector) {
-  return items.reduce((accumulator, item) => {
+export type QaRunSummary = {
+  total: number;
+  passed: number;
+  failed: number;
+  skipped: number;
+  flaky: number;
+  passRate: number;
+  failureRate: number;
+  totalDurationMs: number;
+  averageDurationMs: number;
+  suites: Record<string, number>;
+};
+
+export type ReleaseGateOptions = {
+  minimumPassRate?: number;
+  maximumFailedTests?: number;
+  maximumFlakyTests?: number;
+};
+
+export type ReleaseGateCheck = {
+  name: string;
+  expected: string;
+  actual: string;
+  passed: boolean;
+};
+
+export type ReleaseGate = {
+  status: 'ready' | 'blocked';
+  checks: ReleaseGateCheck[];
+};
+
+export type SlowTest = {
+  testName: string;
+  suite?: string;
+  durationMs?: number;
+  status: QaStatus;
+};
+
+export type FailedTest = {
+  testName: string;
+  suite?: string;
+  error: string;
+  durationMs: number;
+};
+
+export type FlakyCandidate = {
+  suite: string;
+  testName: string;
+  totalRuns: number;
+  passedRuns: number;
+  failedRuns: number;
+  lastStatus: QaStatus;
+};
+
+export type DailyQaSnapshot = {
+  generatedAt: string;
+  summary: QaRunSummary;
+  failedTests: FailedTest[];
+  slowTests: SlowTest[];
+  flakyCandidates: FlakyCandidate[];
+  releaseGate: ReleaseGate;
+};
+
+function countBy<T>(items: T[], keySelector: (item: T) => string): Record<string, number> {
+  return items.reduce<Record<string, number>>((accumulator, item) => {
     const key = keySelector(item);
     accumulator[key] = (accumulator[key] || 0) + 1;
     return accumulator;
   }, {});
 }
 
-function calculatePassRate(results) {
+export function calculatePassRate(results: QaTestResult[]): number {
   if (!results.length) {
     return 0;
   }
@@ -22,7 +95,7 @@ function calculatePassRate(results) {
   return Number(((passed / results.length) * 100).toFixed(2));
 }
 
-function calculateFailureRate(results) {
+export function calculateFailureRate(results: QaTestResult[]): number {
   if (!results.length) {
     return 0;
   }
@@ -31,7 +104,7 @@ function calculateFailureRate(results) {
   return Number(((failed / results.length) * 100).toFixed(2));
 }
 
-function summarizeRun(results) {
+export function summarizeRun(results: QaTestResult[]): QaRunSummary {
   const statusCounts = countBy(results, (result) => result.status);
   const suiteCounts = countBy(results, (result) => result.suite || 'unknown');
   const totalDurationMs = results.reduce((sum, result) => sum + (result.durationMs || 0), 0);
@@ -50,10 +123,10 @@ function summarizeRun(results) {
   };
 }
 
-function findSlowTests(results, thresholdMs = 1000) {
+export function findSlowTests(results: QaTestResult[], thresholdMs = 1000): SlowTest[] {
   return results
     .filter((result) => (result.durationMs || 0) >= thresholdMs)
-    .sort((first, second) => second.durationMs - first.durationMs)
+    .sort((first, second) => (second.durationMs || 0) - (first.durationMs || 0))
     .map((result) => ({
       testName: result.testName,
       suite: result.suite,
@@ -62,7 +135,7 @@ function findSlowTests(results, thresholdMs = 1000) {
     }));
 }
 
-function findFailedTests(results) {
+export function findFailedTests(results: QaTestResult[]): FailedTest[] {
   return results
     .filter((result) => result.status === STATUS.FAILED)
     .map((result) => ({
@@ -73,8 +146,8 @@ function findFailedTests(results) {
     }));
 }
 
-function detectFlakyCandidates(history) {
-  const groupedByTest = history.reduce((accumulator, result) => {
+export function detectFlakyCandidates(history: QaTestResult[]): FlakyCandidate[] {
+  const groupedByTest = history.reduce<Record<string, QaTestResult[]>>((accumulator, result) => {
     const key = `${result.suite || 'unknown'}::${result.testName}`;
     accumulator[key] = accumulator[key] || [];
     accumulator[key].push(result);
@@ -100,12 +173,12 @@ function detectFlakyCandidates(history) {
     .sort((first, second) => second.failedRuns - first.failedRuns);
 }
 
-function buildReleaseGate(summary, options = {}) {
+export function buildReleaseGate(summary: QaRunSummary, options: ReleaseGateOptions = {}): ReleaseGate {
   const minimumPassRate = options.minimumPassRate || 95;
   const maximumFailedTests = options.maximumFailedTests ?? 0;
   const maximumFlakyTests = options.maximumFlakyTests ?? 3;
 
-  const checks = [
+  const checks: ReleaseGateCheck[] = [
     {
       name: 'pass rate',
       expected: `>= ${minimumPassRate}%`,
@@ -132,7 +205,7 @@ function buildReleaseGate(summary, options = {}) {
   };
 }
 
-function createDailyQaSnapshot(results, history = []) {
+export function createDailyQaSnapshot(results: QaTestResult[], history: QaTestResult[] = []): DailyQaSnapshot {
   const summary = summarizeRun(results);
   const failedTests = findFailedTests(results);
   const slowTests = findSlowTests(results);
@@ -148,15 +221,3 @@ function createDailyQaSnapshot(results, history = []) {
     releaseGate,
   };
 }
-
-module.exports = {
-  STATUS,
-  buildReleaseGate,
-  calculateFailureRate,
-  calculatePassRate,
-  createDailyQaSnapshot,
-  detectFlakyCandidates,
-  findFailedTests,
-  findSlowTests,
-  summarizeRun,
-};
