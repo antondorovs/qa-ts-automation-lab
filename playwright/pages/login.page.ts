@@ -1,17 +1,17 @@
 import { Page } from '@playwright/test';
 
 export class LoginPage {
-    readonly page: Page;
+  readonly page: Page;
 
-    constructor(page: Page) {
-        this.page = page;
-    }
+  constructor(page: Page) {
+    this.page = page;
+  }
 
-    async openLoginPage() {
-        await this.page.goto('https://example.com');
-    }
+  async openLoginPage() {
+    await this.page.goto('/');
+  }
 
-    async getPageTitle() {
-        return await this.page.title();
-    }
+  async getPageTitle() {
+    return this.page.title();
+  }
 }

@@ -1,13 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { env } from '../utils/env';
+import { buildInvalidLoginPayload } from '../utils/test-data-builder.ts';
 
-test('login api should return unauthorized with invalid credentials', async ({ request }) => {
-    const response = await request.post(`${env.baseUrl}/api/login`, {
-        data: {
-            email: env.email,
-            password: 'wrong-password'
-        }
-    });
+test('@api @smoke login api should return unauthorized with invalid credentials', async ({ request }) => {
+  const response = await request.post(`${env.baseUrl}/api/login`, {
+    data: buildInvalidLoginPayload({ email: env.email }),
+  });
 
-    expect(response.status()).toBe(401);
+  expect(response.status()).toBe(401);
 });

@@ -12,6 +12,13 @@ const defaultPost = {
   userId: 1,
 };
 
+const defaultComment = {
+  postId: 1,
+  name: 'QA regression comment',
+  email: 'qa.regression@example.com',
+  body: 'Practice comment creation flow with Playwright request context',
+};
+
 function buildUserPayload(overrides = {}) {
   return {
     ...defaultUser,
@@ -22,6 +29,13 @@ function buildUserPayload(overrides = {}) {
 function buildPostPayload(overrides = {}) {
   return {
     ...defaultPost,
+    ...overrides,
+  };
+}
+
+function buildCommentPayload(overrides = {}) {
+  return {
+    ...defaultComment,
     ...overrides,
   };
 }
@@ -42,6 +56,7 @@ function buildPaginationParams(page = 1, limit = 10) {
 }
 
 module.exports = {
+  buildCommentPayload,
   buildInvalidLoginPayload,
   buildPaginationParams,
   buildPostPayload,

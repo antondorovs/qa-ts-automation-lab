@@ -1,13 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/api.fixture';
+import { expectUserShape } from './utils/schema-validator';
 
-test('GET user should return valid response', async ({ request }) => {
-  const response = await request.get('https://jsonplaceholder.typicode.com/users/1');
-
-  expect(response.status()).toBe(200);
-
+test('@api @smoke GET /users/{id} should return valid user response', async ({ jsonPlaceholderClient }) => {
+  const response = await jsonPlaceholderClient.getUser(1);
   const body = await response.json();
 
+  expectUserShape(body);
   expect(body.id).toBe(1);
-  expect(body.name).toBeTruthy();
-  expect(body.email).toContain('@');
 });

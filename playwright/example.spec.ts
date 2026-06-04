@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { ExamplePage } from './pages/example.page';
 import { IANA_EXAMPLE_URL, mockExampleDomain } from './fixtures/example-domain.fixture';
 
-test.describe('Example Domain smoke checks', () => {
+test.describe('@ui @smoke Example Domain smoke checks', () => {
   test.beforeEach(async ({ page }) => {
     await mockExampleDomain(page);
   });
