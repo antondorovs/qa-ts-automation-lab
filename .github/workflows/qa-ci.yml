@@ -85,6 +85,9 @@ jobs:
     name: UI tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
+      options: --ipc=host
 
     steps:
       - name: Checkout repository
@@ -98,9 +101,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
 
       - name: Run UI tests
         run: npm run test:ui -- --project=chromium

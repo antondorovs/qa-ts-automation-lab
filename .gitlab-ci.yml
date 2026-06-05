@@ -42,8 +42,8 @@ api-tests:
 
 ui-tests:
   stage: test
+  image: mcr.microsoft.com/playwright:v1.59.1-noble
   script:
-    - npx playwright install --with-deps chromium
     - npm run test:ui -- --project=chromium
   artifacts:
     when: on_failure
