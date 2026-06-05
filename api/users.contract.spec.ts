@@ -1,8 +1,8 @@
 import { test, expect } from './fixtures/api.fixture';
-import { buildCommentPayload, buildPostPayload } from '../utils/test-data-builder.ts';
+import { buildCommentPayload, buildPostPayload, buildUserPayload } from '../utils/test-data-builder';
 import { expectArrayLengthAtLeast, expectCommentShape, expectPostShape, expectUserShape } from './utils/schema-validator';
 
-test.describe('@api @contract JSONPlaceholder users contract', () => {
+test.describe('@api @contract local users contract', () => {
   test('GET /users should return a stable users collection', async ({ jsonPlaceholderClient }) => {
     const response = await jsonPlaceholderClient.listUsers();
     const users = await response.json();
@@ -21,6 +21,29 @@ test.describe('@api @contract JSONPlaceholder users contract', () => {
     expect(user.id).toBe(1);
   });
 
+  test('POST /users should create a user with a generated id', async ({ jsonPlaceholderClient }) => {
+    const payload = buildUserPayload({
+      email: 'created.user@example.com',
+    });
+
+    const response = await jsonPlaceholderClient.createUser(payload);
+    const user = await response.json();
+
+    expectUserShape(user);
+    expect(user).toMatchObject(payload);
+    expect(user.id).toBe(11);
+  });
+
+  test('POST /users should reject incomplete payloads', async ({ jsonPlaceholderClient }) => {
+    const response = await jsonPlaceholderClient.createInvalidUser({
+      name: 'Incomplete User',
+    });
+    const body = await response.json();
+
+    expect(response.status()).toBe(400);
+    expect(body).toEqual({ error: 'name, username and email are required' });
+  });
+
   test('GET /posts filtered by userId should return only this user posts', async ({ jsonPlaceholderClient }) => {
     const response = await jsonPlaceholderClient.getPostsByUser(1);
     const posts = await response.json();
@@ -34,7 +57,7 @@ test.describe('@api @contract JSONPlaceholder users contract', () => {
 
   test('POST /posts should echo created payload fields', async ({ jsonPlaceholderClient }) => {
     const payload = buildPostPayload({
-      title: 'QA learning lab API test',
+      title: 'QA TypeScript automation API test',
       body: 'Practice API creation flow with Playwright request context',
     });
 

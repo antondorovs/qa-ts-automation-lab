@@ -4,8 +4,11 @@
   "description": "TypeScript-first QA automation, API testing, SQL and backend practice",
   "scripts": {
     "test": "playwright test",
+    "typecheck": "tsc --noEmit",
     "test:api": "playwright test api",
     "test:ui": "playwright test playwright",
+    "test:utils": "playwright test utils",
+    "test:live": "playwright test api/live --grep @live",
     "test:chromium": "playwright test --project=chromium",
     "test:smoke": "playwright test --grep @smoke",
     "test:contract": "playwright test --grep @contract",
@@ -23,8 +26,13 @@
     "url": "https://github.com/antondorovs/qa-ts-automation-lab/issues"
   },
   "homepage": "https://github.com/antondorovs/qa-ts-automation-lab#readme",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
-    "@playwright/test": "^1.59.1"
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^24.13.0",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "dotenv": "^17.4.2"

@@ -43,17 +43,21 @@ Project structure:
 
 Useful commands:
 - npm test -> run all Playwright tests
+- npm run typecheck -> run strict TypeScript compiler checks without emitting files
 - npm run test:api -> run API tests
 - npm run test:ui -> run UI tests
+- npm run test:utils -> run utility and source policy tests
+- npm run test:live -> run public API diagnostics when `RUN_LIVE_API_TESTS=true`
 - npm run test:chromium -> run all tests in Chromium
 - npm run test:smoke -> run smoke-tagged tests
 - npm run test:contract -> run contract-tagged tests
 - npm run test:report -> open the Playwright report
 
 Environment:
-- `.env.example` contains safe public API practice values
-- local `.env` is ignored and can override API settings
-- CI workflows define the same public practice values explicitly
+- core API tests use a local TypeScript HTTP server and do not require external services
+- `.env.example` contains safe values used only by optional public API diagnostics
+- local `.env` is ignored and can override live diagnostic settings
+- push CI does not call JSONPlaceholder or Reqres
 
 Documentation:
 - `docs/README.md` is the entry point for broader human-facing documentation

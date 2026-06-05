@@ -1,4 +1,4 @@
-import { APIRequestContext, expect } from '@playwright/test';
+import { type APIRequestContext, expect } from '@playwright/test';
 
 export type UserPayload = {
   name: string;
@@ -30,6 +30,10 @@ export class JsonPlaceholderClient {
     return response;
   }
 
+  async getMissingUser(userId: number) {
+    return this.request.get(`/users/${userId}`);
+  }
+
   async listUsers() {
     const response = await this.request.get('/users');
     expect(response.status(), 'GET /users').toBe(200);
@@ -40,6 +44,10 @@ export class JsonPlaceholderClient {
     const response = await this.request.post('/users', { data: payload });
     expect(response.status(), 'POST /users').toBe(201);
     return response;
+  }
+
+  async createInvalidUser(payload: Record<string, unknown>) {
+    return this.request.post('/users', { data: payload });
   }
 
   async getPostsByUser(userId: number) {

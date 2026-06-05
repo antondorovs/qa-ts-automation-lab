@@ -1,41 +1,40 @@
 stages:
   - validate
   - test
-  - report
+  - diagnostics
+
+default:
+  image: node:24-bookworm
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
+  before_script:
+    - npm ci --cache .npm --prefer-offline
 
 variables:
-  NODE_VERSION: "20"
-  BASE_URL: "https://reqres.in"
-  API_EMAIL: "eve.holt@reqres.in"
-  API_PASSWORD: "cityslicka"
+  CI: "true"
 
-cache:
-  key:
-    files:
-      - package-lock.json
-  paths:
-    - .npm/
-    - node_modules/
-
-install:
+typecheck-and-utils:
   stage: validate
-  image: mcr.microsoft.com/playwright:v1.59.1-noble
   script:
-    - npm ci --cache .npm --prefer-offline
+    - npm run typecheck
+    - npm run test:utils -- --project=chromium
   artifacts:
+    when: on_failure
     paths:
-      - node_modules/
-    expire_in: 1 hour
+      - playwright-report/
+      - test-results/
+    expire_in: 7 days
 
 api-tests:
   stage: test
-  image: mcr.microsoft.com/playwright:v1.59.1-noble
-  needs:
-    - install
   script:
     - npm run test:api -- --project=chromium
   artifacts:
-    when: always
+    when: on_failure
     paths:
       - playwright-report/
       - test-results/
@@ -43,25 +42,24 @@ api-tests:
 
 ui-tests:
   stage: test
-  image: mcr.microsoft.com/playwright:v1.59.1-noble
-  needs:
-    - install
   script:
-    - npx playwright --version
+    - npx playwright install --with-deps chromium
     - npm run test:ui -- --project=chromium
   artifacts:
-    when: always
+    when: on_failure
     paths:
       - playwright-report/
       - test-results/
     expire_in: 7 days
 
-quality-summary:
-  stage: report
-  image: mcr.microsoft.com/playwright:v1.59.1-noble
-  needs:
-    - api-tests
-    - ui-tests
+live-api:
+  stage: diagnostics
+  when: manual
+  allow_failure: true
+  variables:
+    RUN_LIVE_API_TESTS: "true"
+    BASE_URL: "https://reqres.in"
+    API_EMAIL: "eve.holt@reqres.in"
+    API_PASSWORD: "cityslicka"
   script:
-    - npx playwright test --list --project=chromium
-    - echo "QA TypeScript Automation Lab pipeline finished"
+    - npm run test:live -- --project=chromium

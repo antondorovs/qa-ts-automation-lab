@@ -1,0 +1,145 @@
+name: QA CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CI: true
+
+jobs:
+  typecheck-and-utils:
+    name: Typecheck and utilities
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript compiler
+        run: npm run typecheck
+
+      - name: Run utility tests
+        run: npm run test:utils -- --project=chromium
+
+      - name: Upload utility failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: utility-test-artifacts
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  api-tests:
+    name: API tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run deterministic API tests
+        run: npm run test:api -- --project=chromium
+
+      - name: Upload API failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-test-artifacts
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  ui-tests:
+    name: UI tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run UI tests
+        run: npm run test:ui -- --project=chromium
+
+      - name: Upload UI failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-test-artifacts
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  live-api:
+    name: Live API diagnostics
+    if: github.event_name == 'workflow_dispatch'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RUN_LIVE_API_TESTS: 'true'
+      BASE_URL: https://reqres.in
+      API_EMAIL: eve.holt@reqres.in
+      API_PASSWORD: cityslicka
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run public API diagnostics
+        run: npm run test:live -- --project=chromium
