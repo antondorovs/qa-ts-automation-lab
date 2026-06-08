@@ -13,7 +13,8 @@
     "test:smoke": "playwright test --grep @smoke",
     "test:contract": "playwright test --grep @contract",
     "test:headed": "playwright test --headed",
-    "test:report": "playwright show-report"
+    "test:report": "playwright show-report",
+    "test:qa-report": "playwright test --project=chromium"
   },
   "repository": {
     "type": "git",

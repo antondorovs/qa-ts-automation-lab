@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 import { assertEmailField, assertHeader, buildAssertionResult, normalizeHeaders } from '../api/utils/response-assertions';
 import { isClientError, isServerError, isSuccessStatus } from '../api/utils/status-code-helper';
 import { buildApiBugFromFailure, renderMarkdown } from './bug-report-builder';
-import { createDailyQaSnapshot, STATUS } from './qa-metrics';
+import { STATUS, type QaTestResult } from './qa-metrics';
+import { buildQaRunReport } from './qa-report';
 import { buildRegressionRiskSummary } from './regression-risk-summary';
 import { buildCommentPayload, buildPaginationParams, buildPostPayload, buildUserPayload } from './test-data-builder';
 
@@ -67,22 +68,46 @@ test.describe('@utils @contract TypeScript QA utilities', () => {
   });
 
   test('metrics and regression summaries should expose release risk signals', () => {
-    const snapshot = createDailyQaSnapshot([
-      { testName: 'login smoke', suite: 'ui', status: STATUS.PASSED, durationMs: 300 },
-      { testName: 'users contract', suite: 'api', status: STATUS.FAILED, durationMs: 900, error: 'schema mismatch' },
-      { testName: 'checkout regression', suite: 'ui', status: STATUS.FLAKY, durationMs: 1300 },
-    ]);
-
-    const riskSummary = buildRegressionRiskSummary({
-      failed: snapshot.summary.failed,
-      flaky: snapshot.summary.flaky,
-      slow: snapshot.slowTests.length,
-      skipped: snapshot.summary.skipped,
+    const results: QaTestResult[] = [
+      createQaResult('login smoke', 'ui', STATUS.PASSED, 300),
+      createQaResult('users contract', 'api', STATUS.FAILED, 900, 'schema mismatch'),
+      createQaResult('checkout regression', 'ui', STATUS.FLAKY, 1300),
+    ];
+    const report = buildQaRunReport(results, {
+      runStatus: 'failed',
+      durationMs: 2500,
+      generatedAt: '2026-06-08T00:00:00.000Z',
     });
 
-    expect(snapshot.summary.total).toBe(3);
-    expect(snapshot.failedTests).toHaveLength(1);
-    expect(snapshot.releaseGate.status).toBe('blocked');
+    const riskSummary = buildRegressionRiskSummary({
+      failed: report.summary.failed,
+      flaky: report.summary.flaky,
+      slow: report.slowTests.length,
+      skipped: report.summary.skipped,
+    });
+
+    expect(report.summary.total).toBe(3);
+    expect(report.failedTests).toHaveLength(1);
+    expect(report.qualityGate.status).toBe('blocked');
     expect(riskSummary.risk).toBe('medium');
   });
 });
+
+function createQaResult(
+  title: string,
+  suite: string,
+  status: QaTestResult['status'],
+  durationMs: number,
+  error?: string,
+): QaTestResult {
+  return {
+    id: `${suite}:${title}`,
+    suite,
+    title,
+    status,
+    durationMs,
+    attempts: 1,
+    tags: [],
+    error,
+  };
+}

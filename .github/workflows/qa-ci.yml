@@ -38,6 +38,15 @@ jobs:
       - name: Run utility tests
         run: npm run test:utils -- --project=chromium
 
+      - name: Upload QA run intelligence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: utility-qa-report
+          path: qa-report/
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Upload utility failure artifacts
         if: failure()
         uses: actions/upload-artifact@v7
@@ -69,6 +78,15 @@ jobs:
 
       - name: Run deterministic API tests
         run: npm run test:api -- --project=chromium
+
+      - name: Upload QA run intelligence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-qa-report
+          path: qa-report/
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Upload API failure artifacts
         if: failure()
@@ -104,6 +122,15 @@ jobs:
 
       - name: Run UI tests
         run: npm run test:ui -- --project=chromium
+
+      - name: Upload QA run intelligence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-qa-report
+          path: qa-report/
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Upload UI failure artifacts
         if: failure()
@@ -143,3 +170,12 @@ jobs:
 
       - name: Run public API diagnostics
         run: npm run test:live -- --project=chromium
+
+      - name: Upload QA run intelligence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: live-api-qa-report
+          path: qa-report/
+          if-no-files-found: warn
+          retention-days: 14

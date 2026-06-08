@@ -6,6 +6,7 @@ Keep folder-specific documentation close to the related code when possible:
 
 - API documentation belongs in `api/README.md`.
 - SQL documentation belongs in `sql/README.md`.
+- QA reporting and release gate behavior is documented in `qa-run-intelligence.md`.
 - Manual QA examples belong in `bug-reports/`, `test-cases/`, and `notes/`.
 
 Use this folder later for broader guides such as onboarding notes, release notes, learning roadmaps, or portfolio walkthroughs.

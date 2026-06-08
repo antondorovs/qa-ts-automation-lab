@@ -12,6 +12,7 @@ This project combines practical examples of:
 - test documentation
 - bug reporting
 - QA utilities and helpers
+- custom QA run intelligence and release gates
 
 Main goals of this repository:
 - improve automation skills
@@ -40,6 +41,7 @@ Project structure:
 - test-cases/ -> test case examples
 - notes/ -> QA notes and learning materials
 - docs/ -> human-facing project documentation
+- qa-report/ -> generated JSON and Markdown run intelligence (ignored by Git)
 
 Useful commands:
 - npm test -> run all Playwright tests
@@ -52,15 +54,19 @@ Useful commands:
 - npm run test:smoke -> run smoke-tagged tests
 - npm run test:contract -> run contract-tagged tests
 - npm run test:report -> open the Playwright report
+- npm run test:qa-report -> run Chromium tests and generate QA run intelligence
 
 Environment:
 - core API tests use a local TypeScript HTTP server and do not require external services
 - `.env.example` contains safe values used only by optional public API diagnostics
 - local `.env` is ignored and can override live diagnostic settings
 - push CI does not call JSONPlaceholder or Reqres
+- every Playwright run generates `qa-report/qa-summary.json` and `qa-report/qa-summary.md`
+- CI retries a failed test once, reports retry success as flaky, and blocks the quality gate
 
 Documentation:
 - `docs/README.md` is the entry point for broader human-facing documentation
+- `docs/qa-run-intelligence.md` describes reporter metrics and release gate behavior
 
 GitHub language statistics note:
 - Generated HTML reports are ignored with `.gitignore` and `.gitattributes`
@@ -72,5 +78,6 @@ GitHub language statistics note:
 Current practice focus:
 - TypeScript: Playwright API/UI automation and page object examples
 - TypeScript utilities: reusable QA helpers, metrics, assertions, and bug report builders
+- QA reporting: Playwright result aggregation, flaky detection, slow-test visibility, and strict release gates
 - SQL: datasets, reporting queries, window functions, and release quality dashboards
 - YAML/Docker: CI jobs, Kubernetes manifests, and local service setup

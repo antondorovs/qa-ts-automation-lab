@@ -2,6 +2,7 @@
 *.html linguist-generated=true
 playwright-report/** linguist-generated=true
 test-results/** linguist-generated=true
+qa-report/** linguist-generated=true
 coverage/** linguist-generated=true
 dist/** linguist-generated=true
 

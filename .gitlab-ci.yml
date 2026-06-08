@@ -23,22 +23,24 @@ typecheck-and-utils:
     - npm run typecheck
     - npm run test:utils -- --project=chromium
   artifacts:
-    when: on_failure
+    when: always
     paths:
+      - qa-report/
       - playwright-report/
       - test-results/
-    expire_in: 7 days
+    expire_in: 14 days
 
 api-tests:
   stage: test
   script:
     - npm run test:api -- --project=chromium
   artifacts:
-    when: on_failure
+    when: always
     paths:
+      - qa-report/
       - playwright-report/
       - test-results/
-    expire_in: 7 days
+    expire_in: 14 days
 
 ui-tests:
   stage: test
@@ -46,11 +48,12 @@ ui-tests:
   script:
     - npm run test:ui -- --project=chromium
   artifacts:
-    when: on_failure
+    when: always
     paths:
+      - qa-report/
       - playwright-report/
       - test-results/
-    expire_in: 7 days
+    expire_in: 14 days
 
 live-api:
   stage: diagnostics
@@ -63,3 +66,10 @@ live-api:
     API_PASSWORD: "cityslicka"
   script:
     - npm run test:live -- --project=chromium
+  artifacts:
+    when: always
+    paths:
+      - qa-report/
+      - playwright-report/
+      - test-results/
+    expire_in: 14 days
