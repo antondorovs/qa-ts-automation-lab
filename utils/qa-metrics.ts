@@ -1,3 +1,5 @@
+import type { RegressionRiskHotspot, RegressionRiskSummary } from './regression-risk-summary';
+
 export const STATUS = {
   PASSED: 'passed',
   FAILED: 'failed',
@@ -70,6 +72,8 @@ export type QaRunReport = {
   durationMs: number;
   summary: QaRunSummary;
   qualityGate: QualityGateResult;
+  regressionRisk: RegressionRiskSummary;
+  riskHotspots: RegressionRiskHotspot[];
   slowTests: SlowTest[];
   failedTests: FailedTest[];
   tests: QaTestResult[];

@@ -6,6 +6,10 @@ import {
   type QaRunReport,
   type QaTestResult,
 } from './qa-metrics';
+import {
+  buildRegressionRiskHotspots,
+  buildRegressionRiskSummary,
+} from './regression-risk-summary';
 
 export type QaRunMetadata = {
   generatedAt?: string;
@@ -19,6 +23,15 @@ export function buildQaRunReport(
   options: QaReporterOptions = {},
 ): QaRunReport {
   const qualityGate = evaluateQualityGate(tests, options.qualityGate);
+  const slowTests = findSlowTests(tests, options.slowTestThresholdMs);
+  const regressionRisk = buildRegressionRiskSummary({
+    failed: qualityGate.summary.failed
+      + qualityGate.summary.timedOut
+      + qualityGate.summary.interrupted,
+    flaky: qualityGate.summary.flaky,
+    slow: slowTests.length,
+    skipped: qualityGate.summary.skipped,
+  });
 
   return {
     generatedAt: metadata.generatedAt || new Date().toISOString(),
@@ -26,7 +39,9 @@ export function buildQaRunReport(
     durationMs: metadata.durationMs,
     summary: qualityGate.summary,
     qualityGate,
-    slowTests: findSlowTests(tests, options.slowTestThresholdMs),
+    regressionRisk,
+    riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
+    slowTests,
     failedTests: findFailedTests(tests),
     tests,
   };
@@ -54,7 +69,26 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     ...qualityGate.checks.map((check) => (
       `| ${escapeTable(check.name)} | ${escapeTable(check.expected)} | ${escapeTable(check.actual)} | ${check.passed ? 'PASS' : 'FAIL'} |`
     )),
+    '',
+    '## Regression Risk',
+    '',
+    `Risk: **${report.regressionRisk.risk}** (${report.regressionRisk.score} points)`,
+    '',
+    report.regressionRisk.recommendation,
   ];
+
+  if (report.riskHotspots.length) {
+    lines.push(
+      '',
+      '### Risk Hotspots',
+      '',
+      '| Suite | Risk | Score | Failed | Flaky | Slow | Skipped |',
+      '| --- | --- | ---: | ---: | ---: | ---: | ---: |',
+      ...report.riskHotspots.map((hotspot) => (
+        `| ${escapeTable(hotspot.suite)} | ${hotspot.risk} | ${hotspot.score} | ${hotspot.signals.failed} | ${hotspot.signals.flaky} | ${hotspot.signals.slow} | ${hotspot.signals.skipped} |`
+      )),
+    );
+  }
 
   if (report.failedTests.length) {
     lines.push(

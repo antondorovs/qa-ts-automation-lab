@@ -1,3 +1,5 @@
+import { STATUS, isFailureStatus, type QaTestResult } from './qa-metrics';
+
 export type RegressionRisk = 'low' | 'medium' | 'high';
 
 export type RegressionRiskWeights = {
@@ -23,6 +25,11 @@ export type RegressionRiskSummary = {
   score: number;
   recommendation: string;
   signals: Required<RegressionSignals>;
+};
+
+export type RegressionRiskHotspot = RegressionRiskSummary & {
+  suite: string;
+  tests: number;
 };
 
 const DEFAULT_WEIGHTS: RegressionRiskWeights = {
@@ -71,6 +78,32 @@ export function buildRegressionRiskSummary(
       skipped: summary.skipped || 0,
     },
   };
+}
+
+export function buildRegressionRiskHotspots(
+  results: QaTestResult[],
+  slowTestThresholdMs = 1000,
+): RegressionRiskHotspot[] {
+  const suites = new Map<string, QaTestResult[]>();
+
+  for (const result of results) {
+    const suite = result.suite || 'unknown';
+    suites.set(suite, [...(suites.get(suite) || []), result]);
+  }
+
+  return [...suites.entries()]
+    .map(([suite, suiteResults]) => ({
+      suite,
+      tests: suiteResults.length,
+      ...buildRegressionRiskSummary({
+        failed: suiteResults.filter((result) => isFailureStatus(result.status)).length,
+        flaky: suiteResults.filter((result) => result.status === STATUS.FLAKY).length,
+        slow: suiteResults.filter((result) => result.durationMs >= slowTestThresholdMs).length,
+        skipped: suiteResults.filter((result) => result.status === STATUS.SKIPPED).length,
+      }),
+    }))
+    .filter((hotspot) => hotspot.score > 0)
+    .sort((first, second) => second.score - first.score || first.suite.localeCompare(second.suite));
 }
 
 function buildRecommendation(risk: RegressionRisk): string {

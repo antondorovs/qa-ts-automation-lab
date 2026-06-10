@@ -36,6 +36,17 @@ Playwright performs one retry in CI. This produces evidence for flaky detection 
 
 The reporter can override the final Playwright status when the quality gate is blocked. This keeps the same policy across local scripts, GitHub Actions, and GitLab CI.
 
+## Regression Risk
+
+Each report converts current run signals into a regression risk score:
+
+- failed, timed-out, or interrupted tests add five points
+- flaky tests add three points
+- slow tests add two points
+- skipped tests add one point
+
+Scores below six are low risk, scores from six to fourteen are medium risk, and scores of fifteen or more are high risk. The report includes a release recommendation and ranks suites with non-zero risk signals so investigation can start with the strongest hotspot.
+
 ## CI Visibility
 
 On GitHub Actions, the Markdown report is appended to the native job summary and uploaded as an artifact. On GitLab CI, the report directory is retained as an artifact for every job, including successful runs.

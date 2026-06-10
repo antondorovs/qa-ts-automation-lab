@@ -87,11 +87,63 @@ test.describe('@utils @contract QA run intelligence', () => {
     const serialized = JSON.parse(JSON.stringify(report)) as typeof report;
 
     expect(report.qualityGate.status).toBe('ready');
+    expect(report.regressionRisk).toMatchObject({
+      risk: 'low',
+      score: 2,
+    });
+    expect(report.riskHotspots).toEqual([
+      expect.objectContaining({
+        suite: 'utils/qa-reporter.spec.ts',
+        score: 2,
+        signals: expect.objectContaining({
+          slow: 1,
+        }),
+      }),
+    ]);
     expect(report.slowTests).toHaveLength(1);
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
     expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
     expect(markdown).toContain('slow UI smoke');
+    expect(markdown).toContain('## Regression Risk');
+    expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
+  });
+
+  test('report should rank the suites with the strongest regression signals first', () => {
+    const report = buildQaRunReport([
+      {
+        ...createResult('failed checkout', STATUS.FAILED, 1500, ['ui']),
+        suite: 'playwright/checkout.spec.ts',
+      },
+      {
+        ...createResult('flaky login', STATUS.FLAKY, 400, ['ui']),
+        suite: 'playwright/login.spec.ts',
+      },
+      {
+        ...createResult('skipped live API', STATUS.SKIPPED, 0, ['live']),
+        suite: 'api/live/public-apis.live.spec.ts',
+      },
+    ], {
+      generatedAt: '2026-06-10T12:00:00.000Z',
+      runStatus: 'failed',
+      durationMs: 1900,
+    });
+
+    expect(report.regressionRisk).toMatchObject({
+      risk: 'medium',
+      score: 11,
+      signals: {
+        failed: 1,
+        flaky: 1,
+        slow: 1,
+        skipped: 1,
+      },
+    });
+    expect(report.riskHotspots.map(({ suite, score }) => ({ suite, score }))).toEqual([
+      { suite: 'playwright/checkout.spec.ts', score: 7 },
+      { suite: 'playwright/login.spec.ts', score: 3 },
+      { suite: 'api/live/public-apis.live.spec.ts', score: 1 },
+    ]);
   });
 });
 
