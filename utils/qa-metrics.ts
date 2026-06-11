@@ -66,6 +66,18 @@ export type FailedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' 
   error: string;
 };
 
+export type QaTagSummary = {
+  tag: string;
+  total: number;
+  executed: number;
+  passed: number;
+  failures: number;
+  flaky: number;
+  skipped: number;
+  passRate: number;
+  durationMs: number;
+};
+
 export type QaRunReport = {
   generatedAt: string;
   runStatus: 'passed' | 'failed' | 'timedout' | 'interrupted';
@@ -74,6 +86,7 @@ export type QaRunReport = {
   qualityGate: QualityGateResult;
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
+  tagCoverage: QaTagSummary[];
   slowTests: SlowTest[];
   failedTests: FailedTest[];
   tests: QaTestResult[];
@@ -211,6 +224,36 @@ export function findFailedTests(results: QaTestResult[]): FailedTest[] {
 
 export function findReleaseBlockers(results: QaTestResult[]): QaTestResult[] {
   return results.filter((result) => isFailureStatus(result.status) || result.status === STATUS.FLAKY);
+}
+
+export function summarizeTagCoverage(results: QaTestResult[]): QaTagSummary[] {
+  const taggedResults = new Map<string, QaTestResult[]>();
+
+  for (const result of results) {
+    const tags = result.tags.length ? [...new Set(result.tags)] : ['untagged'];
+
+    for (const tag of tags) {
+      taggedResults.set(tag, [...(taggedResults.get(tag) || []), result]);
+    }
+  }
+
+  return [...taggedResults.entries()]
+    .sort(([firstTag], [secondTag]) => firstTag.localeCompare(secondTag))
+    .map(([tag, tagResults]) => {
+      const summary = summarizeRun(tagResults);
+
+      return {
+        tag,
+        total: summary.total,
+        executed: summary.executed,
+        passed: summary.passed,
+        failures: summary.failed + summary.timedOut + summary.interrupted,
+        flaky: summary.flaky,
+        skipped: summary.skipped,
+        passRate: summary.passRate,
+        durationMs: summary.totalDurationMs,
+      };
+    });
 }
 
 export function isFailureStatus(status: QaTestStatus): boolean {

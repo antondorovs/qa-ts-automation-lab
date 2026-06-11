@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { STATUS, evaluateQualityGate, summarizeRun, type QaTestResult } from './qa-metrics';
+import {
+  STATUS,
+  evaluateQualityGate,
+  summarizeRun,
+  summarizeTagCoverage,
+  type QaTestResult,
+} from './qa-metrics';
 import { buildQaRunReport, renderQaReportMarkdown } from './qa-report';
 import { mapPlaywrightResult, mapPlaywrightStatus } from './qa-reporter';
 
@@ -100,6 +106,28 @@ test.describe('@utils @contract QA run intelligence', () => {
         }),
       }),
     ]);
+    expect(report.tagCoverage).toEqual([
+      expect.objectContaining({
+        tag: 'api',
+        total: 1,
+        passRate: 100,
+      }),
+      expect.objectContaining({
+        tag: 'contract',
+        total: 1,
+        passRate: 100,
+      }),
+      expect.objectContaining({
+        tag: 'smoke',
+        total: 1,
+        passRate: 100,
+      }),
+      expect.objectContaining({
+        tag: 'ui',
+        total: 1,
+        passRate: 100,
+      }),
+    ]);
     expect(report.slowTests).toHaveLength(1);
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
@@ -107,6 +135,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('slow UI smoke');
     expect(markdown).toContain('## Regression Risk');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
+    expect(markdown).toContain('## Tag Coverage');
+    expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
   });
 
   test('report should rank the suites with the strongest regression signals first', () => {
@@ -143,6 +173,51 @@ test.describe('@utils @contract QA run intelligence', () => {
       { suite: 'playwright/checkout.spec.ts', score: 7 },
       { suite: 'playwright/login.spec.ts', score: 3 },
       { suite: 'api/live/public-apis.live.spec.ts', score: 1 },
+    ]);
+  });
+
+  test('tag coverage should aggregate overlapping tags and expose untagged tests', () => {
+    const coverage = summarizeTagCoverage([
+      createResult('API smoke', STATUS.PASSED, 100, ['api', 'smoke']),
+      createResult('API regression', STATUS.FAILED, 200, ['api', 'regression']),
+      createResult('draft scenario', STATUS.SKIPPED, 0),
+    ]);
+
+    expect(coverage).toEqual([
+      {
+        tag: 'api',
+        total: 2,
+        executed: 2,
+        passed: 1,
+        failures: 1,
+        flaky: 0,
+        skipped: 0,
+        passRate: 50,
+        durationMs: 300,
+      },
+      expect.objectContaining({
+        tag: 'regression',
+        total: 1,
+        failures: 1,
+        passRate: 0,
+      }),
+      expect.objectContaining({
+        tag: 'smoke',
+        total: 1,
+        passed: 1,
+        passRate: 100,
+      }),
+      {
+        tag: 'untagged',
+        total: 1,
+        executed: 0,
+        passed: 0,
+        failures: 0,
+        flaky: 0,
+        skipped: 1,
+        passRate: 100,
+        durationMs: 0,
+      },
     ]);
   });
 });

@@ -47,6 +47,12 @@ Each report converts current run signals into a regression risk score:
 
 Scores below six are low risk, scores from six to fourteen are medium risk, and scores of fifteen or more are high risk. The report includes a release recommendation and ranks suites with non-zero risk signals so investigation can start with the strongest hotspot.
 
+## Tag Coverage
+
+The report groups results by normalized Playwright tags and shows the total, executed, passed, failed, flaky, and skipped tests for each group. It also includes pass rate and accumulated duration.
+
+A test can contribute to multiple tag rows, such as `api` and `smoke`. Tests without tags are grouped under `untagged` so missing classification remains visible as the suite grows.
+
 ## CI Visibility
 
 On GitHub Actions, the Markdown report is appended to the native job summary and uploaded as an artifact. On GitLab CI, the report directory is retained as an artifact for every job, including successful runs.

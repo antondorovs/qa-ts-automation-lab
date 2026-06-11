@@ -2,6 +2,7 @@ import {
   evaluateQualityGate,
   findFailedTests,
   findSlowTests,
+  summarizeTagCoverage,
   type QaReporterOptions,
   type QaRunReport,
   type QaTestResult,
@@ -41,6 +42,7 @@ export function buildQaRunReport(
     qualityGate,
     regressionRisk,
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
+    tagCoverage: summarizeTagCoverage(tests),
     slowTests,
     failedTests: findFailedTests(tests),
     tests,
@@ -86,6 +88,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '| --- | --- | ---: | ---: | ---: | ---: | ---: |',
       ...report.riskHotspots.map((hotspot) => (
         `| ${escapeTable(hotspot.suite)} | ${hotspot.risk} | ${hotspot.score} | ${hotspot.signals.failed} | ${hotspot.signals.flaky} | ${hotspot.signals.slow} | ${hotspot.signals.skipped} |`
+      )),
+    );
+  }
+
+  if (report.tagCoverage.length) {
+    lines.push(
+      '',
+      '## Tag Coverage',
+      '',
+      '| Tag | Total | Executed | Passed | Failed | Flaky | Skipped | Pass rate | Duration |',
+      '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+      ...report.tagCoverage.map((tag) => (
+        `| ${escapeTable(tag.tag)} | ${tag.total} | ${tag.executed} | ${tag.passed} | ${tag.failures} | ${tag.flaky} | ${tag.skipped} | ${tag.passRate}% | ${formatDuration(tag.durationMs)} |`
       )),
     );
   }
