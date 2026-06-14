@@ -78,6 +78,16 @@ export type QaTagSummary = {
   durationMs: number;
 };
 
+export type QaSuitePerformance = {
+  suite: string;
+  total: number;
+  executed: number;
+  slowTests: number;
+  totalDurationMs: number;
+  averageDurationMs: number;
+  maximumDurationMs: number;
+};
+
 export type QaRunReport = {
   generatedAt: string;
   runStatus: 'passed' | 'failed' | 'timedout' | 'interrupted';
@@ -87,6 +97,7 @@ export type QaRunReport = {
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
   tagCoverage: QaTagSummary[];
+  suitePerformance: QaSuitePerformance[];
   slowTests: SlowTest[];
   failedTests: FailedTest[];
   tests: QaTestResult[];
@@ -254,6 +265,38 @@ export function summarizeTagCoverage(results: QaTestResult[]): QaTagSummary[] {
         durationMs: summary.totalDurationMs,
       };
     });
+}
+
+export function summarizeSuitePerformance(
+  results: QaTestResult[],
+  slowTestThresholdMs = 1000,
+): QaSuitePerformance[] {
+  const suites = new Map<string, QaTestResult[]>();
+
+  for (const result of results) {
+    const suite = result.suite || 'unknown';
+    suites.set(suite, [...(suites.get(suite) || []), result]);
+  }
+
+  return [...suites.entries()]
+    .map(([suite, suiteResults]) => {
+      const summary = summarizeRun(suiteResults);
+
+      return {
+        suite,
+        total: summary.total,
+        executed: summary.executed,
+        slowTests: suiteResults.filter((result) => result.durationMs >= slowTestThresholdMs).length,
+        totalDurationMs: summary.totalDurationMs,
+        averageDurationMs: summary.averageDurationMs,
+        maximumDurationMs: Math.max(0, ...suiteResults.map((result) => result.durationMs)),
+      };
+    })
+    .sort((first, second) => (
+      second.totalDurationMs - first.totalDurationMs
+      || second.maximumDurationMs - first.maximumDurationMs
+      || first.suite.localeCompare(second.suite)
+    ));
 }
 
 export function isFailureStatus(status: QaTestStatus): boolean {

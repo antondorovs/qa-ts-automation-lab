@@ -3,6 +3,7 @@ import {
   STATUS,
   evaluateQualityGate,
   summarizeRun,
+  summarizeSuitePerformance,
   summarizeTagCoverage,
   type QaTestResult,
 } from './qa-metrics';
@@ -129,6 +130,17 @@ test.describe('@utils @contract QA run intelligence', () => {
       }),
     ]);
     expect(report.slowTests).toHaveLength(1);
+    expect(report.suitePerformance).toEqual([
+      {
+        suite: 'utils/qa-reporter.spec.ts',
+        total: 2,
+        executed: 2,
+        slowTests: 1,
+        totalDurationMs: 1920,
+        averageDurationMs: 960,
+        maximumDurationMs: 1800,
+      },
+    ]);
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
     expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
@@ -137,6 +149,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
+    expect(markdown).toContain('## Suite Performance');
+    expect(markdown).toContain('| utils/qa-reporter.spec.ts | 2 | 2 | 1 | 1.92s | 960ms | 1.80s |');
   });
 
   test('report should rank the suites with the strongest regression signals first', () => {
@@ -217,6 +231,57 @@ test.describe('@utils @contract QA run intelligence', () => {
         skipped: 1,
         passRate: 100,
         durationMs: 0,
+      },
+    ]);
+  });
+
+  test('suite performance should rank the most expensive suites first', () => {
+    const performance = summarizeSuitePerformance([
+      {
+        ...createResult('checkout smoke', STATUS.PASSED, 900),
+        suite: 'playwright/checkout.spec.ts',
+      },
+      {
+        ...createResult('checkout regression', STATUS.PASSED, 700),
+        suite: 'playwright/checkout.spec.ts',
+      },
+      {
+        ...createResult('API contract', STATUS.PASSED, 1200),
+        suite: 'api/users.contract.spec.ts',
+      },
+      {
+        ...createResult('disabled live check', STATUS.SKIPPED, 0),
+        suite: 'api/live/public-apis.live.spec.ts',
+      },
+    ], 1000);
+
+    expect(performance).toEqual([
+      {
+        suite: 'playwright/checkout.spec.ts',
+        total: 2,
+        executed: 2,
+        slowTests: 0,
+        totalDurationMs: 1600,
+        averageDurationMs: 800,
+        maximumDurationMs: 900,
+      },
+      {
+        suite: 'api/users.contract.spec.ts',
+        total: 1,
+        executed: 1,
+        slowTests: 1,
+        totalDurationMs: 1200,
+        averageDurationMs: 1200,
+        maximumDurationMs: 1200,
+      },
+      {
+        suite: 'api/live/public-apis.live.spec.ts',
+        total: 1,
+        executed: 0,
+        slowTests: 0,
+        totalDurationMs: 0,
+        averageDurationMs: 0,
+        maximumDurationMs: 0,
       },
     ]);
   });

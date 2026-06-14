@@ -53,6 +53,16 @@ The report groups results by normalized Playwright tags and shows the total, exe
 
 A test can contribute to multiple tag rows, such as `api` and `smoke`. Tests without tags are grouped under `untagged` so missing classification remains visible as the suite grows.
 
+## Suite Performance
+
+The report ranks test suites by accumulated execution time and shows:
+
+- total and executed test counts
+- number of tests above the configured slow-test threshold
+- total, average, and maximum test duration
+
+This makes the suites with the largest runtime cost visible even when every test passes, so optimization work can start with the strongest contributor.
+
 ## CI Visibility
 
 On GitHub Actions, the Markdown report is appended to the native job summary and uploaded as an artifact. On GitLab CI, the report directory is retained as an artifact for every job, including successful runs.

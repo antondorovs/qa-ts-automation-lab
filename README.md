@@ -12,7 +12,7 @@ This project combines practical examples of:
 - test documentation
 - bug reporting
 - QA utilities and helpers
-- custom QA run intelligence, tag coverage, regression risk scoring, and release gates
+- custom QA run intelligence, tag coverage, suite performance, regression risk scoring, and release gates
 
 Main goals of this repository:
 - improve automation skills
@@ -78,6 +78,6 @@ GitHub language statistics note:
 Current practice focus:
 - TypeScript: Playwright API/UI automation and page object examples
 - TypeScript utilities: reusable QA helpers, metrics, assertions, and bug report builders
-- QA reporting: Playwright result aggregation, tag coverage, flaky detection, risk hotspots, slow-test visibility, and strict release gates
+- QA reporting: Playwright result aggregation, tag coverage, suite performance, flaky detection, risk hotspots, slow-test visibility, and strict release gates
 - SQL: datasets, reporting queries, window functions, and release quality dashboards
 - YAML/Docker: CI jobs, Kubernetes manifests, and local service setup

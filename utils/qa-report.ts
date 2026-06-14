@@ -2,6 +2,7 @@ import {
   evaluateQualityGate,
   findFailedTests,
   findSlowTests,
+  summarizeSuitePerformance,
   summarizeTagCoverage,
   type QaReporterOptions,
   type QaRunReport,
@@ -43,6 +44,7 @@ export function buildQaRunReport(
     regressionRisk,
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
     tagCoverage: summarizeTagCoverage(tests),
+    suitePerformance: summarizeSuitePerformance(tests, options.slowTestThresholdMs),
     slowTests,
     failedTests: findFailedTests(tests),
     tests,
@@ -101,6 +103,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
       ...report.tagCoverage.map((tag) => (
         `| ${escapeTable(tag.tag)} | ${tag.total} | ${tag.executed} | ${tag.passed} | ${tag.failures} | ${tag.flaky} | ${tag.skipped} | ${tag.passRate}% | ${formatDuration(tag.durationMs)} |`
+      )),
+    );
+  }
+
+  if (report.suitePerformance.length) {
+    lines.push(
+      '',
+      '## Suite Performance',
+      '',
+      '| Suite | Tests | Executed | Slow | Total duration | Average | Maximum |',
+      '| --- | ---: | ---: | ---: | ---: | ---: | ---: |',
+      ...report.suitePerformance.map((suite) => (
+        `| ${escapeTable(suite.suite)} | ${suite.total} | ${suite.executed} | ${suite.slowTests} | ${formatDuration(suite.totalDurationMs)} | ${formatDuration(suite.averageDurationMs)} | ${formatDuration(suite.maximumDurationMs)} |`
       )),
     );
   }
