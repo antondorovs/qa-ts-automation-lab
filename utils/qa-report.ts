@@ -2,6 +2,7 @@ import {
   evaluateQualityGate,
   findFailedTests,
   findSlowTests,
+  summarizeExecutionStability,
   summarizeSuitePerformance,
   summarizeTagCoverage,
   type QaReporterOptions,
@@ -41,6 +42,7 @@ export function buildQaRunReport(
     durationMs: metadata.durationMs,
     summary: qualityGate.summary,
     qualityGate,
+    stability: summarizeExecutionStability(tests),
     regressionRisk,
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
     tagCoverage: summarizeTagCoverage(tests),
@@ -73,6 +75,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     ...qualityGate.checks.map((check) => (
       `| ${escapeTable(check.name)} | ${escapeTable(check.expected)} | ${escapeTable(check.actual)} | ${check.passed ? 'PASS' : 'FAIL'} |`
     )),
+    '',
+    '## Execution Stability',
+    '',
+    '| Executed | First-pass passed | Retried tests | Retry attempts | First-pass rate |',
+    '| ---: | ---: | ---: | ---: | ---: |',
+    `| ${report.stability.executed} | ${report.stability.firstPassPassed} | ${report.stability.retriedTests} | ${report.stability.retryAttempts} | ${report.stability.firstPassRate}% |`,
     '',
     '## Regression Risk',
     '',

@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
   STATUS,
   evaluateQualityGate,
+  summarizeExecutionStability,
   summarizeRun,
   summarizeSuitePerformance,
   summarizeTagCoverage,
@@ -94,6 +95,13 @@ test.describe('@utils @contract QA run intelligence', () => {
     const serialized = JSON.parse(JSON.stringify(report)) as typeof report;
 
     expect(report.qualityGate.status).toBe('ready');
+    expect(report.stability).toEqual({
+      executed: 2,
+      firstPassPassed: 2,
+      retriedTests: 0,
+      retryAttempts: 0,
+      firstPassRate: 100,
+    });
     expect(report.regressionRisk).toMatchObject({
       risk: 'low',
       score: 2,
@@ -146,6 +154,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
     expect(markdown).toContain('slow UI smoke');
     expect(markdown).toContain('## Regression Risk');
+    expect(markdown).toContain('## Execution Stability');
+    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 100% |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
@@ -284,6 +294,46 @@ test.describe('@utils @contract QA run intelligence', () => {
         maximumDurationMs: 0,
       },
     ]);
+  });
+
+  test('execution stability should expose retries and support a first-pass quality gate', () => {
+    const results = [
+      createResult('stable smoke', STATUS.PASSED),
+      {
+        ...createResult('flaky checkout', STATUS.FLAKY),
+        attempts: 2,
+      },
+      {
+        ...createResult('failed payment', STATUS.FAILED),
+        attempts: 3,
+      },
+      {
+        ...createResult('disabled live check', STATUS.SKIPPED),
+        attempts: 0,
+      },
+    ];
+    const stability = summarizeExecutionStability(results);
+    const qualityGate = evaluateQualityGate(results, {
+      minimumPassRate: 0,
+      maximumFailures: 1,
+      maximumFlakyTests: 1,
+      minimumFirstPassRate: 80,
+    });
+
+    expect(stability).toEqual({
+      executed: 3,
+      firstPassPassed: 1,
+      retriedTests: 2,
+      retryAttempts: 3,
+      firstPassRate: 33.33,
+    });
+    expect(qualityGate.status).toBe('blocked');
+    expect(qualityGate.checks).toContainEqual({
+      name: 'first-pass rate',
+      expected: '>= 80%',
+      actual: '33.33%',
+      passed: false,
+    });
   });
 });
 

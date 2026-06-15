@@ -36,6 +36,17 @@ Playwright performs one retry in CI. This produces evidence for flaky detection 
 
 The reporter can override the final Playwright status when the quality gate is blocked. This keeps the same policy across local scripts, GitHub Actions, and GitLab CI.
 
+## Execution Stability
+
+The report separates final pass rate from first-pass stability. It shows:
+
+- tests that passed without a retry
+- tests that required at least one retry
+- total retry attempts consumed by the run
+- first-pass pass rate across executed tests
+
+Projects can set an optional `minimumFirstPassRate` quality-gate threshold. This catches a run that eventually becomes green but consumes retries too often.
+
 ## Regression Risk
 
 Each report converts current run signals into a regression risk score:

@@ -43,6 +43,7 @@ export type QualityGateOptions = {
   minimumPassRate: number;
   maximumFailures: number;
   maximumFlakyTests: number;
+  minimumFirstPassRate?: number;
   maximumAverageDurationMs?: number;
   requiredTags?: string[];
 };
@@ -88,12 +89,21 @@ export type QaSuitePerformance = {
   maximumDurationMs: number;
 };
 
+export type QaStabilitySummary = {
+  executed: number;
+  firstPassPassed: number;
+  retriedTests: number;
+  retryAttempts: number;
+  firstPassRate: number;
+};
+
 export type QaRunReport = {
   generatedAt: string;
   runStatus: 'passed' | 'failed' | 'timedout' | 'interrupted';
   durationMs: number;
   summary: QaRunSummary;
   qualityGate: QualityGateResult;
+  stability: QaStabilitySummary;
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
   tagCoverage: QaTagSummary[];
@@ -193,6 +203,17 @@ export function evaluateQualityGate(
       expected: `<= ${resolvedOptions.maximumAverageDurationMs}ms`,
       actual: `${summary.averageDurationMs}ms`,
       passed: summary.averageDurationMs <= resolvedOptions.maximumAverageDurationMs,
+    });
+  }
+
+  if (resolvedOptions.minimumFirstPassRate !== undefined) {
+    const stability = summarizeExecutionStability(results);
+
+    checks.push({
+      name: 'first-pass rate',
+      expected: `>= ${resolvedOptions.minimumFirstPassRate}%`,
+      actual: `${stability.firstPassRate}%`,
+      passed: stability.firstPassRate >= resolvedOptions.minimumFirstPassRate,
     });
   }
 
@@ -297,6 +318,26 @@ export function summarizeSuitePerformance(
       || second.maximumDurationMs - first.maximumDurationMs
       || first.suite.localeCompare(second.suite)
     ));
+}
+
+export function summarizeExecutionStability(results: QaTestResult[]): QaStabilitySummary {
+  const executedResults = results.filter((result) => result.status !== STATUS.SKIPPED);
+  const firstPassPassed = executedResults.filter((result) => (
+    result.status === STATUS.PASSED && result.attempts === 1
+  )).length;
+
+  return {
+    executed: executedResults.length,
+    firstPassPassed,
+    retriedTests: executedResults.filter((result) => result.attempts > 1).length,
+    retryAttempts: executedResults.reduce(
+      (total, result) => total + Math.max(0, result.attempts - 1),
+      0,
+    ),
+    firstPassRate: executedResults.length
+      ? percentage(firstPassPassed, executedResults.length)
+      : 100,
+  };
 }
 
 export function isFailureStatus(status: QaTestStatus): boolean {
