@@ -58,6 +58,7 @@ export type QualityGateCheck = {
 export type QualityGateResult = {
   status: 'ready' | 'blocked';
   checks: QualityGateCheck[];
+  failedChecks: QualityGateCheck[];
   summary: QaRunSummary;
 };
 
@@ -97,12 +98,19 @@ export type QaStabilitySummary = {
   firstPassRate: number;
 };
 
+export type QaReleaseDecision = {
+  status: QualityGateResult['status'];
+  summary: string;
+  actionItems: string[];
+};
+
 export type QaRunReport = {
   generatedAt: string;
   runStatus: 'passed' | 'failed' | 'timedout' | 'interrupted';
   durationMs: number;
   summary: QaRunSummary;
   qualityGate: QualityGateResult;
+  releaseDecision: QaReleaseDecision;
   stability: QaStabilitySummary;
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
@@ -224,6 +232,7 @@ export function evaluateQualityGate(
   return {
     status: checks.every((check) => check.passed) ? 'ready' : 'blocked',
     checks,
+    failedChecks: checks.filter((check) => !check.passed),
     summary,
   };
 }
@@ -337,6 +346,24 @@ export function summarizeExecutionStability(results: QaTestResult[]): QaStabilit
     firstPassRate: executedResults.length
       ? percentage(firstPassPassed, executedResults.length)
       : 100,
+  };
+}
+
+export function buildReleaseDecision(qualityGate: QualityGateResult): QaReleaseDecision {
+  if (qualityGate.status === 'ready') {
+    return {
+      status: 'ready',
+      summary: 'Ready for release based on the configured quality gate.',
+      actionItems: ['Review the generated QA summary before deployment.'],
+    };
+  }
+
+  return {
+    status: 'blocked',
+    summary: 'Blocked by the configured quality gate.',
+    actionItems: qualityGate.failedChecks.map((check) => (
+      `Fix ${check.name}: expected ${check.expected}, actual ${check.actual}.`
+    )),
   };
 }
 

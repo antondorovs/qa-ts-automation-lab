@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
   STATUS,
+  buildReleaseDecision,
   evaluateQualityGate,
   summarizeExecutionStability,
   summarizeRun,
@@ -95,6 +96,12 @@ test.describe('@utils @contract QA run intelligence', () => {
     const serialized = JSON.parse(JSON.stringify(report)) as typeof report;
 
     expect(report.qualityGate.status).toBe('ready');
+    expect(report.qualityGate.failedChecks).toEqual([]);
+    expect(report.releaseDecision).toEqual({
+      status: 'ready',
+      summary: 'Ready for release based on the configured quality gate.',
+      actionItems: ['Review the generated QA summary before deployment.'],
+    });
     expect(report.stability).toEqual({
       executed: 2,
       firstPassPassed: 2,
@@ -152,6 +159,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
     expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
+    expect(markdown).toContain('## Release Decision');
+    expect(markdown).toContain('Status: **ready**');
     expect(markdown).toContain('slow UI smoke');
     expect(markdown).toContain('## Regression Risk');
     expect(markdown).toContain('## Execution Stability');
@@ -328,11 +337,44 @@ test.describe('@utils @contract QA run intelligence', () => {
       firstPassRate: 33.33,
     });
     expect(qualityGate.status).toBe('blocked');
+    expect(qualityGate.failedChecks).toEqual([
+      {
+        name: 'first-pass rate',
+        expected: '>= 80%',
+        actual: '33.33%',
+        passed: false,
+      },
+    ]);
     expect(qualityGate.checks).toContainEqual({
       name: 'first-pass rate',
       expected: '>= 80%',
       actual: '33.33%',
       passed: false,
+    });
+  });
+
+  test('release decision should turn failed quality checks into action items', () => {
+    const qualityGate = evaluateQualityGate([
+      createResult('stable smoke', STATUS.PASSED),
+      createResult('failed payment', STATUS.FAILED),
+    ], {
+      minimumPassRate: 100,
+      maximumFailures: 0,
+      maximumFlakyTests: 0,
+    });
+    const releaseDecision = buildReleaseDecision(qualityGate);
+
+    expect(qualityGate.failedChecks.map((check) => check.name)).toEqual([
+      'pass rate',
+      'failures',
+    ]);
+    expect(releaseDecision).toEqual({
+      status: 'blocked',
+      summary: 'Blocked by the configured quality gate.',
+      actionItems: [
+        'Fix pass rate: expected >= 100%, actual 50%.',
+        'Fix failures: expected <= 0, actual 1.',
+      ],
     });
   });
 });

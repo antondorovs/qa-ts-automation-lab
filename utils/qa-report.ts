@@ -1,4 +1,5 @@
 import {
+  buildReleaseDecision,
   evaluateQualityGate,
   findFailedTests,
   findSlowTests,
@@ -42,6 +43,7 @@ export function buildQaRunReport(
     durationMs: metadata.durationMs,
     summary: qualityGate.summary,
     qualityGate,
+    releaseDecision: buildReleaseDecision(qualityGate),
     stability: summarizeExecutionStability(tests),
     regressionRisk,
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
@@ -75,6 +77,14 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     ...qualityGate.checks.map((check) => (
       `| ${escapeTable(check.name)} | ${escapeTable(check.expected)} | ${escapeTable(check.actual)} | ${check.passed ? 'PASS' : 'FAIL'} |`
     )),
+    '',
+    '## Release Decision',
+    '',
+    `Status: **${report.releaseDecision.status}**`,
+    '',
+    report.releaseDecision.summary,
+    '',
+    ...report.releaseDecision.actionItems.map((item) => `- ${item}`),
     '',
     '## Execution Stability',
     '',
