@@ -70,6 +70,12 @@ The report groups results by normalized Playwright tags and shows the total, exe
 
 A test can contribute to multiple tag rows, such as `api` and `smoke`. Tests without tags are grouped under `untagged` so missing classification remains visible as the suite grows.
 
+## Suite Health
+
+The report groups tests by suite and marks each suite as `healthy` or `attention`. A suite needs attention when it has a failed, timed-out, interrupted, or flaky result.
+
+Suite health includes totals, executed tests, passed tests, failure counts, flaky counts, skipped tests, and pass rate. Suites needing attention are listed first so triage can start in the highest-risk area.
+
 ## Suite Performance
 
 The report ranks test suites by accumulated execution time and shows:

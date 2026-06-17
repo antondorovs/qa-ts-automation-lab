@@ -5,6 +5,7 @@ import {
   evaluateQualityGate,
   summarizeExecutionStability,
   summarizeRun,
+  summarizeSuiteHealth,
   summarizeSuitePerformance,
   summarizeTagCoverage,
   type QaTestResult,
@@ -145,6 +146,19 @@ test.describe('@utils @contract QA run intelligence', () => {
       }),
     ]);
     expect(report.slowTests).toHaveLength(1);
+    expect(report.suiteHealth).toEqual([
+      {
+        suite: 'utils/qa-reporter.spec.ts',
+        status: 'healthy',
+        total: 2,
+        executed: 2,
+        passed: 2,
+        failures: 0,
+        flaky: 0,
+        skipped: 0,
+        passRate: 100,
+      },
+    ]);
     expect(report.suitePerformance).toEqual([
       {
         suite: 'utils/qa-reporter.spec.ts',
@@ -168,6 +182,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
+    expect(markdown).toContain('## Suite Health');
+    expect(markdown).toContain('| utils/qa-reporter.spec.ts | healthy | 2 | 2 | 2 | 0 | 0 | 0 | 100% |');
     expect(markdown).toContain('## Suite Performance');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | 2 | 2 | 1 | 1.92s | 960ms | 1.80s |');
   });
@@ -301,6 +317,74 @@ test.describe('@utils @contract QA run intelligence', () => {
         totalDurationMs: 0,
         averageDurationMs: 0,
         maximumDurationMs: 0,
+      },
+    ]);
+  });
+
+  test('suite health should rank suites needing attention before healthy suites', () => {
+    const health = summarizeSuiteHealth([
+      {
+        ...createResult('checkout smoke', STATUS.PASSED, 900),
+        suite: 'playwright/checkout.spec.ts',
+      },
+      {
+        ...createResult('payment regression', STATUS.FAILED, 700),
+        suite: 'playwright/payment.spec.ts',
+      },
+      {
+        ...createResult('login retry', STATUS.FLAKY, 300),
+        suite: 'playwright/login.spec.ts',
+      },
+      {
+        ...createResult('disabled live check', STATUS.SKIPPED, 0),
+        suite: 'api/live/public-apis.live.spec.ts',
+      },
+    ]);
+
+    expect(health).toEqual([
+      {
+        suite: 'playwright/payment.spec.ts',
+        status: 'attention',
+        total: 1,
+        executed: 1,
+        passed: 0,
+        failures: 1,
+        flaky: 0,
+        skipped: 0,
+        passRate: 0,
+      },
+      {
+        suite: 'playwright/login.spec.ts',
+        status: 'attention',
+        total: 1,
+        executed: 1,
+        passed: 0,
+        failures: 0,
+        flaky: 1,
+        skipped: 0,
+        passRate: 0,
+      },
+      {
+        suite: 'api/live/public-apis.live.spec.ts',
+        status: 'healthy',
+        total: 1,
+        executed: 0,
+        passed: 0,
+        failures: 0,
+        flaky: 0,
+        skipped: 1,
+        passRate: 100,
+      },
+      {
+        suite: 'playwright/checkout.spec.ts',
+        status: 'healthy',
+        total: 1,
+        executed: 1,
+        passed: 1,
+        failures: 0,
+        flaky: 0,
+        skipped: 0,
+        passRate: 100,
       },
     ]);
   });

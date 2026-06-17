@@ -90,6 +90,18 @@ export type QaSuitePerformance = {
   maximumDurationMs: number;
 };
 
+export type QaSuiteHealth = {
+  suite: string;
+  status: 'healthy' | 'attention';
+  total: number;
+  executed: number;
+  passed: number;
+  failures: number;
+  flaky: number;
+  skipped: number;
+  passRate: number;
+};
+
 export type QaStabilitySummary = {
   executed: number;
   firstPassPassed: number;
@@ -115,6 +127,7 @@ export type QaRunReport = {
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
   tagCoverage: QaTagSummary[];
+  suiteHealth: QaSuiteHealth[];
   suitePerformance: QaSuitePerformance[];
   slowTests: SlowTest[];
   failedTests: FailedTest[];
@@ -325,6 +338,42 @@ export function summarizeSuitePerformance(
     .sort((first, second) => (
       second.totalDurationMs - first.totalDurationMs
       || second.maximumDurationMs - first.maximumDurationMs
+      || first.suite.localeCompare(second.suite)
+    ));
+}
+
+export function summarizeSuiteHealth(results: QaTestResult[]): QaSuiteHealth[] {
+  const suites = new Map<string, QaTestResult[]>();
+
+  for (const result of results) {
+    const suite = result.suite || 'unknown';
+    suites.set(suite, [...(suites.get(suite) || []), result]);
+  }
+
+  return [...suites.entries()]
+    .map(([suite, suiteResults]) => {
+      const summary = summarizeRun(suiteResults);
+      const failures = summary.failed + summary.timedOut + summary.interrupted;
+      const needsAttention = failures > 0 || summary.flaky > 0;
+      const status: QaSuiteHealth['status'] = needsAttention ? 'attention' : 'healthy';
+
+      return {
+        suite,
+        status,
+        total: summary.total,
+        executed: summary.executed,
+        passed: summary.passed,
+        failures,
+        flaky: summary.flaky,
+        skipped: summary.skipped,
+        passRate: summary.passRate,
+      };
+    })
+    .sort((first, second) => (
+      Number(second.status === 'attention') - Number(first.status === 'attention')
+      || second.failures - first.failures
+      || second.flaky - first.flaky
+      || first.passRate - second.passRate
       || first.suite.localeCompare(second.suite)
     ));
 }
