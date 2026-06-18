@@ -80,6 +80,19 @@ export type QaTagSummary = {
   durationMs: number;
 };
 
+export type QaTestAreaSummary = {
+  area: string;
+  status: 'healthy' | 'attention';
+  total: number;
+  executed: number;
+  passed: number;
+  failures: number;
+  flaky: number;
+  skipped: number;
+  passRate: number;
+  durationMs: number;
+};
+
 export type QaSuitePerformance = {
   suite: string;
   total: number;
@@ -127,6 +140,7 @@ export type QaRunReport = {
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
   tagCoverage: QaTagSummary[];
+  testAreas: QaTestAreaSummary[];
   suiteHealth: QaSuiteHealth[];
   suitePerformance: QaSuitePerformance[];
   slowTests: SlowTest[];
@@ -310,6 +324,44 @@ export function summarizeTagCoverage(results: QaTestResult[]): QaTagSummary[] {
     });
 }
 
+export function summarizeTestAreas(results: QaTestResult[]): QaTestAreaSummary[] {
+  const areas = new Map<string, QaTestResult[]>();
+
+  for (const result of results) {
+    const area = getTestArea(result.suite);
+    areas.set(area, [...(areas.get(area) || []), result]);
+  }
+
+  return [...areas.entries()]
+    .map(([area, areaResults]) => {
+      const summary = summarizeRun(areaResults);
+      const failures = summary.failed + summary.timedOut + summary.interrupted;
+      const status: QaTestAreaSummary['status'] = failures > 0 || summary.flaky > 0
+        ? 'attention'
+        : 'healthy';
+
+      return {
+        area,
+        status,
+        total: summary.total,
+        executed: summary.executed,
+        passed: summary.passed,
+        failures,
+        flaky: summary.flaky,
+        skipped: summary.skipped,
+        passRate: summary.passRate,
+        durationMs: summary.totalDurationMs,
+      };
+    })
+    .sort((first, second) => (
+      Number(second.status === 'attention') - Number(first.status === 'attention')
+      || second.failures - first.failures
+      || second.flaky - first.flaky
+      || second.durationMs - first.durationMs
+      || first.area.localeCompare(second.area)
+    ));
+}
+
 export function summarizeSuitePerformance(
   results: QaTestResult[],
   slowTestThresholdMs = 1000,
@@ -450,4 +502,9 @@ function buildRequiredTagsCheck(results: QaTestResult[], requiredTags: string[])
 
 function normalizeTag(tag: string): string {
   return tag.replace(/^@/, '');
+}
+
+function getTestArea(suite: string): string {
+  const [area] = suite.split('/');
+  return area || 'unknown';
 }

@@ -8,6 +8,7 @@ import {
   summarizeSuiteHealth,
   summarizeSuitePerformance,
   summarizeTagCoverage,
+  summarizeTestAreas,
   type QaTestResult,
 } from './qa-metrics';
 import { buildQaRunReport, renderQaReportMarkdown } from './qa-report';
@@ -146,6 +147,20 @@ test.describe('@utils @contract QA run intelligence', () => {
       }),
     ]);
     expect(report.slowTests).toHaveLength(1);
+    expect(report.testAreas).toEqual([
+      {
+        area: 'utils',
+        status: 'healthy',
+        total: 2,
+        executed: 2,
+        passed: 2,
+        failures: 0,
+        flaky: 0,
+        skipped: 0,
+        passRate: 100,
+        durationMs: 1920,
+      },
+    ]);
     expect(report.suiteHealth).toEqual([
       {
         suite: 'utils/qa-reporter.spec.ts',
@@ -182,6 +197,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
+    expect(markdown).toContain('## Test Area Summary');
+    expect(markdown).toContain('| utils | healthy | 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
     expect(markdown).toContain('## Suite Health');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | healthy | 2 | 2 | 2 | 0 | 0 | 0 | 100% |');
     expect(markdown).toContain('## Suite Performance');
@@ -317,6 +334,66 @@ test.describe('@utils @contract QA run intelligence', () => {
         totalDurationMs: 0,
         averageDurationMs: 0,
         maximumDurationMs: 0,
+      },
+    ]);
+  });
+
+  test('test area summary should group suites by top-level project area', () => {
+    const areas = summarizeTestAreas([
+      {
+        ...createResult('API smoke', STATUS.PASSED, 100),
+        suite: 'api/users.api.spec.ts',
+      },
+      {
+        ...createResult('API regression', STATUS.FAILED, 300),
+        suite: 'api/users.contract.spec.ts',
+      },
+      {
+        ...createResult('UI retry', STATUS.FLAKY, 400),
+        suite: 'playwright/login.spec.ts',
+      },
+      {
+        ...createResult('utility contract', STATUS.PASSED, 200),
+        suite: 'utils/qa-reporter.spec.ts',
+      },
+    ]);
+
+    expect(areas).toEqual([
+      {
+        area: 'api',
+        status: 'attention',
+        total: 2,
+        executed: 2,
+        passed: 1,
+        failures: 1,
+        flaky: 0,
+        skipped: 0,
+        passRate: 50,
+        durationMs: 400,
+      },
+      {
+        area: 'playwright',
+        status: 'attention',
+        total: 1,
+        executed: 1,
+        passed: 0,
+        failures: 0,
+        flaky: 1,
+        skipped: 0,
+        passRate: 0,
+        durationMs: 400,
+      },
+      {
+        area: 'utils',
+        status: 'healthy',
+        total: 1,
+        executed: 1,
+        passed: 1,
+        failures: 0,
+        flaky: 0,
+        skipped: 0,
+        passRate: 100,
+        durationMs: 200,
       },
     ]);
   });

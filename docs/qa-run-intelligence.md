@@ -70,6 +70,12 @@ The report groups results by normalized Playwright tags and shows the total, exe
 
 A test can contribute to multiple tag rows, such as `api` and `smoke`. Tests without tags are grouped under `untagged` so missing classification remains visible as the suite grows.
 
+## Test Area Summary
+
+The report groups suites by the first path segment, such as `api`, `playwright`, and `utils`. Each area shows status, total tests, executed tests, passed tests, failed tests, flaky tests, skipped tests, pass rate, and accumulated duration.
+
+Areas with failures or flaky tests are marked `attention` and sorted above healthy areas. This gives a quick release-level view before drilling into individual suites.
+
 ## Suite Health
 
 The report groups tests by suite and marks each suite as `healthy` or `attention`. A suite needs attention when it has a failed, timed-out, interrupted, or flaky result.

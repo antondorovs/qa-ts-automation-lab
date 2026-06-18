@@ -7,6 +7,7 @@ import {
   summarizeSuiteHealth,
   summarizeSuitePerformance,
   summarizeTagCoverage,
+  summarizeTestAreas,
   type QaReporterOptions,
   type QaRunReport,
   type QaTestResult,
@@ -49,6 +50,7 @@ export function buildQaRunReport(
     regressionRisk,
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
     tagCoverage: summarizeTagCoverage(tests),
+    testAreas: summarizeTestAreas(tests),
     suiteHealth: summarizeSuiteHealth(tests),
     suitePerformance: summarizeSuitePerformance(tests, options.slowTestThresholdMs),
     slowTests,
@@ -123,6 +125,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
       ...report.tagCoverage.map((tag) => (
         `| ${escapeTable(tag.tag)} | ${tag.total} | ${tag.executed} | ${tag.passed} | ${tag.failures} | ${tag.flaky} | ${tag.skipped} | ${tag.passRate}% | ${formatDuration(tag.durationMs)} |`
+      )),
+    );
+  }
+
+  if (report.testAreas.length) {
+    lines.push(
+      '',
+      '## Test Area Summary',
+      '',
+      '| Area | Status | Total | Executed | Passed | Failed | Flaky | Skipped | Pass rate | Duration |',
+      '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+      ...report.testAreas.map((area) => (
+        `| ${escapeTable(area.area)} | ${area.status} | ${area.total} | ${area.executed} | ${area.passed} | ${area.failures} | ${area.flaky} | ${area.skipped} | ${area.passRate}% | ${formatDuration(area.durationMs)} |`
       )),
     );
   }
