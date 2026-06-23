@@ -70,6 +70,12 @@ The report groups results by normalized Playwright tags and shows the total, exe
 
 A test can contribute to multiple tag rows, such as `api` and `smoke`. Tests without tags are grouped under `untagged` so missing classification remains visible as the suite grows.
 
+## Test Classification
+
+The report summarizes test classification hygiene across the whole run. It shows total tests, tagged tests, untagged tests, skipped tests, live-tagged diagnostics, and the overall classification rate.
+
+This makes missing tags visible before they become a reporting blind spot. Live-tagged tests are counted separately because they are optional diagnostics rather than deterministic CI coverage.
+
 ## Test Area Summary
 
 The report groups suites by the first path segment, such as `api`, `playwright`, and `utils`. Each area shows status, total tests, executed tests, passed tests, failed tests, flaky tests, skipped tests, pass rate, and accumulated duration.

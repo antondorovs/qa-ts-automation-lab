@@ -3,6 +3,7 @@ import {
   evaluateQualityGate,
   findFailedTests,
   findSlowTests,
+  summarizeClassification,
   summarizeExecutionStability,
   summarizeSuiteHealth,
   summarizeSuitePerformance,
@@ -50,6 +51,7 @@ export function buildQaRunReport(
     regressionRisk,
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
     tagCoverage: summarizeTagCoverage(tests),
+    classification: summarizeClassification(tests),
     testAreas: summarizeTestAreas(tests),
     suiteHealth: summarizeSuiteHealth(tests),
     suitePerformance: summarizeSuitePerformance(tests, options.slowTestThresholdMs),
@@ -128,6 +130,15 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       )),
     );
   }
+
+  lines.push(
+    '',
+    '## Test Classification',
+    '',
+    '| Total | Tagged | Untagged | Skipped | Live-tagged | Classification rate |',
+    '| ---: | ---: | ---: | ---: | ---: | ---: |',
+    `| ${report.classification.total} | ${report.classification.tagged} | ${report.classification.untagged} | ${report.classification.skipped} | ${report.classification.liveTagged} | ${report.classification.classificationRate}% |`,
+  );
 
   if (report.testAreas.length) {
     lines.push(

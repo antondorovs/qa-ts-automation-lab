@@ -93,6 +93,15 @@ export type QaTestAreaSummary = {
   durationMs: number;
 };
 
+export type QaClassificationSummary = {
+  total: number;
+  tagged: number;
+  untagged: number;
+  skipped: number;
+  liveTagged: number;
+  classificationRate: number;
+};
+
 export type QaSuitePerformance = {
   suite: string;
   total: number;
@@ -140,6 +149,7 @@ export type QaRunReport = {
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
   tagCoverage: QaTagSummary[];
+  classification: QaClassificationSummary;
   testAreas: QaTestAreaSummary[];
   suiteHealth: QaSuiteHealth[];
   suitePerformance: QaSuitePerformance[];
@@ -360,6 +370,19 @@ export function summarizeTestAreas(results: QaTestResult[]): QaTestAreaSummary[]
       || second.durationMs - first.durationMs
       || first.area.localeCompare(second.area)
     ));
+}
+
+export function summarizeClassification(results: QaTestResult[]): QaClassificationSummary {
+  const tagged = results.filter((result) => result.tags.length > 0).length;
+
+  return {
+    total: results.length,
+    tagged,
+    untagged: results.length - tagged,
+    skipped: countByStatus(results, STATUS.SKIPPED),
+    liveTagged: results.filter((result) => result.tags.includes('live')).length,
+    classificationRate: results.length ? percentage(tagged, results.length) : 100,
+  };
 }
 
 export function summarizeSuitePerformance(

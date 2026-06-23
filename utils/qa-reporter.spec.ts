@@ -3,6 +3,7 @@ import {
   STATUS,
   buildReleaseDecision,
   evaluateQualityGate,
+  summarizeClassification,
   summarizeExecutionStability,
   summarizeRun,
   summarizeSuiteHealth,
@@ -147,6 +148,14 @@ test.describe('@utils @contract QA run intelligence', () => {
       }),
     ]);
     expect(report.slowTests).toHaveLength(1);
+    expect(report.classification).toEqual({
+      total: 2,
+      tagged: 2,
+      untagged: 0,
+      skipped: 0,
+      liveTagged: 0,
+      classificationRate: 100,
+    });
     expect(report.testAreas).toEqual([
       {
         area: 'utils',
@@ -197,6 +206,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
+    expect(markdown).toContain('## Test Classification');
+    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 0 | 100% |');
     expect(markdown).toContain('## Test Area Summary');
     expect(markdown).toContain('| utils | healthy | 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
     expect(markdown).toContain('## Suite Health');
@@ -396,6 +407,24 @@ test.describe('@utils @contract QA run intelligence', () => {
         durationMs: 200,
       },
     ]);
+  });
+
+  test('classification summary should expose tagged, untagged, skipped and live coverage', () => {
+    const classification = summarizeClassification([
+      createResult('API smoke', STATUS.PASSED, 100, ['api', 'smoke']),
+      createResult('draft scenario', STATUS.SKIPPED, 0),
+      createResult('live diagnostic', STATUS.SKIPPED, 0, ['live', 'api']),
+      createResult('UI smoke', STATUS.PASSED, 100, ['ui']),
+    ]);
+
+    expect(classification).toEqual({
+      total: 4,
+      tagged: 3,
+      untagged: 1,
+      skipped: 2,
+      liveTagged: 1,
+      classificationRate: 75,
+    });
   });
 
   test('suite health should rank suites needing attention before healthy suites', () => {
