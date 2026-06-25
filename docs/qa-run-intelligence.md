@@ -36,6 +36,12 @@ Playwright performs one retry in CI. This produces evidence for flaky detection 
 
 The reporter can override the final Playwright status when the quality gate is blocked. This keeps the same policy across local scripts, GitHub Actions, and GitLab CI.
 
+## Quality Gate Policy
+
+Each report records the resolved quality-gate policy that was applied to the run. The policy includes required pass rate, maximum failures, maximum flaky tests, optional first-pass rate, optional average-duration threshold, and optional required tags.
+
+Recording the policy next to the results makes the report easier to review later because the thresholds are visible without opening Playwright configuration or reporter options.
+
 ## Release Decision
 
 The report turns quality-gate checks into a release decision. When every configured check passes, the decision is `ready` and the report reminds reviewers to inspect the generated summary before deployment.

@@ -57,6 +57,7 @@ export type QualityGateCheck = {
 
 export type QualityGateResult = {
   status: 'ready' | 'blocked';
+  policy: QualityGateOptions;
   checks: QualityGateCheck[];
   failedChecks: QualityGateCheck[];
   summary: QaRunSummary;
@@ -268,6 +269,7 @@ export function evaluateQualityGate(
 
   return {
     status: checks.every((check) => check.passed) ? 'ready' : 'blocked',
+    policy: resolvedOptions,
     checks,
     failedChecks: checks.filter((check) => !check.passed),
     summary,

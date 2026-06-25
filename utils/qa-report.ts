@@ -76,6 +76,17 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     '| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
     `| ${summary.total} | ${summary.executed} | ${summary.passed} | ${summary.failed + summary.timedOut + summary.interrupted} | ${summary.flaky} | ${summary.skipped} | ${summary.passRate}% | ${formatDuration(report.durationMs)} |`,
     '',
+    '## Quality Gate Policy',
+    '',
+    '| Policy | Value |',
+    '| --- | --- |',
+    `| Minimum pass rate | >= ${qualityGate.policy.minimumPassRate}% |`,
+    `| Maximum failures | <= ${qualityGate.policy.maximumFailures} |`,
+    `| Maximum flaky tests | <= ${qualityGate.policy.maximumFlakyTests} |`,
+    `| Minimum first-pass rate | ${qualityGate.policy.minimumFirstPassRate === undefined ? 'not configured' : `>= ${qualityGate.policy.minimumFirstPassRate}%`} |`,
+    `| Maximum average duration | ${qualityGate.policy.maximumAverageDurationMs === undefined ? 'not configured' : `<= ${qualityGate.policy.maximumAverageDurationMs}ms`} |`,
+    `| Required tags | ${formatRequiredTags(qualityGate.policy.requiredTags)} |`,
+    '',
     '## Quality Gate',
     '',
     '| Check | Expected | Actual | Result |',
@@ -219,4 +230,8 @@ function escapeTable(value: string): string {
 
 function firstLine(value: string): string {
   return value.split(/\r?\n/, 1)[0];
+}
+
+function formatRequiredTags(tags?: string[]): string {
+  return tags?.length ? tags.map((tag) => tag.replace(/^@/, '')).join(', ') : 'not configured';
 }
