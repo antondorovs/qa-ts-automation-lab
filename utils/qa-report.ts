@@ -2,6 +2,7 @@ import {
   buildReleaseDecision,
   evaluateQualityGate,
   findFailedTests,
+  findSkippedTests,
   findSlowTests,
   summarizeClassification,
   summarizeExecutionStability,
@@ -57,6 +58,7 @@ export function buildQaRunReport(
     suitePerformance: summarizeSuitePerformance(tests, options.slowTestThresholdMs),
     slowTests,
     failedTests: findFailedTests(tests),
+    skippedTests: findSkippedTests(tests),
     tests,
   };
 }
@@ -190,6 +192,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     );
   }
 
+  if (report.skippedTests.length) {
+    lines.push(
+      '',
+      '## Skipped Tests',
+      '',
+      '| Test | Suite | Tags |',
+      '| --- | --- | --- |',
+      ...report.skippedTests.map((test) => (
+        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${formatTags(test.tags)} |`
+      )),
+    );
+  }
+
   if (report.failedTests.length) {
     lines.push(
       '',
@@ -234,4 +249,8 @@ function firstLine(value: string): string {
 
 function formatRequiredTags(tags?: string[]): string {
   return tags?.length ? tags.map((tag) => tag.replace(/^@/, '')).join(', ') : 'not configured';
+}
+
+function formatTags(tags: string[]): string {
+  return tags.length ? tags.map(escapeTable).join(', ') : 'untagged';
 }

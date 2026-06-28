@@ -69,6 +69,8 @@ export type FailedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' 
   error: string;
 };
 
+export type SkippedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'tags'>;
+
 export type QaTagSummary = {
   tag: string;
   total: number;
@@ -156,6 +158,7 @@ export type QaRunReport = {
   suitePerformance: QaSuitePerformance[];
   slowTests: SlowTest[];
   failedTests: FailedTest[];
+  skippedTests: SkippedTest[];
   tests: QaTestResult[];
 };
 
@@ -300,6 +303,16 @@ export function findFailedTests(results: QaTestResult[]): FailedTest[] {
       durationMs,
       error: error || 'No error message captured',
     }));
+}
+
+export function findSkippedTests(results: QaTestResult[]): SkippedTest[] {
+  return results
+    .filter((result) => result.status === STATUS.SKIPPED)
+    .sort((first, second) => (
+      first.suite.localeCompare(second.suite)
+      || first.title.localeCompare(second.title)
+    ))
+    .map(({ id, suite, title, tags }) => ({ id, suite, title, tags }));
 }
 
 export function findReleaseBlockers(results: QaTestResult[]): QaTestResult[] {

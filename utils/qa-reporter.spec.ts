@@ -3,6 +3,7 @@ import {
   STATUS,
   buildReleaseDecision,
   evaluateQualityGate,
+  findSkippedTests,
   summarizeClassification,
   summarizeExecutionStability,
   summarizeRun,
@@ -305,6 +306,46 @@ test.describe('@utils @contract QA run intelligence', () => {
         durationMs: 0,
       },
     ]);
+  });
+
+  test('skipped test inventory should retain suites, tags and deterministic ordering', () => {
+    const tests = [
+      {
+        ...createResult('disabled checkout scenario', STATUS.SKIPPED, 0),
+        suite: 'playwright/checkout.spec.ts',
+      },
+      {
+        ...createResult('optional live lookup', STATUS.SKIPPED, 0, ['api', 'live']),
+        suite: 'api/live/public-apis.live.spec.ts',
+      },
+      createResult('passing contract', STATUS.PASSED, 100, ['contract']),
+    ];
+    const skippedTests = findSkippedTests(tests);
+    const report = buildQaRunReport(tests, {
+      generatedAt: '2026-06-28T12:00:00.000Z',
+      runStatus: 'passed',
+      durationMs: 100,
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(skippedTests).toEqual([
+      {
+        id: 'optional-live-lookup',
+        suite: 'api/live/public-apis.live.spec.ts',
+        title: 'optional live lookup',
+        tags: ['api', 'live'],
+      },
+      {
+        id: 'disabled-checkout-scenario',
+        suite: 'playwright/checkout.spec.ts',
+        title: 'disabled checkout scenario',
+        tags: [],
+      },
+    ]);
+    expect(report.skippedTests).toEqual(skippedTests);
+    expect(markdown).toContain('## Skipped Tests');
+    expect(markdown).toContain('| optional live lookup | api/live/public-apis.live.spec.ts | api, live |');
+    expect(markdown).toContain('| disabled checkout scenario | playwright/checkout.spec.ts | untagged |');
   });
 
   test('suite performance should rank the most expensive suites first', () => {

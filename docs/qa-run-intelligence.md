@@ -82,6 +82,12 @@ The report summarizes test classification hygiene across the whole run. It shows
 
 This makes missing tags visible before they become a reporting blind spot. Live-tagged tests are counted separately because they are optional diagnostics rather than deterministic CI coverage.
 
+## Skipped Test Inventory
+
+The report keeps a dedicated inventory of skipped tests with their suite and normalized tags. The list is sorted by suite and test title so repeated runs produce a stable review order.
+
+This makes intentionally disabled scenarios and optional diagnostics visible without lowering the pass rate. Untagged skipped tests are labeled explicitly in the Markdown summary.
+
 ## Test Area Summary
 
 The report groups suites by the first path segment, such as `api`, `playwright`, and `utils`. Each area shows status, total tests, executed tests, passed tests, failed tests, flaky tests, skipped tests, pass rate, and accumulated duration.
