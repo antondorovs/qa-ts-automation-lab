@@ -78,6 +78,6 @@ GitHub language statistics note:
 Current practice focus:
 - TypeScript: Playwright API/UI automation and page object examples
 - TypeScript utilities: reusable QA helpers, metrics, assertions, and bug report builders
-- QA reporting: Playwright result aggregation, quality gate policy visibility, release decisions, execution stability, tag coverage, test classification, skipped test inventory, test area summaries, suite health, suite performance, flaky detection, risk hotspots, slow-test visibility, and strict release gates
+- QA reporting: Playwright result aggregation, quality gate policy visibility, release decisions, execution stability, tag coverage, test classification, skipped test inventory and limits, test area summaries, suite health, suite performance, flaky detection, risk hotspots, slow-test visibility, and strict release gates
 - SQL: datasets, reporting queries, window functions, and release quality dashboards
 - YAML/Docker: CI jobs, Kubernetes manifests, and local service setup

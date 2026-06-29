@@ -38,9 +38,11 @@ The reporter can override the final Playwright status when the quality gate is b
 
 ## Quality Gate Policy
 
-Each report records the resolved quality-gate policy that was applied to the run. The policy includes required pass rate, maximum failures, maximum flaky tests, optional first-pass rate, optional average-duration threshold, and optional required tags.
+Each report records the resolved quality-gate policy that was applied to the run. The policy includes required pass rate, maximum failures, maximum flaky tests, an optional skipped-test limit, optional first-pass rate, optional average-duration threshold, and optional required tags.
 
 Recording the policy next to the results makes the report easier to review later because the thresholds are visible without opening Playwright configuration or reporter options.
+
+Teams can set `maximumSkippedTests` when temporarily disabled coverage must stay below an explicit limit. The option is not enabled by default, so intentionally skipped live diagnostics remain visible without blocking the standard gate.
 
 ## Release Decision
 

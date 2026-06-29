@@ -43,6 +43,7 @@ export type QualityGateOptions = {
   minimumPassRate: number;
   maximumFailures: number;
   maximumFlakyTests: number;
+  maximumSkippedTests?: number;
   minimumFirstPassRate?: number;
   maximumAverageDurationMs?: number;
   requiredTags?: string[];
@@ -245,6 +246,15 @@ export function evaluateQualityGate(
       passed: summary.flaky <= resolvedOptions.maximumFlakyTests,
     },
   ];
+
+  if (resolvedOptions.maximumSkippedTests !== undefined) {
+    checks.push({
+      name: 'skipped tests',
+      expected: `<= ${resolvedOptions.maximumSkippedTests}`,
+      actual: String(summary.skipped),
+      passed: summary.skipped <= resolvedOptions.maximumSkippedTests,
+    });
+  }
 
   if (resolvedOptions.maximumAverageDurationMs !== undefined) {
     checks.push({
