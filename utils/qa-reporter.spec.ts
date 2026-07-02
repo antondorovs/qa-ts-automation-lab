@@ -3,6 +3,7 @@ import {
   STATUS,
   buildReleaseDecision,
   evaluateQualityGate,
+  findRetriedTests,
   findSkippedTests,
   summarizeClassification,
   summarizeExecutionStability,
@@ -589,12 +590,19 @@ test.describe('@utils @contract QA run intelligence', () => {
       },
     ];
     const stability = summarizeExecutionStability(results);
+    const retriedTests = findRetriedTests(results);
     const qualityGate = evaluateQualityGate(results, {
       minimumPassRate: 0,
       maximumFailures: 1,
       maximumFlakyTests: 1,
       minimumFirstPassRate: 80,
     });
+    const report = buildQaRunReport(results, {
+      generatedAt: '2026-07-02T12:00:00.000Z',
+      runStatus: 'failed',
+      durationMs: 400,
+    });
+    const markdown = renderQaReportMarkdown(report);
 
     expect(stability).toEqual({
       executed: 3,
@@ -603,6 +611,28 @@ test.describe('@utils @contract QA run intelligence', () => {
       retryAttempts: 3,
       firstPassRate: 33.33,
     });
+    expect(retriedTests).toEqual([
+      {
+        id: 'failed-payment',
+        suite: 'utils/qa-reporter.spec.ts',
+        title: 'failed payment',
+        status: STATUS.FAILED,
+        durationMs: 100,
+        attempts: 3,
+      },
+      {
+        id: 'flaky-checkout',
+        suite: 'utils/qa-reporter.spec.ts',
+        title: 'flaky checkout',
+        status: STATUS.FLAKY,
+        durationMs: 100,
+        attempts: 2,
+      },
+    ]);
+    expect(report.retriedTests).toEqual(retriedTests);
+    expect(markdown).toContain('## Retried Tests');
+    expect(markdown).toContain('| failed payment | utils/qa-reporter.spec.ts | 3 | failed | 100ms |');
+    expect(markdown).toContain('| flaky checkout | utils/qa-reporter.spec.ts | 2 | flaky | 100ms |');
     expect(qualityGate.status).toBe('blocked');
     expect(qualityGate.policy).toMatchObject({
       minimumFirstPassRate: 80,

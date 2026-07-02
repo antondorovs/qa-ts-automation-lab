@@ -61,6 +61,12 @@ The report separates final pass rate from first-pass stability. It shows:
 
 Projects can set an optional `minimumFirstPassRate` quality-gate threshold. This catches a run that eventually becomes green but consumes retries too often.
 
+## Retried Test Inventory
+
+The report lists every test that required more than one attempt, including its suite, total attempts, final status, and accumulated duration. Tests with the most attempts are shown first, followed by the longest-running retries.
+
+This connects the run-level stability rate to concrete test cases so flaky or repeatedly failing scenarios can be investigated without searching through the full Playwright log.
+
 ## Regression Risk
 
 Each report converts current run signals into a regression risk score:

@@ -2,6 +2,7 @@ import {
   buildReleaseDecision,
   evaluateQualityGate,
   findFailedTests,
+  findRetriedTests,
   findSkippedTests,
   findSlowTests,
   summarizeClassification,
@@ -59,6 +60,7 @@ export function buildQaRunReport(
     slowTests,
     failedTests: findFailedTests(tests),
     skippedTests: findSkippedTests(tests),
+    retriedTests: findRetriedTests(tests),
     tests,
   };
 }
@@ -189,6 +191,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '| --- | ---: | ---: | ---: | ---: | ---: | ---: |',
       ...report.suitePerformance.map((suite) => (
         `| ${escapeTable(suite.suite)} | ${suite.total} | ${suite.executed} | ${suite.slowTests} | ${formatDuration(suite.totalDurationMs)} | ${formatDuration(suite.averageDurationMs)} | ${formatDuration(suite.maximumDurationMs)} |`
+      )),
+    );
+  }
+
+  if (report.retriedTests.length) {
+    lines.push(
+      '',
+      '## Retried Tests',
+      '',
+      '| Test | Suite | Attempts | Final status | Duration |',
+      '| --- | --- | ---: | --- | ---: |',
+      ...report.retriedTests.map((test) => (
+        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.attempts} | ${test.status} | ${formatDuration(test.durationMs)} |`
       )),
     );
   }
