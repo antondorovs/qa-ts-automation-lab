@@ -273,6 +273,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       runStatus: 'failed',
       durationMs: 1900,
     });
+    const markdown = renderQaReportMarkdown(report);
 
     expect(report.regressionRisk).toMatchObject({
       risk: 'medium',
@@ -289,6 +290,22 @@ test.describe('@utils @contract QA run intelligence', () => {
       { suite: 'playwright/login.spec.ts', score: 3 },
       { suite: 'api/live/public-apis.live.spec.ts', score: 1 },
     ]);
+    expect(report.releaseBlockers).toEqual([
+      expect.objectContaining({
+        title: 'failed checkout',
+        status: STATUS.FAILED,
+        tags: ['ui'],
+      }),
+      expect.objectContaining({
+        title: 'flaky login',
+        status: STATUS.FLAKY,
+        tags: ['ui'],
+      }),
+    ]);
+    expect(markdown).toContain('## Release Blockers');
+    expect(markdown).toContain('| failed checkout | playwright/checkout.spec.ts | failed | 1 | ui |');
+    expect(markdown).toContain('| flaky login | playwright/login.spec.ts | flaky | 2 | ui |');
+    expect(markdown).not.toContain('| skipped live API | api/live/public-apis.live.spec.ts | skipped |');
   });
 
   test('tag coverage should aggregate overlapping tags and expose untagged tests', () => {

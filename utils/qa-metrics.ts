@@ -154,6 +154,7 @@ export type QaRunReport = {
   summary: QaRunSummary;
   qualityGate: QualityGateResult;
   releaseDecision: QaReleaseDecision;
+  releaseBlockers: QaTestResult[];
   stability: QaStabilitySummary;
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];

@@ -2,6 +2,7 @@ import {
   buildReleaseDecision,
   evaluateQualityGate,
   findFailedTests,
+  findReleaseBlockers,
   findRetriedTests,
   findSkippedTests,
   findSlowTests,
@@ -49,6 +50,7 @@ export function buildQaRunReport(
     summary: qualityGate.summary,
     qualityGate,
     releaseDecision: buildReleaseDecision(qualityGate),
+    releaseBlockers: findReleaseBlockers(tests),
     stability: summarizeExecutionStability(tests),
     regressionRisk,
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
@@ -191,6 +193,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '| --- | ---: | ---: | ---: | ---: | ---: | ---: |',
       ...report.suitePerformance.map((suite) => (
         `| ${escapeTable(suite.suite)} | ${suite.total} | ${suite.executed} | ${suite.slowTests} | ${formatDuration(suite.totalDurationMs)} | ${formatDuration(suite.averageDurationMs)} | ${formatDuration(suite.maximumDurationMs)} |`
+      )),
+    );
+  }
+
+  if (report.releaseBlockers.length) {
+    lines.push(
+      '',
+      '## Release Blockers',
+      '',
+      '| Test | Suite | Status | Attempts | Tags |',
+      '| --- | --- | --- | ---: | --- |',
+      ...report.releaseBlockers.map((test) => (
+        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.status} | ${test.attempts} | ${formatTags(test.tags)} |`
       )),
     );
   }

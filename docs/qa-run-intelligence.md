@@ -50,6 +50,12 @@ The report turns quality-gate checks into a release decision. When every configu
 
 When any check fails, the decision is `blocked`. Failed checks are stored separately in JSON and rendered as action items in Markdown, such as fixing pass rate, failure count, flaky tests, first-pass rate, missing tags, or duration thresholds.
 
+## Release Blockers
+
+The report keeps a dedicated inventory of failed, timed-out, interrupted, and flaky tests. Each entry includes its suite, final status, attempt count, and normalized tags.
+
+This puts every test-level release blocker in one place. Flaky tests remain visible even though they are intentionally excluded from the separate failure-error list.
+
 ## Execution Stability
 
 The report separates final pass rate from first-pass stability. It shows:
