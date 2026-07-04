@@ -6,6 +6,7 @@ import {
   findRetriedTests,
   findSkippedTests,
   findSlowTests,
+  findUntaggedTests,
   summarizeClassification,
   summarizeExecutionStability,
   summarizeSuiteHealth,
@@ -62,6 +63,7 @@ export function buildQaRunReport(
     slowTests,
     failedTests: findFailedTests(tests),
     skippedTests: findSkippedTests(tests),
+    untaggedTests: findUntaggedTests(tests),
     retriedTests: findRetriedTests(tests),
     tests,
   };
@@ -157,6 +159,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     '| ---: | ---: | ---: | ---: | ---: | ---: |',
     `| ${report.classification.total} | ${report.classification.tagged} | ${report.classification.untagged} | ${report.classification.skipped} | ${report.classification.liveTagged} | ${report.classification.classificationRate}% |`,
   );
+
+  if (report.untaggedTests.length) {
+    lines.push(
+      '',
+      '## Untagged Tests',
+      '',
+      '| Test | Suite | Status |',
+      '| --- | --- | --- |',
+      ...report.untaggedTests.map((test) => (
+        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.status} |`
+      )),
+    );
+  }
 
   if (report.testAreas.length) {
     lines.push(

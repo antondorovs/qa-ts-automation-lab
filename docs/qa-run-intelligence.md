@@ -96,6 +96,12 @@ The report summarizes test classification hygiene across the whole run. It shows
 
 This makes missing tags visible before they become a reporting blind spot. Live-tagged tests are counted separately because they are optional diagnostics rather than deterministic CI coverage.
 
+## Untagged Test Inventory
+
+The report lists every test without normalized tags, including its suite and final status. Entries are sorted by suite and title to keep repeated reports stable and easy to compare.
+
+This turns the classification-rate metric into an actionable cleanup list instead of leaving reviewers to search the complete test result payload.
+
 ## Skipped Test Inventory
 
 The report keeps a dedicated inventory of skipped tests with their suite and normalized tags. The list is sorted by suite and test title so repeated runs produce a stable review order.

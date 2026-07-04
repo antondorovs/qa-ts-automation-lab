@@ -72,6 +72,8 @@ export type FailedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' 
 
 export type SkippedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'tags'>;
 
+export type UntaggedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status'>;
+
 export type RetriedTest = Pick<
   QaTestResult,
   'id' | 'suite' | 'title' | 'status' | 'durationMs' | 'attempts'
@@ -166,6 +168,7 @@ export type QaRunReport = {
   slowTests: SlowTest[];
   failedTests: FailedTest[];
   skippedTests: SkippedTest[];
+  untaggedTests: UntaggedTest[];
   retriedTests: RetriedTest[];
   tests: QaTestResult[];
 };
@@ -330,6 +333,16 @@ export function findSkippedTests(results: QaTestResult[]): SkippedTest[] {
       || first.title.localeCompare(second.title)
     ))
     .map(({ id, suite, title, tags }) => ({ id, suite, title, tags }));
+}
+
+export function findUntaggedTests(results: QaTestResult[]): UntaggedTest[] {
+  return results
+    .filter((result) => result.tags.length === 0)
+    .sort((first, second) => (
+      first.suite.localeCompare(second.suite)
+      || first.title.localeCompare(second.title)
+    ))
+    .map(({ id, suite, title, status }) => ({ id, suite, title, status }));
 }
 
 export function findRetriedTests(results: QaTestResult[]): RetriedTest[] {

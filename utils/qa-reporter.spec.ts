@@ -5,6 +5,7 @@ import {
   evaluateQualityGate,
   findRetriedTests,
   findSkippedTests,
+  findUntaggedTests,
   summarizeClassification,
   summarizeExecutionStability,
   summarizeRun,
@@ -520,6 +521,46 @@ test.describe('@utils @contract QA run intelligence', () => {
       liveTagged: 1,
       classificationRate: 75,
     });
+  });
+
+  test('untagged test inventory should identify classification gaps in stable order', () => {
+    const results = [
+      {
+        ...createResult('checkout draft', STATUS.SKIPPED, 0),
+        suite: 'playwright/checkout.spec.ts',
+      },
+      {
+        ...createResult('API draft', STATUS.PASSED),
+        suite: 'api/users.api.spec.ts',
+      },
+      createResult('classified contract', STATUS.PASSED, 100, ['contract']),
+    ];
+    const untaggedTests = findUntaggedTests(results);
+    const report = buildQaRunReport(results, {
+      generatedAt: '2026-07-04T12:00:00.000Z',
+      runStatus: 'passed',
+      durationMs: 200,
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(untaggedTests).toEqual([
+      {
+        id: 'api-draft',
+        suite: 'api/users.api.spec.ts',
+        title: 'API draft',
+        status: STATUS.PASSED,
+      },
+      {
+        id: 'checkout-draft',
+        suite: 'playwright/checkout.spec.ts',
+        title: 'checkout draft',
+        status: STATUS.SKIPPED,
+      },
+    ]);
+    expect(report.untaggedTests).toEqual(untaggedTests);
+    expect(markdown).toContain('## Untagged Tests');
+    expect(markdown).toContain('| API draft | api/users.api.spec.ts | passed |');
+    expect(markdown).toContain('| checkout draft | playwright/checkout.spec.ts | skipped |');
   });
 
   test('suite health should rank suites needing attention before healthy suites', () => {
