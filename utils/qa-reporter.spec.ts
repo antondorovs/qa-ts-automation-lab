@@ -95,6 +95,29 @@ test.describe('@utils @contract QA run intelligence', () => {
     ]);
   });
 
+  test('quality gate should enforce an optional classification rate', () => {
+    const results = [
+      createResult('classified smoke', STATUS.PASSED, 100, ['smoke']),
+      createResult('untagged contract', STATUS.PASSED),
+    ];
+    const defaultGate = evaluateQualityGate(results);
+    const strictGate = evaluateQualityGate(results, {
+      minimumClassificationRate: 100,
+    });
+
+    expect(defaultGate.status).toBe('ready');
+    expect(strictGate.status).toBe('blocked');
+    expect(strictGate.policy.minimumClassificationRate).toBe(100);
+    expect(strictGate.failedChecks).toEqual([
+      {
+        name: 'classification rate',
+        expected: '>= 100%',
+        actual: '50%',
+        passed: false,
+      },
+    ]);
+  });
+
   test('quality gate should block flaky, timed out and interrupted tests', () => {
     const statuses = [STATUS.FLAKY, STATUS.TIMED_OUT, STATUS.INTERRUPTED];
 
@@ -120,6 +143,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       slowTestThresholdMs: 1000,
       qualityGate: {
         maximumSkippedTests: 0,
+        minimumClassificationRate: 100,
         requiredTags: ['@smoke', 'contract'],
       },
     });
@@ -132,6 +156,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       maximumFailures: 0,
       maximumFlakyTests: 0,
       maximumSkippedTests: 0,
+      minimumClassificationRate: 100,
       requiredTags: ['@smoke', 'contract'],
     });
     expect(report.qualityGate.failedChecks).toEqual([]);
@@ -235,6 +260,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('## Quality Gate Policy');
     expect(markdown).toContain('| Minimum pass rate | >= 100% |');
     expect(markdown).toContain('| Maximum skipped tests | <= 0 |');
+    expect(markdown).toContain('| Minimum classification rate | >= 100% |');
     expect(markdown).toContain('| Required tags | smoke, contract |');
     expect(markdown).toContain('## Release Decision');
     expect(markdown).toContain('Status: **ready**');

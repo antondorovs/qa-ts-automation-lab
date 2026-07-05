@@ -45,6 +45,7 @@ export type QualityGateOptions = {
   maximumFlakyTests: number;
   maximumSkippedTests?: number;
   minimumFirstPassRate?: number;
+  minimumClassificationRate?: number;
   maximumAverageDurationMs?: number;
   requiredTags?: string[];
 };
@@ -283,6 +284,17 @@ export function evaluateQualityGate(
       expected: `>= ${resolvedOptions.minimumFirstPassRate}%`,
       actual: `${stability.firstPassRate}%`,
       passed: stability.firstPassRate >= resolvedOptions.minimumFirstPassRate,
+    });
+  }
+
+  if (resolvedOptions.minimumClassificationRate !== undefined) {
+    const classification = summarizeClassification(results);
+
+    checks.push({
+      name: 'classification rate',
+      expected: `>= ${resolvedOptions.minimumClassificationRate}%`,
+      actual: `${classification.classificationRate}%`,
+      passed: classification.classificationRate >= resolvedOptions.minimumClassificationRate,
     });
   }
 

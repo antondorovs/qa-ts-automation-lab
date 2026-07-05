@@ -93,6 +93,7 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     `| Maximum flaky tests | <= ${qualityGate.policy.maximumFlakyTests} |`,
     `| Maximum skipped tests | ${qualityGate.policy.maximumSkippedTests === undefined ? 'not configured' : `<= ${qualityGate.policy.maximumSkippedTests}`} |`,
     `| Minimum first-pass rate | ${qualityGate.policy.minimumFirstPassRate === undefined ? 'not configured' : `>= ${qualityGate.policy.minimumFirstPassRate}%`} |`,
+    `| Minimum classification rate | ${qualityGate.policy.minimumClassificationRate === undefined ? 'not configured' : `>= ${qualityGate.policy.minimumClassificationRate}%`} |`,
     `| Maximum average duration | ${qualityGate.policy.maximumAverageDurationMs === undefined ? 'not configured' : `<= ${qualityGate.policy.maximumAverageDurationMs}ms`} |`,
     `| Required tags | ${formatRequiredTags(qualityGate.policy.requiredTags)} |`,
     '',
