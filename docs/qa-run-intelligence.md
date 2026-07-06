@@ -132,6 +132,12 @@ The report ranks test suites by accumulated execution time and shows:
 
 This makes the suites with the largest runtime cost visible even when every test passes, so optimization work can start with the strongest contributor.
 
+## Execution Duration Profile
+
+The report summarizes duration across executed tests with total, average, median, 95th percentile, and maximum values. Skipped tests are excluded so their zero-duration results do not distort the distribution.
+
+Median duration represents a typical test, while the 95th percentile and maximum expose tail latency that an average can hide.
+
 ## CI Visibility
 
 On GitHub Actions, the Markdown report is appended to the native job summary and uploaded as an artifact. On GitLab CI, the report directory is retained as an artifact for every job, including successful runs.

@@ -144,6 +144,15 @@ export type QaStabilitySummary = {
   firstPassRate: number;
 };
 
+export type QaDurationProfile = {
+  executed: number;
+  totalDurationMs: number;
+  averageDurationMs: number;
+  medianDurationMs: number;
+  p95DurationMs: number;
+  maximumDurationMs: number;
+};
+
 export type QaReleaseDecision = {
   status: QualityGateResult['status'];
   summary: string;
@@ -159,6 +168,7 @@ export type QaRunReport = {
   releaseDecision: QaReleaseDecision;
   releaseBlockers: QaTestResult[];
   stability: QaStabilitySummary;
+  durationProfile: QaDurationProfile;
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
   tagCoverage: QaTagSummary[];
@@ -546,6 +556,29 @@ export function summarizeExecutionStability(results: QaTestResult[]): QaStabilit
     firstPassRate: executedResults.length
       ? percentage(firstPassPassed, executedResults.length)
       : 100,
+  };
+}
+
+export function summarizeDurationProfile(results: QaTestResult[]): QaDurationProfile {
+  const durations = results
+    .filter((result) => result.status !== STATUS.SKIPPED)
+    .map((result) => result.durationMs)
+    .sort((first, second) => first - second);
+  const totalDurationMs = durations.reduce((total, duration) => total + duration, 0);
+  const middle = Math.floor(durations.length / 2);
+  const medianDurationMs = durations.length === 0
+    ? 0
+    : durations.length % 2
+      ? durations[middle]
+      : Math.round((durations[middle - 1] + durations[middle]) / 2);
+
+  return {
+    executed: durations.length,
+    totalDurationMs,
+    averageDurationMs: durations.length ? Math.round(totalDurationMs / durations.length) : 0,
+    medianDurationMs,
+    p95DurationMs: durations.length ? durations[Math.ceil(durations.length * 0.95) - 1] : 0,
+    maximumDurationMs: durations.at(-1) || 0,
   };
 }
 

@@ -7,6 +7,7 @@ import {
   findSkippedTests,
   findUntaggedTests,
   summarizeClassification,
+  summarizeDurationProfile,
   summarizeExecutionStability,
   summarizeRun,
   summarizeSuiteHealth,
@@ -735,6 +736,35 @@ test.describe('@utils @contract QA run intelligence', () => {
       actual: '33.33%',
       passed: false,
     });
+  });
+
+  test('duration profile should expose median and tail latency for executed tests', () => {
+    const results = [
+      createResult('fast check', STATUS.PASSED, 100),
+      createResult('regular check', STATUS.PASSED, 200),
+      createResult('slow check', STATUS.PASSED, 300),
+      createResult('tail check', STATUS.PASSED, 400),
+      createResult('disabled check', STATUS.SKIPPED, 0),
+    ];
+    const durationProfile = summarizeDurationProfile(results);
+    const report = buildQaRunReport(results, {
+      generatedAt: '2026-07-06T12:00:00.000Z',
+      runStatus: 'passed',
+      durationMs: 1000,
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(durationProfile).toEqual({
+      executed: 4,
+      totalDurationMs: 1000,
+      averageDurationMs: 250,
+      medianDurationMs: 250,
+      p95DurationMs: 400,
+      maximumDurationMs: 400,
+    });
+    expect(report.durationProfile).toEqual(durationProfile);
+    expect(markdown).toContain('## Execution Duration Profile');
+    expect(markdown).toContain('| 4 | 1.00s | 250ms | 250ms | 400ms | 400ms |');
   });
 
   test('release decision should turn failed quality checks into action items', () => {
