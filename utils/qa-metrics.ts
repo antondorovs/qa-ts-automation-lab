@@ -47,6 +47,7 @@ export type QualityGateOptions = {
   minimumFirstPassRate?: number;
   minimumClassificationRate?: number;
   maximumAverageDurationMs?: number;
+  maximumP95DurationMs?: number;
   requiredTags?: string[];
 };
 
@@ -283,6 +284,17 @@ export function evaluateQualityGate(
       expected: `<= ${resolvedOptions.maximumAverageDurationMs}ms`,
       actual: `${summary.averageDurationMs}ms`,
       passed: summary.averageDurationMs <= resolvedOptions.maximumAverageDurationMs,
+    });
+  }
+
+  if (resolvedOptions.maximumP95DurationMs !== undefined) {
+    const durationProfile = summarizeDurationProfile(results);
+
+    checks.push({
+      name: 'p95 duration',
+      expected: `<= ${resolvedOptions.maximumP95DurationMs}ms`,
+      actual: `${durationProfile.p95DurationMs}ms`,
+      passed: durationProfile.p95DurationMs <= resolvedOptions.maximumP95DurationMs,
     });
   }
 

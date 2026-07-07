@@ -103,6 +103,7 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     `| Minimum first-pass rate | ${qualityGate.policy.minimumFirstPassRate === undefined ? 'not configured' : `>= ${qualityGate.policy.minimumFirstPassRate}%`} |`,
     `| Minimum classification rate | ${qualityGate.policy.minimumClassificationRate === undefined ? 'not configured' : `>= ${qualityGate.policy.minimumClassificationRate}%`} |`,
     `| Maximum average duration | ${qualityGate.policy.maximumAverageDurationMs === undefined ? 'not configured' : `<= ${qualityGate.policy.maximumAverageDurationMs}ms`} |`,
+    `| Maximum p95 duration | ${qualityGate.policy.maximumP95DurationMs === undefined ? 'not configured' : `<= ${qualityGate.policy.maximumP95DurationMs}ms`} |`,
     `| Required tags | ${formatRequiredTags(qualityGate.policy.requiredTags)} |`,
     '',
     '## Quality Gate',
