@@ -104,6 +104,7 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     `| Minimum classification rate | ${qualityGate.policy.minimumClassificationRate === undefined ? 'not configured' : `>= ${qualityGate.policy.minimumClassificationRate}%`} |`,
     `| Maximum average duration | ${qualityGate.policy.maximumAverageDurationMs === undefined ? 'not configured' : `<= ${qualityGate.policy.maximumAverageDurationMs}ms`} |`,
     `| Maximum p95 duration | ${qualityGate.policy.maximumP95DurationMs === undefined ? 'not configured' : `<= ${qualityGate.policy.maximumP95DurationMs}ms`} |`,
+    `| Maximum test duration | ${qualityGate.policy.maximumTestDurationMs === undefined ? 'not configured' : `<= ${qualityGate.policy.maximumTestDurationMs}ms`} |`,
     `| Required tags | ${formatRequiredTags(qualityGate.policy.requiredTags)} |`,
     '',
     '## Quality Gate',

@@ -144,6 +144,29 @@ test.describe('@utils @contract QA run intelligence', () => {
     ]);
   });
 
+  test('quality gate should enforce an optional maximum test duration', () => {
+    const results = [
+      createResult('fast contract', STATUS.PASSED, 100),
+      createResult('regular contract', STATUS.PASSED, 200),
+      createResult('outlier contract', STATUS.PASSED, 1200),
+      createResult('disabled diagnostic', STATUS.SKIPPED, 0),
+    ];
+    const strictGate = evaluateQualityGate(results, {
+      maximumTestDurationMs: 1000,
+    });
+
+    expect(strictGate.status).toBe('blocked');
+    expect(strictGate.policy.maximumTestDurationMs).toBe(1000);
+    expect(strictGate.failedChecks).toEqual([
+      {
+        name: 'maximum test duration',
+        expected: '<= 1000ms',
+        actual: '1200ms',
+        passed: false,
+      },
+    ]);
+  });
+
   test('quality gate should block flaky, timed out and interrupted tests', () => {
     const statuses = [STATUS.FLAKY, STATUS.TIMED_OUT, STATUS.INTERRUPTED];
 
@@ -171,6 +194,7 @@ test.describe('@utils @contract QA run intelligence', () => {
         maximumSkippedTests: 0,
         minimumClassificationRate: 100,
         maximumP95DurationMs: 2000,
+        maximumTestDurationMs: 2000,
         requiredTags: ['@smoke', 'contract'],
       },
     });
@@ -185,6 +209,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       maximumSkippedTests: 0,
       minimumClassificationRate: 100,
       maximumP95DurationMs: 2000,
+      maximumTestDurationMs: 2000,
       requiredTags: ['@smoke', 'contract'],
     });
     expect(report.qualityGate.failedChecks).toEqual([]);
@@ -287,6 +312,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
     expect(markdown).toContain('## Quality Gate Policy');
     expect(markdown).toContain('| Maximum p95 duration | <= 2000ms |');
+    expect(markdown).toContain('| Maximum test duration | <= 2000ms |');
     expect(markdown).toContain('| Minimum pass rate | >= 100% |');
     expect(markdown).toContain('| Maximum skipped tests | <= 0 |');
     expect(markdown).toContain('| Minimum classification rate | >= 100% |');

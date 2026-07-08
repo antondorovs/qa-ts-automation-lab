@@ -38,7 +38,7 @@ The reporter can override the final Playwright status when the quality gate is b
 
 ## Quality Gate Policy
 
-Each report records the resolved quality-gate policy that was applied to the run. The policy includes required pass rate, maximum failures, maximum flaky tests, an optional skipped-test limit, optional first-pass and classification-rate thresholds, optional average and p95 duration thresholds, and optional required tags.
+Each report records the resolved quality-gate policy that was applied to the run. The policy includes required pass rate, maximum failures, maximum flaky tests, an optional skipped-test limit, optional first-pass and classification-rate thresholds, optional average, p95, and individual-test duration thresholds, and optional required tags.
 
 Recording the policy next to the results makes the report easier to review later because the thresholds are visible without opening Playwright configuration or reporter options.
 
@@ -139,6 +139,8 @@ The report summarizes duration across executed tests with total, average, median
 Median duration represents a typical test, while the 95th percentile and maximum expose tail latency that an average can hide.
 
 Projects can set `maximumP95DurationMs` to block a run when the slowest five percent of executed tests exceed an acceptable duration. The threshold is optional and skipped tests remain excluded from the calculation.
+
+The optional `maximumTestDurationMs` threshold blocks a run when any executed test exceeds its duration budget. This catches a single severe outlier even when the average and p95 remain acceptable across a large suite.
 
 ## CI Visibility
 

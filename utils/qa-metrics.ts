@@ -48,6 +48,7 @@ export type QualityGateOptions = {
   minimumClassificationRate?: number;
   maximumAverageDurationMs?: number;
   maximumP95DurationMs?: number;
+  maximumTestDurationMs?: number;
   requiredTags?: string[];
 };
 
@@ -248,6 +249,7 @@ export function evaluateQualityGate(
   };
   const summary = summarizeRun(results);
   const failureCount = summary.failed + summary.timedOut + summary.interrupted;
+  const durationProfile = summarizeDurationProfile(results);
   const checks: QualityGateCheck[] = [
     {
       name: 'pass rate',
@@ -288,13 +290,20 @@ export function evaluateQualityGate(
   }
 
   if (resolvedOptions.maximumP95DurationMs !== undefined) {
-    const durationProfile = summarizeDurationProfile(results);
-
     checks.push({
       name: 'p95 duration',
       expected: `<= ${resolvedOptions.maximumP95DurationMs}ms`,
       actual: `${durationProfile.p95DurationMs}ms`,
       passed: durationProfile.p95DurationMs <= resolvedOptions.maximumP95DurationMs,
+    });
+  }
+
+  if (resolvedOptions.maximumTestDurationMs !== undefined) {
+    checks.push({
+      name: 'maximum test duration',
+      expected: `<= ${resolvedOptions.maximumTestDurationMs}ms`,
+      actual: `${durationProfile.maximumDurationMs}ms`,
+      passed: durationProfile.maximumDurationMs <= resolvedOptions.maximumTestDurationMs,
     });
   }
 
