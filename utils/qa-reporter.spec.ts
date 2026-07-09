@@ -90,6 +90,26 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 3 | 2 | 1 | 1 | 0 | 1 | 50% | 50% | 200ms |');
   });
 
+  test('Markdown report should summarize failed quality-gate checks', () => {
+    const report = buildQaRunReport([
+      createResult('passing smoke', STATUS.PASSED),
+      createResult('broken contract', STATUS.FAILED),
+    ], {
+      generatedAt: '2026-07-09T14:00:00.000Z',
+      runStatus: 'failed',
+      durationMs: 200,
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(report.qualityGate.failedChecks.map((check) => check.name)).toEqual([
+      'pass rate',
+      'failures',
+    ]);
+    expect(markdown).toContain('## Blocked Checks');
+    expect(markdown).toContain('| pass rate | >= 100% | 50% |');
+    expect(markdown).toContain('| failures | <= 0 | 1 |');
+  });
+
   test('quality gate should enforce an optional skipped test limit', () => {
     const results = [
       createResult('passing smoke', STATUS.PASSED),

@@ -119,6 +119,22 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     ...qualityGate.checks.map((check) => (
       `| ${escapeTable(check.name)} | ${escapeTable(check.expected)} | ${escapeTable(check.actual)} | ${check.passed ? 'PASS' : 'FAIL'} |`
     )),
+  ];
+
+  if (qualityGate.failedChecks.length) {
+    lines.push(
+      '',
+      '## Blocked Checks',
+      '',
+      '| Check | Expected | Actual |',
+      '| --- | --- | --- |',
+      ...qualityGate.failedChecks.map((check) => (
+        `| ${escapeTable(check.name)} | ${escapeTable(check.expected)} | ${escapeTable(check.actual)} |`
+      )),
+    );
+  }
+
+  lines.push(
     '',
     '## Release Decision',
     '',
@@ -139,7 +155,7 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     `Risk: **${report.regressionRisk.risk}** (${report.regressionRisk.score} points)`,
     '',
     report.regressionRisk.recommendation,
-  ];
+  );
 
   if (report.riskHotspots.length) {
     lines.push(
