@@ -24,6 +24,8 @@ The reporter records one final result per test:
 
 Skipped tests remain visible but are excluded from the pass-rate denominator. A test that fails first and passes on retry is reported as `flaky`, not `passed`.
 
+The Markdown summary shows both pass rate and failure rate for executed tests, so reviewers can see the healthy and unhealthy share of the run without recalculating skipped diagnostics.
+
 ## Quality Gate
 
 The default release gate requires:

@@ -73,6 +73,23 @@ test.describe('@utils @contract QA run intelligence', () => {
     });
   });
 
+  test('Markdown summary should include failure rate for executed tests', () => {
+    const report = buildQaRunReport([
+      createResult('passing smoke', STATUS.PASSED),
+      createResult('broken contract', STATUS.FAILED),
+      createResult('disabled live check', STATUS.SKIPPED),
+    ], {
+      generatedAt: '2026-07-09T13:00:00.000Z',
+      runStatus: 'failed',
+      durationMs: 200,
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(report.summary.failureRate).toBe(50);
+    expect(markdown).toContain('Failure rate');
+    expect(markdown).toContain('| 3 | 2 | 1 | 1 | 0 | 1 | 50% | 50% | 200ms |');
+  });
+
   test('quality gate should enforce an optional skipped test limit', () => {
     const results = [
       createResult('passing smoke', STATUS.PASSED),
@@ -343,7 +360,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     ]);
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
-    expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
+    expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 0% | 1.92s |');
     expect(markdown).toContain('## Quality Gate Policy');
     expect(markdown).toContain('| Maximum p95 duration | <= 2000ms |');
     expect(markdown).toContain('| Maximum test duration | <= 2000ms |');
