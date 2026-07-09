@@ -142,6 +142,8 @@ Projects can set `maximumP95DurationMs` to block a run when the slowest five per
 
 The optional `maximumTestDurationMs` threshold blocks a run when any executed test exceeds its duration budget. This catches a single severe outlier even when the average and p95 remain acceptable across a large suite.
 
+When that threshold is configured, the report also lists every executed test that exceeded the individual duration budget. The inventory keeps skipped diagnostics out of the breach list and sorts the longest over-budget tests first.
+
 ## CI Visibility
 
 On GitHub Actions, the Markdown report is appended to the native job summary and uploaded as an artifact. On GitLab CI, the report directory is retained as an artifact for every job, including successful runs.

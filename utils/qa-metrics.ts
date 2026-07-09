@@ -69,6 +69,11 @@ export type QualityGateResult = {
 
 export type SlowTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' | 'durationMs'>;
 
+export type DurationBudgetBreach = Pick<
+  QaTestResult,
+  'id' | 'suite' | 'title' | 'status' | 'durationMs'
+>;
+
 export type FailedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' | 'durationMs'> & {
   error: string;
 };
@@ -179,6 +184,7 @@ export type QaRunReport = {
   suiteHealth: QaSuiteHealth[];
   suitePerformance: QaSuitePerformance[];
   slowTests: SlowTest[];
+  durationBudgetBreaches: DurationBudgetBreach[];
   failedTests: FailedTest[];
   skippedTests: SkippedTest[];
   untaggedTests: UntaggedTest[];
@@ -346,6 +352,31 @@ export function findSlowTests(results: QaTestResult[], thresholdMs = 1000): Slow
   return results
     .filter((result) => result.durationMs >= thresholdMs)
     .sort((first, second) => second.durationMs - first.durationMs)
+    .map(({ id, suite, title, status, durationMs }) => ({
+      id,
+      suite,
+      title,
+      status,
+      durationMs,
+    }));
+}
+
+export function findDurationBudgetBreaches(
+  results: QaTestResult[],
+  maximumDurationMs?: number,
+): DurationBudgetBreach[] {
+  if (maximumDurationMs === undefined) {
+    return [];
+  }
+
+  return results
+    .filter((result) => result.status !== STATUS.SKIPPED)
+    .filter((result) => result.durationMs > maximumDurationMs)
+    .sort((first, second) => (
+      second.durationMs - first.durationMs
+      || first.suite.localeCompare(second.suite)
+      || first.title.localeCompare(second.title)
+    ))
     .map(({ id, suite, title, status, durationMs }) => ({
       id,
       suite,

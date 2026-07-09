@@ -3,6 +3,7 @@ import {
   STATUS,
   buildReleaseDecision,
   evaluateQualityGate,
+  findDurationBudgetBreaches,
   findRetriedTests,
   findSkippedTests,
   findUntaggedTests,
@@ -165,6 +166,39 @@ test.describe('@utils @contract QA run intelligence', () => {
         passed: false,
       },
     ]);
+  });
+
+  test('duration budget breaches should identify executed tests over the configured maximum', () => {
+    const results = [
+      createResult('fast contract', STATUS.PASSED, 100),
+      createResult('outlier contract', STATUS.PASSED, 1200),
+      createResult('disabled diagnostic', STATUS.SKIPPED, 5000),
+    ];
+    const breaches = findDurationBudgetBreaches(results, 1000);
+    const report = buildQaRunReport(results, {
+      generatedAt: '2026-07-09T12:00:00.000Z',
+      runStatus: 'passed',
+      durationMs: 6300,
+    }, {
+      qualityGate: {
+        maximumTestDurationMs: 1000,
+      },
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(breaches).toEqual([
+      {
+        id: 'outlier-contract',
+        suite: 'utils/qa-reporter.spec.ts',
+        title: 'outlier contract',
+        status: STATUS.PASSED,
+        durationMs: 1200,
+      },
+    ]);
+    expect(report.durationBudgetBreaches).toEqual(breaches);
+    expect(markdown).toContain('## Duration Budget Breaches');
+    expect(markdown).toContain('| outlier contract | utils/qa-reporter.spec.ts | passed | 1.20s |');
+    expect(markdown).not.toContain('| disabled diagnostic | utils/qa-reporter.spec.ts | skipped | 5.00s |');
   });
 
   test('quality gate should block flaky, timed out and interrupted tests', () => {

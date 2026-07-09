@@ -1,6 +1,7 @@
 import {
   buildReleaseDecision,
   evaluateQualityGate,
+  findDurationBudgetBreaches,
   findFailedTests,
   findReleaseBlockers,
   findRetriedTests,
@@ -63,6 +64,10 @@ export function buildQaRunReport(
     suiteHealth: summarizeSuiteHealth(tests),
     suitePerformance: summarizeSuitePerformance(tests, options.slowTestThresholdMs),
     slowTests,
+    durationBudgetBreaches: findDurationBudgetBreaches(
+      tests,
+      options.qualityGate?.maximumTestDurationMs,
+    ),
     failedTests: findFailedTests(tests),
     skippedTests: findSkippedTests(tests),
     untaggedTests: findUntaggedTests(tests),
@@ -219,6 +224,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '| --- | ---: | ---: | ---: | ---: | ---: | ---: |',
       ...report.suitePerformance.map((suite) => (
         `| ${escapeTable(suite.suite)} | ${suite.total} | ${suite.executed} | ${suite.slowTests} | ${formatDuration(suite.totalDurationMs)} | ${formatDuration(suite.averageDurationMs)} | ${formatDuration(suite.maximumDurationMs)} |`
+      )),
+    );
+  }
+
+  if (report.durationBudgetBreaches.length) {
+    lines.push(
+      '',
+      '## Duration Budget Breaches',
+      '',
+      '| Test | Suite | Status | Duration |',
+      '| --- | --- | --- | ---: |',
+      ...report.durationBudgetBreaches.map((test) => (
+        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.status} | ${formatDuration(test.durationMs)} |`
       )),
     );
   }
