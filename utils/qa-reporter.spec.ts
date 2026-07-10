@@ -388,6 +388,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| Maximum skipped tests | <= 0 |');
     expect(markdown).toContain('| Minimum classification rate | >= 100% |');
     expect(markdown).toContain('| Required tags | smoke, contract |');
+    expect(markdown).toContain('## Quality Gate Summary');
+    expect(markdown).toContain('| 8 | 8 | 0 |');
     expect(markdown).toContain('## Release Decision');
     expect(markdown).toContain('Status: **ready**');
     expect(markdown).toContain('slow UI smoke');

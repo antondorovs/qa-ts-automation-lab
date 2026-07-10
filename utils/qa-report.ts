@@ -119,6 +119,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     ...qualityGate.checks.map((check) => (
       `| ${escapeTable(check.name)} | ${escapeTable(check.expected)} | ${escapeTable(check.actual)} | ${check.passed ? 'PASS' : 'FAIL'} |`
     )),
+    '',
+    '## Quality Gate Summary',
+    '',
+    '| Total checks | Passed | Failed |',
+    '| ---: | ---: | ---: |',
+    `| ${qualityGate.checks.length} | ${qualityGate.checks.filter((check) => check.passed).length} | ${qualityGate.failedChecks.length} |`,
   ];
 
   if (qualityGate.failedChecks.length) {
