@@ -4,6 +4,7 @@ import {
   buildReleaseDecision,
   evaluateQualityGate,
   findDurationBudgetBreaches,
+  findFlakyTests,
   findRetriedTests,
   findSkippedTests,
   findUntaggedTests,
@@ -915,6 +916,50 @@ test.describe('@utils @contract QA run intelligence', () => {
       actual: '33.33%',
       passed: false,
     });
+  });
+
+  test('flaky test inventory should expose unstable tests with tags', () => {
+    const results = [
+      {
+        ...createResult('flaky checkout', STATUS.FLAKY, 400, ['ui']),
+        attempts: 2,
+      },
+      {
+        ...createResult('flaky payment', STATUS.FLAKY, 900, ['payment', 'regression']),
+        attempts: 3,
+      },
+      createResult('stable smoke', STATUS.PASSED, 100, ['smoke']),
+    ];
+    const flakyTests = findFlakyTests(results);
+    const report = buildQaRunReport(results, {
+      generatedAt: '2026-07-12T14:00:00.000Z',
+      runStatus: 'failed',
+      durationMs: 1400,
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(flakyTests).toEqual([
+      {
+        id: 'flaky-payment',
+        suite: 'utils/qa-reporter.spec.ts',
+        title: 'flaky payment',
+        durationMs: 900,
+        attempts: 3,
+        tags: ['payment', 'regression'],
+      },
+      {
+        id: 'flaky-checkout',
+        suite: 'utils/qa-reporter.spec.ts',
+        title: 'flaky checkout',
+        durationMs: 400,
+        attempts: 2,
+        tags: ['ui'],
+      },
+    ]);
+    expect(report.flakyTests).toEqual(flakyTests);
+    expect(markdown).toContain('## Flaky Tests');
+    expect(markdown).toContain('| flaky payment | utils/qa-reporter.spec.ts | 3 | 900ms | payment, regression |');
+    expect(markdown).toContain('| flaky checkout | utils/qa-reporter.spec.ts | 2 | 400ms | ui |');
   });
 
   test('duration profile should expose median and tail latency for executed tests', () => {

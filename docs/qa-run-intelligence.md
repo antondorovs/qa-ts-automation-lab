@@ -83,6 +83,12 @@ The report lists every test that required more than one attempt, including its s
 
 This connects the run-level stability rate to concrete test cases so flaky or repeatedly failing scenarios can be investigated without searching through the full Playwright log.
 
+## Flaky Test Inventory
+
+The report keeps a separate inventory of tests whose final QA status is `flaky`. Each entry includes suite, attempts, accumulated duration, and normalized tags.
+
+Flaky tests are sorted by attempts and duration so repeated instability stays visible even when the last retry passes.
+
 ## Regression Risk
 
 Each report converts current run signals into a regression risk score:

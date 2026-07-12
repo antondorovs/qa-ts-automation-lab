@@ -3,6 +3,7 @@ import {
   evaluateQualityGate,
   findDurationBudgetBreaches,
   findFailedTests,
+  findFlakyTests,
   findReleaseBlockers,
   findRetriedTests,
   findSkippedTests,
@@ -72,6 +73,7 @@ export function buildQaRunReport(
     skippedTests: findSkippedTests(tests),
     untaggedTests: findUntaggedTests(tests),
     retriedTests: findRetriedTests(tests),
+    flakyTests: findFlakyTests(tests),
     tests,
   };
 }
@@ -291,6 +293,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '| --- | --- | ---: | --- | ---: |',
       ...report.retriedTests.map((test) => (
         `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.attempts} | ${test.status} | ${formatDuration(test.durationMs)} |`
+      )),
+    );
+  }
+
+  if (report.flakyTests.length) {
+    lines.push(
+      '',
+      '## Flaky Tests',
+      '',
+      '| Test | Suite | Attempts | Duration | Tags |',
+      '| --- | --- | ---: | ---: | --- |',
+      ...report.flakyTests.map((test) => (
+        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.attempts} | ${formatDuration(test.durationMs)} | ${formatTags(test.tags)} |`
       )),
     );
   }

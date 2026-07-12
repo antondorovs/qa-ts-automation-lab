@@ -94,6 +94,11 @@ export type RetriedTest = Pick<
   'id' | 'suite' | 'title' | 'status' | 'durationMs' | 'attempts'
 >;
 
+export type FlakyTest = Pick<
+  QaTestResult,
+  'id' | 'suite' | 'title' | 'durationMs' | 'attempts' | 'tags'
+>;
+
 export type QaTagSummary = {
   tag: string;
   total: number;
@@ -196,6 +201,7 @@ export type QaRunReport = {
   skippedTests: SkippedTest[];
   untaggedTests: UntaggedTest[];
   retriedTests: RetriedTest[];
+  flakyTests: FlakyTest[];
   tests: QaTestResult[];
 };
 
@@ -453,6 +459,25 @@ export function findRetriedTests(results: QaTestResult[]): RetriedTest[] {
       status,
       durationMs,
       attempts,
+    }));
+}
+
+export function findFlakyTests(results: QaTestResult[]): FlakyTest[] {
+  return results
+    .filter((result) => result.status === STATUS.FLAKY)
+    .sort((first, second) => (
+      second.attempts - first.attempts
+      || second.durationMs - first.durationMs
+      || first.suite.localeCompare(second.suite)
+      || first.title.localeCompare(second.title)
+    ))
+    .map(({ id, suite, title, durationMs, attempts, tags }) => ({
+      id,
+      suite,
+      title,
+      durationMs,
+      attempts,
+      tags,
     }));
 }
 
