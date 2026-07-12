@@ -91,6 +91,26 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 3 | 2 | 1 | 1 | 0 | 1 | 50% | 50% | 200ms |');
   });
 
+  test('Markdown report should include final status breakdown', () => {
+    const report = buildQaRunReport([
+      createResult('passing smoke', STATUS.PASSED),
+      createResult('broken contract', STATUS.FAILED),
+      createResult('flaky checkout', STATUS.FLAKY),
+      createResult('timed out payment', STATUS.TIMED_OUT),
+      createResult('interrupted flow', STATUS.INTERRUPTED),
+      createResult('disabled live check', STATUS.SKIPPED),
+    ], {
+      generatedAt: '2026-07-12T13:00:00.000Z',
+      runStatus: 'failed',
+      durationMs: 600,
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(markdown).toContain('## Status Breakdown');
+    expect(markdown).toContain('| Passed | Failed | Flaky | Timed out | Interrupted | Skipped |');
+    expect(markdown).toContain('| 1 | 1 | 1 | 1 | 1 | 1 |');
+  });
+
   test('Markdown report should summarize failed quality-gate checks', () => {
     const report = buildQaRunReport([
       createResult('passing smoke', STATUS.PASSED),
