@@ -124,7 +124,7 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     '',
     '| Total checks | Passed | Failed |',
     '| ---: | ---: | ---: |',
-    `| ${qualityGate.checks.length} | ${qualityGate.checks.filter((check) => check.passed).length} | ${qualityGate.failedChecks.length} |`,
+    `| ${qualityGate.checkSummary.total} | ${qualityGate.checkSummary.passed} | ${qualityGate.checkSummary.failed} |`,
   ];
 
   if (qualityGate.failedChecks.length) {

@@ -10,6 +10,7 @@ import {
   summarizeClassification,
   summarizeDurationProfile,
   summarizeExecutionStability,
+  summarizeQualityGateChecks,
   summarizeRun,
   summarizeSuiteHealth,
   summarizeSuitePerformance,
@@ -108,6 +109,37 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('## Blocked Checks');
     expect(markdown).toContain('| pass rate | >= 100% | 50% |');
     expect(markdown).toContain('| failures | <= 0 | 1 |');
+  });
+
+  test('quality gate check summary should be available in serialized reports', () => {
+    const qualityGate = evaluateQualityGate([
+      createResult('passing smoke', STATUS.PASSED),
+      createResult('broken contract', STATUS.FAILED),
+    ]);
+    const report = buildQaRunReport([
+      createResult('passing smoke', STATUS.PASSED),
+      createResult('broken contract', STATUS.FAILED),
+    ], {
+      generatedAt: '2026-07-12T12:00:00.000Z',
+      runStatus: 'failed',
+      durationMs: 200,
+    });
+
+    expect(summarizeQualityGateChecks(qualityGate.checks)).toEqual({
+      total: 3,
+      passed: 1,
+      failed: 2,
+    });
+    expect(report.qualityGate.checkSummary).toEqual({
+      total: 3,
+      passed: 1,
+      failed: 2,
+    });
+    expect(JSON.parse(JSON.stringify(report)).qualityGate.checkSummary).toEqual({
+      total: 3,
+      passed: 1,
+      failed: 2,
+    });
   });
 
   test('quality gate should enforce an optional skipped test limit', () => {

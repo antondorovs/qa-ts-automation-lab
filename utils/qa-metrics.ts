@@ -59,11 +59,18 @@ export type QualityGateCheck = {
   passed: boolean;
 };
 
+export type QaQualityGateSummary = {
+  total: number;
+  passed: number;
+  failed: number;
+};
+
 export type QualityGateResult = {
   status: 'ready' | 'blocked';
   policy: QualityGateOptions;
   checks: QualityGateCheck[];
   failedChecks: QualityGateCheck[];
+  checkSummary: QaQualityGateSummary;
   summary: QaRunSummary;
 };
 
@@ -344,7 +351,18 @@ export function evaluateQualityGate(
     policy: resolvedOptions,
     checks,
     failedChecks: checks.filter((check) => !check.passed),
+    checkSummary: summarizeQualityGateChecks(checks),
     summary,
+  };
+}
+
+export function summarizeQualityGateChecks(checks: QualityGateCheck[]): QaQualityGateSummary {
+  const passed = checks.filter((check) => check.passed).length;
+
+  return {
+    total: checks.length,
+    passed,
+    failed: checks.length - passed,
   };
 }
 

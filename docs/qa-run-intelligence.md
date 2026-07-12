@@ -44,7 +44,7 @@ Each report records the resolved quality-gate policy that was applied to the run
 
 Recording the policy next to the results makes the report easier to review later because the thresholds are visible without opening Playwright configuration or reporter options.
 
-The Markdown report also summarizes how many quality-gate checks ran, how many passed, and how many failed. This keeps the release signal easy to scan when optional checks are enabled.
+The JSON and Markdown reports also summarize how many quality-gate checks ran, how many passed, and how many failed. This keeps the release signal easy to scan when optional checks are enabled.
 
 Teams can set `maximumSkippedTests` when temporarily disabled coverage must stay below an explicit limit. The option is not enabled by default, so intentionally skipped live diagnostics remain visible without blocking the standard gate.
 
