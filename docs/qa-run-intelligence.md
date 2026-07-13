@@ -64,6 +64,8 @@ Blocked Markdown reports also include a compact failed-check table before the re
 
 The report keeps a dedicated inventory of failed, timed-out, interrupted, and flaky tests. Each entry includes its suite, final status, attempt count, and normalized tags.
 
+The same section includes a release-blocker summary with separate failed, timed-out, interrupted, and flaky counts.
+
 This puts every test-level release blocker in one place. Flaky tests remain visible even though they are intentionally excluded from the separate failure-error list.
 
 ## Execution Stability

@@ -178,6 +178,14 @@ export type QaReleaseDecision = {
   actionItems: string[];
 };
 
+export type QaReleaseBlockerSummary = {
+  total: number;
+  failed: number;
+  timedOut: number;
+  interrupted: number;
+  flaky: number;
+};
+
 export type QaRunReport = {
   generatedAt: string;
   runStatus: 'passed' | 'failed' | 'timedout' | 'interrupted';
@@ -186,6 +194,7 @@ export type QaRunReport = {
   qualityGate: QualityGateResult;
   releaseDecision: QaReleaseDecision;
   releaseBlockers: QaTestResult[];
+  releaseBlockerSummary: QaReleaseBlockerSummary;
   stability: QaStabilitySummary;
   durationProfile: QaDurationProfile;
   regressionRisk: RegressionRiskSummary;
@@ -483,6 +492,18 @@ export function findFlakyTests(results: QaTestResult[]): FlakyTest[] {
 
 export function findReleaseBlockers(results: QaTestResult[]): QaTestResult[] {
   return results.filter((result) => isFailureStatus(result.status) || result.status === STATUS.FLAKY);
+}
+
+export function summarizeReleaseBlockers(results: QaTestResult[]): QaReleaseBlockerSummary {
+  const releaseBlockers = findReleaseBlockers(results);
+
+  return {
+    total: releaseBlockers.length,
+    failed: countByStatus(releaseBlockers, STATUS.FAILED),
+    timedOut: countByStatus(releaseBlockers, STATUS.TIMED_OUT),
+    interrupted: countByStatus(releaseBlockers, STATUS.INTERRUPTED),
+    flaky: countByStatus(releaseBlockers, STATUS.FLAKY),
+  };
 }
 
 export function summarizeTagCoverage(results: QaTestResult[]): QaTagSummary[] {

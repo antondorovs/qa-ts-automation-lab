@@ -12,6 +12,7 @@ import {
   summarizeDurationProfile,
   summarizeExecutionStability,
   summarizeQualityGateChecks,
+  summarizeReleaseBlockers,
   summarizeRun,
   summarizeSuiteHealth,
   summarizeSuitePerformance,
@@ -510,10 +511,38 @@ test.describe('@utils @contract QA run intelligence', () => {
         tags: ['ui'],
       }),
     ]);
+    expect(report.releaseBlockerSummary).toEqual({
+      total: 2,
+      failed: 1,
+      timedOut: 0,
+      interrupted: 0,
+      flaky: 1,
+    });
     expect(markdown).toContain('## Release Blockers');
+    expect(markdown).toContain('## Release Blocker Summary');
+    expect(markdown).toContain('| 2 | 1 | 0 | 0 | 1 |');
     expect(markdown).toContain('| failed checkout | playwright/checkout.spec.ts | failed | 1 | ui |');
     expect(markdown).toContain('| flaky login | playwright/login.spec.ts | flaky | 2 | ui |');
     expect(markdown).not.toContain('| skipped live API | api/live/public-apis.live.spec.ts | skipped |');
+  });
+
+  test('release blocker summary should split blocker statuses', () => {
+    const results = [
+      createResult('failed payment', STATUS.FAILED),
+      createResult('timed out checkout', STATUS.TIMED_OUT),
+      createResult('interrupted setup', STATUS.INTERRUPTED),
+      createResult('flaky login', STATUS.FLAKY),
+      createResult('stable smoke', STATUS.PASSED),
+      createResult('disabled live check', STATUS.SKIPPED),
+    ];
+
+    expect(summarizeReleaseBlockers(results)).toEqual({
+      total: 4,
+      failed: 1,
+      timedOut: 1,
+      interrupted: 1,
+      flaky: 1,
+    });
   });
 
   test('tag coverage should aggregate overlapping tags and expose untagged tests', () => {

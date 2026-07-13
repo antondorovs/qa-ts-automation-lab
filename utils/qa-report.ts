@@ -14,6 +14,7 @@ import {
   summarizeExecutionStability,
   summarizeSuiteHealth,
   summarizeSuitePerformance,
+  summarizeReleaseBlockers,
   summarizeTagCoverage,
   summarizeTestAreas,
   type QaReporterOptions,
@@ -55,6 +56,7 @@ export function buildQaRunReport(
     qualityGate,
     releaseDecision: buildReleaseDecision(qualityGate),
     releaseBlockers: findReleaseBlockers(tests),
+    releaseBlockerSummary: summarizeReleaseBlockers(tests),
     stability: summarizeExecutionStability(tests),
     durationProfile: summarizeDurationProfile(tests),
     regressionRisk,
@@ -272,6 +274,15 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
   }
 
   if (report.releaseBlockers.length) {
+    lines.push(
+      '',
+      '## Release Blocker Summary',
+      '',
+      '| Total | Failed | Timed out | Interrupted | Flaky |',
+      '| ---: | ---: | ---: | ---: | ---: |',
+      `| ${report.releaseBlockerSummary.total} | ${report.releaseBlockerSummary.failed} | ${report.releaseBlockerSummary.timedOut} | ${report.releaseBlockerSummary.interrupted} | ${report.releaseBlockerSummary.flaky} |`,
+    );
+
     lines.push(
       '',
       '## Release Blockers',
