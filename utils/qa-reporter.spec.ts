@@ -5,6 +5,7 @@ import {
   evaluateQualityGate,
   findDurationBudgetBreaches,
   findFlakyTests,
+  findNonPassingExecutedTests,
   findRetriedTests,
   findSkippedTests,
   findUntaggedTests,
@@ -543,6 +544,39 @@ test.describe('@utils @contract QA run intelligence', () => {
       interrupted: 1,
       flaky: 1,
     });
+  });
+
+  test('non-passing executed inventory should exclude passed and skipped tests', () => {
+    const results = [
+      createResult('stable smoke', STATUS.PASSED, 100, ['smoke']),
+      createResult('failed payment', STATUS.FAILED, 700, ['payment']),
+      createResult('timed out checkout', STATUS.TIMED_OUT, 900, ['ui']),
+      createResult('interrupted setup', STATUS.INTERRUPTED, 300, ['setup']),
+      createResult('flaky login', STATUS.FLAKY, 400, ['ui']),
+      createResult('disabled live check', STATUS.SKIPPED, 0, ['live']),
+    ];
+    const nonPassingExecutedTests = findNonPassingExecutedTests(results);
+    const report = buildQaRunReport(results, {
+      generatedAt: '2026-07-13T12:00:00.000Z',
+      runStatus: 'failed',
+      durationMs: 2400,
+    });
+    const markdown = renderQaReportMarkdown(report);
+
+    expect(nonPassingExecutedTests.map(({ title }) => title)).toEqual([
+      'failed payment',
+      'timed out checkout',
+      'interrupted setup',
+      'flaky login',
+    ]);
+    expect(report.nonPassingExecutedTests).toEqual(nonPassingExecutedTests);
+    expect(markdown).toContain('## Non-Passing Executed Tests');
+    expect(markdown).toContain('| failed payment | utils/qa-reporter.spec.ts | failed | 1 | 700ms | payment |');
+    expect(markdown).toContain('| timed out checkout | utils/qa-reporter.spec.ts | timedOut | 1 | 900ms | ui |');
+    expect(markdown).toContain('| interrupted setup | utils/qa-reporter.spec.ts | interrupted | 1 | 300ms | setup |');
+    expect(markdown).toContain('| flaky login | utils/qa-reporter.spec.ts | flaky | 2 | 400ms | ui |');
+    expect(markdown).not.toContain('| stable smoke | utils/qa-reporter.spec.ts | passed |');
+    expect(markdown).not.toContain('| disabled live check | utils/qa-reporter.spec.ts | skipped |');
   });
 
   test('tag coverage should aggregate overlapping tags and expose untagged tests', () => {

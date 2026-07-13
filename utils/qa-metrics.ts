@@ -99,6 +99,11 @@ export type FlakyTest = Pick<
   'id' | 'suite' | 'title' | 'durationMs' | 'attempts' | 'tags'
 >;
 
+export type NonPassingExecutedTest = Pick<
+  QaTestResult,
+  'id' | 'suite' | 'title' | 'status' | 'durationMs' | 'attempts' | 'tags'
+>;
+
 export type QaTagSummary = {
   tag: string;
   total: number;
@@ -211,6 +216,7 @@ export type QaRunReport = {
   untaggedTests: UntaggedTest[];
   retriedTests: RetriedTest[];
   flakyTests: FlakyTest[];
+  nonPassingExecutedTests: NonPassingExecutedTest[];
   tests: QaTestResult[];
 };
 
@@ -490,6 +496,27 @@ export function findFlakyTests(results: QaTestResult[]): FlakyTest[] {
     }));
 }
 
+export function findNonPassingExecutedTests(results: QaTestResult[]): NonPassingExecutedTest[] {
+  return results
+    .filter((result) => result.status !== STATUS.PASSED)
+    .filter((result) => result.status !== STATUS.SKIPPED)
+    .sort((first, second) => (
+      statusPriority(first.status) - statusPriority(second.status)
+      || second.durationMs - first.durationMs
+      || first.suite.localeCompare(second.suite)
+      || first.title.localeCompare(second.title)
+    ))
+    .map(({ id, suite, title, status, durationMs, attempts, tags }) => ({
+      id,
+      suite,
+      title,
+      status,
+      durationMs,
+      attempts,
+      tags,
+    }));
+}
+
 export function findReleaseBlockers(results: QaTestResult[]): QaTestResult[] {
   return results.filter((result) => isFailureStatus(result.status) || result.status === STATUS.FLAKY);
 }
@@ -750,6 +777,26 @@ function buildRequiredTagsCheck(results: QaTestResult[], requiredTags: string[])
 
 function normalizeTag(tag: string): string {
   return tag.replace(/^@/, '');
+}
+
+function statusPriority(status: QaTestStatus): number {
+  if (status === STATUS.FAILED) {
+    return 0;
+  }
+
+  if (status === STATUS.TIMED_OUT) {
+    return 1;
+  }
+
+  if (status === STATUS.INTERRUPTED) {
+    return 2;
+  }
+
+  if (status === STATUS.FLAKY) {
+    return 3;
+  }
+
+  return 4;
 }
 
 function getTestArea(suite: string): string {

@@ -68,6 +68,12 @@ The same section includes a release-blocker summary with separate failed, timed-
 
 This puts every test-level release blocker in one place. Flaky tests remain visible even though they are intentionally excluded from the separate failure-error list.
 
+## Non-Passing Executed Test Inventory
+
+The report lists every executed test whose final QA status is not `passed`. The inventory includes failed, timed-out, interrupted, and flaky tests with attempts, duration, and normalized tags.
+
+Skipped tests stay in their dedicated inventory so intentionally disabled diagnostics do not mix with executed non-pass outcomes.
+
 ## Execution Stability
 
 The report separates final pass rate from first-pass stability. It shows:

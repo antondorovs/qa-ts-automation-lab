@@ -4,6 +4,7 @@ import {
   findDurationBudgetBreaches,
   findFailedTests,
   findFlakyTests,
+  findNonPassingExecutedTests,
   findReleaseBlockers,
   findRetriedTests,
   findSkippedTests,
@@ -76,6 +77,7 @@ export function buildQaRunReport(
     untaggedTests: findUntaggedTests(tests),
     retriedTests: findRetriedTests(tests),
     flakyTests: findFlakyTests(tests),
+    nonPassingExecutedTests: findNonPassingExecutedTests(tests),
     tests,
   };
 }
@@ -291,6 +293,19 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '| --- | --- | --- | ---: | --- |',
       ...report.releaseBlockers.map((test) => (
         `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.status} | ${test.attempts} | ${formatTags(test.tags)} |`
+      )),
+    );
+  }
+
+  if (report.nonPassingExecutedTests.length) {
+    lines.push(
+      '',
+      '## Non-Passing Executed Tests',
+      '',
+      '| Test | Suite | Status | Attempts | Duration | Tags |',
+      '| --- | --- | --- | ---: | ---: | --- |',
+      ...report.nonPassingExecutedTests.map((test) => (
+        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.status} | ${test.attempts} | ${formatDuration(test.durationMs)} | ${formatTags(test.tags)} |`
       )),
     );
   }
