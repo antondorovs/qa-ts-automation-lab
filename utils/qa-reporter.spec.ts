@@ -1044,6 +1044,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(durationProfile).toEqual({
       executed: 4,
       totalDurationMs: 1000,
+      minimumDurationMs: 100,
       averageDurationMs: 250,
       medianDurationMs: 250,
       p95DurationMs: 400,
@@ -1051,7 +1052,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     });
     expect(report.durationProfile).toEqual(durationProfile);
     expect(markdown).toContain('## Execution Duration Profile');
-    expect(markdown).toContain('| 4 | 1.00s | 250ms | 250ms | 400ms | 400ms |');
+    expect(markdown).toContain('| 4 | 1.00s | 100ms | 250ms | 250ms | 400ms | 400ms |');
   });
 
   test('release decision should turn failed quality checks into action items', () => {

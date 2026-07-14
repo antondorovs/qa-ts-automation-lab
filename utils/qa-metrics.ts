@@ -171,6 +171,7 @@ export type QaStabilitySummary = {
 export type QaDurationProfile = {
   executed: number;
   totalDurationMs: number;
+  minimumDurationMs: number;
   averageDurationMs: number;
   medianDurationMs: number;
   p95DurationMs: number;
@@ -718,6 +719,7 @@ export function summarizeDurationProfile(results: QaTestResult[]): QaDurationPro
   return {
     executed: durations.length,
     totalDurationMs,
+    minimumDurationMs: durations[0] || 0,
     averageDurationMs: durations.length ? Math.round(totalDurationMs / durations.length) : 0,
     medianDurationMs,
     p95DurationMs: durations.length ? durations[Math.ceil(durations.length * 0.95) - 1] : 0,

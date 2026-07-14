@@ -156,9 +156,9 @@ This makes the suites with the largest runtime cost visible even when every test
 
 ## Execution Duration Profile
 
-The report summarizes duration across executed tests with total, average, median, 95th percentile, and maximum values. Skipped tests are excluded so their zero-duration results do not distort the distribution.
+The report summarizes duration across executed tests with total, minimum, average, median, 95th percentile, and maximum values. Skipped tests are excluded so their zero-duration results do not distort the distribution.
 
-Median duration represents a typical test, while the 95th percentile and maximum expose tail latency that an average can hide.
+Minimum duration shows the fastest executed check, median duration represents a typical test, while the 95th percentile and maximum expose tail latency that an average can hide.
 
 Projects can set `maximumP95DurationMs` to block a run when the slowest five percent of executed tests exceed an acceptable duration. The threshold is optional and skipped tests remain excluded from the calculation.
 
