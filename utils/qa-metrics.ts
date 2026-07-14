@@ -160,6 +160,12 @@ export type QaSuiteHealth = {
   passRate: number;
 };
 
+export type QaSuiteHealthSummary = {
+  total: number;
+  healthy: number;
+  attention: number;
+};
+
 export type QaStabilitySummary = {
   executed: number;
   firstPassPassed: number;
@@ -209,6 +215,7 @@ export type QaRunReport = {
   tagCoverage: QaTagSummary[];
   classification: QaClassificationSummary;
   testAreas: QaTestAreaSummary[];
+  suiteHealthSummary: QaSuiteHealthSummary;
   suiteHealth: QaSuiteHealth[];
   suitePerformance: QaSuitePerformance[];
   slowTests: SlowTest[];
@@ -682,6 +689,14 @@ export function summarizeSuiteHealth(results: QaTestResult[]): QaSuiteHealth[] {
       || first.passRate - second.passRate
       || first.suite.localeCompare(second.suite)
     ));
+}
+
+export function summarizeSuiteHealthStatus(suiteHealth: QaSuiteHealth[]): QaSuiteHealthSummary {
+  return {
+    total: suiteHealth.length,
+    healthy: suiteHealth.filter((suite) => suite.status === 'healthy').length,
+    attention: suiteHealth.filter((suite) => suite.status === 'attention').length,
+  };
 }
 
 export function summarizeExecutionStability(results: QaTestResult[]): QaStabilitySummary {

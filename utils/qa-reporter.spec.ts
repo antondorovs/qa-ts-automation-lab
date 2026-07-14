@@ -16,6 +16,7 @@ import {
   summarizeReleaseBlockers,
   summarizeRun,
   summarizeSuiteHealth,
+  summarizeSuiteHealthStatus,
   summarizeSuitePerformance,
   summarizeTagCoverage,
   summarizeTestAreas,
@@ -423,6 +424,11 @@ test.describe('@utils @contract QA run intelligence', () => {
         passRate: 100,
       },
     ]);
+    expect(report.suiteHealthSummary).toEqual({
+      total: 1,
+      healthy: 1,
+      attention: 0,
+    });
     expect(report.suitePerformance).toEqual([
       {
         suite: 'utils/qa-reporter.spec.ts',
@@ -460,6 +466,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('## Test Area Summary');
     expect(markdown).toContain('| utils | healthy | 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
     expect(markdown).toContain('## Suite Health');
+    expect(markdown).toContain('## Suite Health Summary');
+    expect(markdown).toContain('| 1 | 1 | 0 |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | healthy | 2 | 2 | 2 | 0 | 0 | 0 | 100% |');
     expect(markdown).toContain('## Suite Performance');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | 2 | 2 | 1 | 1.92s | 960ms | 1.80s |');
@@ -900,6 +908,11 @@ test.describe('@utils @contract QA run intelligence', () => {
         passRate: 100,
       },
     ]);
+    expect(summarizeSuiteHealthStatus(health)).toEqual({
+      total: 4,
+      healthy: 2,
+      attention: 2,
+    });
   });
 
   test('execution stability should expose retries and support a first-pass quality gate', () => {
