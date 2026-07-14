@@ -81,6 +81,7 @@ The report separates final pass rate from first-pass stability. It shows:
 - tests that passed without a retry
 - tests that required at least one retry
 - total retry attempts consumed by the run
+- retry rate across executed tests
 - first-pass pass rate across executed tests
 
 Projects can set an optional `minimumFirstPassRate` quality-gate threshold. This catches a run that eventually becomes green but consumes retries too often.
