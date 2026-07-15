@@ -136,6 +136,12 @@ export type QaTestAreaSummary = {
   durationMs: number;
 };
 
+export type QaTestAreaStatusSummary = {
+  total: number;
+  healthy: number;
+  attention: number;
+};
+
 export type QaClassificationSummary = {
   total: number;
   tagged: number;
@@ -222,6 +228,7 @@ export type QaRunReport = {
   riskHotspots: RegressionRiskHotspot[];
   tagCoverage: QaTagSummary[];
   classification: QaClassificationSummary;
+  testAreaStatusSummary: QaTestAreaStatusSummary;
   testAreas: QaTestAreaSummary[];
   suiteHealthSummary: QaSuiteHealthSummary;
   suiteHealth: QaSuiteHealth[];
@@ -634,6 +641,14 @@ export function summarizeTestAreas(results: QaTestResult[]): QaTestAreaSummary[]
       || second.durationMs - first.durationMs
       || first.area.localeCompare(second.area)
     ));
+}
+
+export function summarizeTestAreaStatus(testAreas: QaTestAreaSummary[]): QaTestAreaStatusSummary {
+  return {
+    total: testAreas.length,
+    healthy: testAreas.filter((area) => area.status === 'healthy').length,
+    attention: testAreas.filter((area) => area.status === 'attention').length,
+  };
 }
 
 export function summarizeClassification(results: QaTestResult[]): QaClassificationSummary {

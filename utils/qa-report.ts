@@ -19,6 +19,7 @@ import {
   summarizeSuitePerformance,
   summarizeReleaseBlockers,
   summarizeTagCoverage,
+  summarizeTestAreaStatus,
   summarizeTestAreas,
   type QaReporterOptions,
   type QaRunReport,
@@ -42,6 +43,7 @@ export function buildQaRunReport(
 ): QaRunReport {
   const qualityGate = evaluateQualityGate(tests, options.qualityGate);
   const slowTests = findSlowTests(tests, options.slowTestThresholdMs);
+  const testAreas = summarizeTestAreas(tests);
   const suiteHealth = summarizeSuiteHealth(tests);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
@@ -67,7 +69,8 @@ export function buildQaRunReport(
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
     tagCoverage: summarizeTagCoverage(tests),
     classification: summarizeClassification(tests),
-    testAreas: summarizeTestAreas(tests),
+    testAreaStatusSummary: summarizeTestAreaStatus(testAreas),
+    testAreas,
     suiteHealthSummary: summarizeSuiteHealthStatus(suiteHealth),
     suiteHealth,
     suitePerformance: summarizeSuitePerformance(tests, options.slowTestThresholdMs),
@@ -233,6 +236,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.testAreas.length) {
     lines.push(
+      '',
+      '## Test Area Status Summary',
+      '',
+      '| Total areas | Healthy | Attention |',
+      '| ---: | ---: | ---: |',
+      `| ${report.testAreaStatusSummary.total} | ${report.testAreaStatusSummary.healthy} | ${report.testAreaStatusSummary.attention} |`,
       '',
       '## Test Area Summary',
       '',
