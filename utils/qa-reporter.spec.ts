@@ -350,6 +350,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       firstPassPassed: 2,
       retriedTests: 0,
       retryAttempts: 0,
+      averageAttempts: 1,
       retryRate: 0,
       firstPassRate: 100,
     });
@@ -457,7 +458,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('slow UI smoke');
     expect(markdown).toContain('## Regression Risk');
     expect(markdown).toContain('## Execution Stability');
-    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 0% | 100% |');
+    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 1 | 0% | 100% |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
@@ -951,6 +952,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       firstPassPassed: 1,
       retriedTests: 2,
       retryAttempts: 3,
+      averageAttempts: 2,
       retryRate: 66.67,
       firstPassRate: 33.33,
     });

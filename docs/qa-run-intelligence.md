@@ -81,6 +81,7 @@ The report separates final pass rate from first-pass stability. It shows:
 - tests that passed without a retry
 - tests that required at least one retry
 - total retry attempts consumed by the run
+- average attempts per executed test
 - retry rate across executed tests
 - first-pass pass rate across executed tests
 
