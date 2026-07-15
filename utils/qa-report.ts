@@ -12,6 +12,7 @@ import {
   findUntaggedTests,
   summarizeClassification,
   summarizeDurationProfile,
+  summarizeDurationBudgetBreaches,
   summarizeExecutionStability,
   summarizeSuiteHealth,
   summarizeSuiteHealthStatus,
@@ -71,6 +72,10 @@ export function buildQaRunReport(
     suiteHealth,
     suitePerformance: summarizeSuitePerformance(tests, options.slowTestThresholdMs),
     slowTests,
+    durationBudgetBreachSummary: summarizeDurationBudgetBreaches(
+      tests,
+      options.qualityGate?.maximumTestDurationMs,
+    ),
     durationBudgetBreaches: findDurationBudgetBreaches(
       tests,
       options.qualityGate?.maximumTestDurationMs,
@@ -273,6 +278,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.durationBudgetBreaches.length) {
     lines.push(
+      '',
+      '## Duration Budget Breach Summary',
+      '',
+      '| Breaches | Threshold | Maximum duration | Maximum over budget |',
+      '| ---: | ---: | ---: | ---: |',
+      `| ${report.durationBudgetBreachSummary.total} | ${formatDuration(report.durationBudgetBreachSummary.thresholdMs || 0)} | ${formatDuration(report.durationBudgetBreachSummary.maximumDurationMs)} | ${formatDuration(report.durationBudgetBreachSummary.maximumOverBudgetMs)} |`,
       '',
       '## Duration Budget Breaches',
       '',

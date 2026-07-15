@@ -81,6 +81,13 @@ export type DurationBudgetBreach = Pick<
   'id' | 'suite' | 'title' | 'status' | 'durationMs'
 >;
 
+export type DurationBudgetBreachSummary = {
+  total: number;
+  thresholdMs?: number;
+  maximumDurationMs: number;
+  maximumOverBudgetMs: number;
+};
+
 export type FailedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' | 'durationMs'> & {
   error: string;
 };
@@ -220,6 +227,7 @@ export type QaRunReport = {
   suiteHealth: QaSuiteHealth[];
   suitePerformance: QaSuitePerformance[];
   slowTests: SlowTest[];
+  durationBudgetBreachSummary: DurationBudgetBreachSummary;
   durationBudgetBreaches: DurationBudgetBreach[];
   failedTests: FailedTest[];
   skippedTests: SkippedTest[];
@@ -433,6 +441,23 @@ export function findDurationBudgetBreaches(
       status,
       durationMs,
     }));
+}
+
+export function summarizeDurationBudgetBreaches(
+  results: QaTestResult[],
+  maximumDurationMs?: number,
+): DurationBudgetBreachSummary {
+  const breaches = findDurationBudgetBreaches(results, maximumDurationMs);
+  const maximumBreachDurationMs = Math.max(0, ...breaches.map((test) => test.durationMs));
+
+  return {
+    total: breaches.length,
+    thresholdMs: maximumDurationMs,
+    maximumDurationMs: maximumBreachDurationMs,
+    maximumOverBudgetMs: maximumDurationMs === undefined
+      ? 0
+      : Math.max(0, maximumBreachDurationMs - maximumDurationMs),
+  };
 }
 
 export function findFailedTests(results: QaTestResult[]): FailedTest[] {

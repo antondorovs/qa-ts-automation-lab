@@ -10,6 +10,7 @@ import {
   findSkippedTests,
   findUntaggedTests,
   summarizeClassification,
+  summarizeDurationBudgetBreaches,
   summarizeDurationProfile,
   summarizeExecutionStability,
   summarizeQualityGateChecks,
@@ -268,6 +269,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       createResult('disabled diagnostic', STATUS.SKIPPED, 5000),
     ];
     const breaches = findDurationBudgetBreaches(results, 1000);
+    const breachSummary = summarizeDurationBudgetBreaches(results, 1000);
     const report = buildQaRunReport(results, {
       generatedAt: '2026-07-09T12:00:00.000Z',
       runStatus: 'passed',
@@ -279,6 +281,12 @@ test.describe('@utils @contract QA run intelligence', () => {
     });
     const markdown = renderQaReportMarkdown(report);
 
+    expect(breachSummary).toEqual({
+      total: 1,
+      thresholdMs: 1000,
+      maximumDurationMs: 1200,
+      maximumOverBudgetMs: 200,
+    });
     expect(breaches).toEqual([
       {
         id: 'outlier-contract',
@@ -288,7 +296,10 @@ test.describe('@utils @contract QA run intelligence', () => {
         durationMs: 1200,
       },
     ]);
+    expect(report.durationBudgetBreachSummary).toEqual(breachSummary);
     expect(report.durationBudgetBreaches).toEqual(breaches);
+    expect(markdown).toContain('## Duration Budget Breach Summary');
+    expect(markdown).toContain('| 1 | 1.00s | 1.20s | 200ms |');
     expect(markdown).toContain('## Duration Budget Breaches');
     expect(markdown).toContain('| outlier contract | utils/qa-reporter.spec.ts | passed | 1.20s |');
     expect(markdown).not.toContain('| disabled diagnostic | utils/qa-reporter.spec.ts | skipped | 5.00s |');

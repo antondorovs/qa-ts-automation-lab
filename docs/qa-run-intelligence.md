@@ -170,6 +170,8 @@ The optional `maximumTestDurationMs` threshold blocks a run when any executed te
 
 When that threshold is configured, the report also lists every executed test that exceeded the individual duration budget. The inventory keeps skipped diagnostics out of the breach list and sorts the longest over-budget tests first.
 
+The same section includes a duration-budget breach summary with total breaches, configured threshold, maximum duration, and maximum amount over budget.
+
 ## CI Visibility
 
 On GitHub Actions, the Markdown report is appended to the native job summary and uploaded as an artifact. On GitLab CI, the report directory is retained as an artifact for every job, including successful runs.
