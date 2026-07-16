@@ -19,6 +19,7 @@ import {
   summarizeSuiteHealth,
   summarizeSuiteHealthStatus,
   summarizeSuitePerformance,
+  summarizeSuitePerformanceProfile,
   summarizeTagCoverage,
   summarizeTestAreaStatus,
   summarizeTestAreas,
@@ -458,6 +459,12 @@ test.describe('@utils @contract QA run intelligence', () => {
         maximumDurationMs: 1800,
       },
     ]);
+    expect(report.suitePerformanceSummary).toEqual({
+      total: 1,
+      slowSuites: 1,
+      totalDurationMs: 1920,
+      maximumDurationMs: 1800,
+    });
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
     expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 0% | 1.92s |');
@@ -490,6 +497,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 1 | 1 | 0 |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | healthy | 2 | 2 | 2 | 0 | 0 | 0 | 100% |');
     expect(markdown).toContain('## Suite Performance');
+    expect(markdown).toContain('## Suite Performance Summary');
+    expect(markdown).toContain('| 1 | 1 | 1.92s | 1.80s |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | 2 | 2 | 1 | 1.92s | 960ms | 1.80s |');
   });
 
@@ -742,6 +751,12 @@ test.describe('@utils @contract QA run intelligence', () => {
         maximumDurationMs: 0,
       },
     ]);
+    expect(summarizeSuitePerformanceProfile(performance)).toEqual({
+      total: 3,
+      slowSuites: 1,
+      totalDurationMs: 2800,
+      maximumDurationMs: 1200,
+    });
   });
 
   test('test area summary should group suites by top-level project area', () => {

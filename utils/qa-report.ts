@@ -17,6 +17,7 @@ import {
   summarizeSuiteHealth,
   summarizeSuiteHealthStatus,
   summarizeSuitePerformance,
+  summarizeSuitePerformanceProfile,
   summarizeReleaseBlockers,
   summarizeTagCoverage,
   summarizeTestAreaStatus,
@@ -45,6 +46,7 @@ export function buildQaRunReport(
   const slowTests = findSlowTests(tests, options.slowTestThresholdMs);
   const testAreas = summarizeTestAreas(tests);
   const suiteHealth = summarizeSuiteHealth(tests);
+  const suitePerformance = summarizeSuitePerformance(tests, options.slowTestThresholdMs);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -73,7 +75,8 @@ export function buildQaRunReport(
     testAreas,
     suiteHealthSummary: summarizeSuiteHealthStatus(suiteHealth),
     suiteHealth,
-    suitePerformance: summarizeSuitePerformance(tests, options.slowTestThresholdMs),
+    suitePerformanceSummary: summarizeSuitePerformanceProfile(suitePerformance),
+    suitePerformance,
     slowTests,
     durationBudgetBreachSummary: summarizeDurationBudgetBreaches(
       tests,
@@ -274,6 +277,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.suitePerformance.length) {
     lines.push(
+      '',
+      '## Suite Performance Summary',
+      '',
+      '| Total suites | Suites with slow tests | Total duration | Maximum test duration |',
+      '| ---: | ---: | ---: | ---: |',
+      `| ${report.suitePerformanceSummary.total} | ${report.suitePerformanceSummary.slowSuites} | ${formatDuration(report.suitePerformanceSummary.totalDurationMs)} | ${formatDuration(report.suitePerformanceSummary.maximumDurationMs)} |`,
       '',
       '## Suite Performance',
       '',

@@ -161,6 +161,13 @@ export type QaSuitePerformance = {
   maximumDurationMs: number;
 };
 
+export type QaSuitePerformanceSummary = {
+  total: number;
+  slowSuites: number;
+  totalDurationMs: number;
+  maximumDurationMs: number;
+};
+
 export type QaSuiteHealth = {
   suite: string;
   status: 'healthy' | 'attention';
@@ -232,6 +239,7 @@ export type QaRunReport = {
   testAreas: QaTestAreaSummary[];
   suiteHealthSummary: QaSuiteHealthSummary;
   suiteHealth: QaSuiteHealth[];
+  suitePerformanceSummary: QaSuitePerformanceSummary;
   suitePerformance: QaSuitePerformance[];
   slowTests: SlowTest[];
   durationBudgetBreachSummary: DurationBudgetBreachSummary;
@@ -694,6 +702,17 @@ export function summarizeSuitePerformance(
       || second.maximumDurationMs - first.maximumDurationMs
       || first.suite.localeCompare(second.suite)
     ));
+}
+
+export function summarizeSuitePerformanceProfile(
+  suitePerformance: QaSuitePerformance[],
+): QaSuitePerformanceSummary {
+  return {
+    total: suitePerformance.length,
+    slowSuites: suitePerformance.filter((suite) => suite.slowTests > 0).length,
+    totalDurationMs: suitePerformance.reduce((total, suite) => total + suite.totalDurationMs, 0),
+    maximumDurationMs: Math.max(0, ...suitePerformance.map((suite) => suite.maximumDurationMs)),
+  };
 }
 
 export function summarizeSuiteHealth(results: QaTestResult[]): QaSuiteHealth[] {

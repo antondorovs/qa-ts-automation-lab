@@ -160,6 +160,8 @@ The report ranks test suites by accumulated execution time and shows:
 
 This makes the suites with the largest runtime cost visible even when every test passes, so optimization work can start with the strongest contributor.
 
+The report includes a suite-performance summary with total suites, suites containing slow tests, total duration, and the maximum test duration before the detailed suite table.
+
 ## Execution Duration Profile
 
 The report summarizes duration across executed tests with total, minimum, average, median, 95th percentile, and maximum values. Skipped tests are excluded so their zero-duration results do not distort the distribution.
