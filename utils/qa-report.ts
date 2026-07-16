@@ -18,6 +18,7 @@ import {
   summarizeSuiteHealthStatus,
   summarizeSuitePerformance,
   summarizeSuitePerformanceProfile,
+  summarizeSlowTests,
   summarizeReleaseBlockers,
   summarizeTagCoverage,
   summarizeTestAreaStatus,
@@ -77,6 +78,7 @@ export function buildQaRunReport(
     suiteHealth,
     suitePerformanceSummary: summarizeSuitePerformanceProfile(suitePerformance),
     suitePerformance,
+    slowTestSummary: summarizeSlowTests(slowTests, options.slowTestThresholdMs),
     slowTests,
     durationBudgetBreachSummary: summarizeDurationBudgetBreaches(
       tests,
@@ -400,6 +402,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.slowTests.length) {
     lines.push(
+      '',
+      '## Slow Test Summary',
+      '',
+      '| Slow tests | Threshold | Maximum duration |',
+      '| ---: | ---: | ---: |',
+      `| ${report.slowTestSummary.total} | ${formatDuration(report.slowTestSummary.thresholdMs)} | ${formatDuration(report.slowTestSummary.maximumDurationMs)} |`,
       '',
       '## Slow Tests',
       '',

@@ -403,6 +403,11 @@ test.describe('@utils @contract QA run intelligence', () => {
       }),
     ]);
     expect(report.slowTests).toHaveLength(1);
+    expect(report.slowTestSummary).toEqual({
+      total: 1,
+      thresholdMs: 1000,
+      maximumDurationMs: 1800,
+    });
     expect(report.classification).toEqual({
       total: 2,
       tagged: 2,
@@ -500,6 +505,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('## Suite Performance Summary');
     expect(markdown).toContain('| 1 | 1 | 1.92s | 1.80s |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | 2 | 2 | 1 | 1.92s | 960ms | 1.80s |');
+    expect(markdown).toContain('## Slow Test Summary');
+    expect(markdown).toContain('| 1 | 1.00s | 1.80s |');
   });
 
   test('report should rank the suites with the strongest regression signals first', () => {

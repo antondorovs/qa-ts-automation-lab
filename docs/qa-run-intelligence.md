@@ -176,6 +176,8 @@ When that threshold is configured, the report also lists every executed test tha
 
 The same section includes a duration-budget breach summary with total breaches, configured threshold, maximum duration, and maximum amount over budget.
 
+When slow tests are present, the report includes a slow-test summary with the total count, configured threshold, and maximum duration before the detailed slow-test list.
+
 ## CI Visibility
 
 On GitHub Actions, the Markdown report is appended to the native job summary and uploaded as an artifact. On GitLab CI, the report directory is retained as an artifact for every job, including successful runs.

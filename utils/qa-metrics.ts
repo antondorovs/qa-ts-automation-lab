@@ -76,6 +76,12 @@ export type QualityGateResult = {
 
 export type SlowTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' | 'durationMs'>;
 
+export type SlowTestSummary = {
+  total: number;
+  thresholdMs: number;
+  maximumDurationMs: number;
+};
+
 export type DurationBudgetBreach = Pick<
   QaTestResult,
   'id' | 'suite' | 'title' | 'status' | 'durationMs'
@@ -241,6 +247,7 @@ export type QaRunReport = {
   suiteHealth: QaSuiteHealth[];
   suitePerformanceSummary: QaSuitePerformanceSummary;
   suitePerformance: QaSuitePerformance[];
+  slowTestSummary: SlowTestSummary;
   slowTests: SlowTest[];
   durationBudgetBreachSummary: DurationBudgetBreachSummary;
   durationBudgetBreaches: DurationBudgetBreach[];
@@ -431,6 +438,14 @@ export function findSlowTests(results: QaTestResult[], thresholdMs = 1000): Slow
       status,
       durationMs,
     }));
+}
+
+export function summarizeSlowTests(slowTests: SlowTest[], thresholdMs = 1000): SlowTestSummary {
+  return {
+    total: slowTests.length,
+    thresholdMs,
+    maximumDurationMs: Math.max(0, ...slowTests.map((test) => test.durationMs)),
+  };
 }
 
 export function findDurationBudgetBreaches(
