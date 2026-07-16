@@ -21,6 +21,7 @@ import {
   summarizeSuitePerformance,
   summarizeSuitePerformanceProfile,
   summarizeTagCoverage,
+  summarizeTagCoverageStatus,
   summarizeTestAreaStatus,
   summarizeTestAreas,
   type QaTestResult,
@@ -489,6 +490,14 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('## Execution Stability');
     expect(markdown).toContain('| 2 | 2 | 0 | 0 | 1 | 0% | 100% |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
+    expect(report.tagCoverageStatusSummary).toEqual({
+      total: 4,
+      failing: 0,
+      flaky: 0,
+      skipped: 0,
+    });
+    expect(markdown).toContain('## Tag Coverage Status Summary');
+    expect(markdown).toContain('| 4 | 0 | 0 | 0 |');
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
     expect(markdown).toContain('## Test Classification');
@@ -667,6 +676,12 @@ test.describe('@utils @contract QA run intelligence', () => {
         durationMs: 0,
       },
     ]);
+    expect(summarizeTagCoverageStatus(coverage)).toEqual({
+      total: 4,
+      failing: 2,
+      flaky: 0,
+      skipped: 1,
+    });
   });
 
   test('skipped test inventory should retain suites, tags and deterministic ordering', () => {

@@ -21,6 +21,7 @@ import {
   summarizeSlowTests,
   summarizeReleaseBlockers,
   summarizeTagCoverage,
+  summarizeTagCoverageStatus,
   summarizeTestAreaStatus,
   summarizeTestAreas,
   type QaReporterOptions,
@@ -48,6 +49,7 @@ export function buildQaRunReport(
   const testAreas = summarizeTestAreas(tests);
   const suiteHealth = summarizeSuiteHealth(tests);
   const suitePerformance = summarizeSuitePerformance(tests, options.slowTestThresholdMs);
+  const tagCoverage = summarizeTagCoverage(tests);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -70,7 +72,8 @@ export function buildQaRunReport(
     durationProfile: summarizeDurationProfile(tests),
     regressionRisk,
     riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
-    tagCoverage: summarizeTagCoverage(tests),
+    tagCoverageStatusSummary: summarizeTagCoverageStatus(tagCoverage),
+    tagCoverage,
     classification: summarizeClassification(tests),
     testAreaStatusSummary: summarizeTestAreaStatus(testAreas),
     testAreas,
@@ -206,6 +209,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.tagCoverage.length) {
     lines.push(
+      '',
+      '## Tag Coverage Status Summary',
+      '',
+      '| Tag rows | Failing tags | Flaky tags | Skipped tags |',
+      '| ---: | ---: | ---: | ---: |',
+      `| ${report.tagCoverageStatusSummary.total} | ${report.tagCoverageStatusSummary.failing} | ${report.tagCoverageStatusSummary.flaky} | ${report.tagCoverageStatusSummary.skipped} |`,
       '',
       '## Tag Coverage',
       '',

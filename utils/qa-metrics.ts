@@ -129,6 +129,13 @@ export type QaTagSummary = {
   durationMs: number;
 };
 
+export type QaTagCoverageStatusSummary = {
+  total: number;
+  failing: number;
+  flaky: number;
+  skipped: number;
+};
+
 export type QaTestAreaSummary = {
   area: string;
   status: 'healthy' | 'attention';
@@ -239,6 +246,7 @@ export type QaRunReport = {
   durationProfile: QaDurationProfile;
   regressionRisk: RegressionRiskSummary;
   riskHotspots: RegressionRiskHotspot[];
+  tagCoverageStatusSummary: QaTagCoverageStatusSummary;
   tagCoverage: QaTagSummary[];
   classification: QaClassificationSummary;
   testAreaStatusSummary: QaTestAreaStatusSummary;
@@ -626,6 +634,17 @@ export function summarizeTagCoverage(results: QaTestResult[]): QaTagSummary[] {
         durationMs: summary.totalDurationMs,
       };
     });
+}
+
+export function summarizeTagCoverageStatus(
+  tagCoverage: QaTagSummary[],
+): QaTagCoverageStatusSummary {
+  return {
+    total: tagCoverage.length,
+    failing: tagCoverage.filter((tag) => tag.failures > 0).length,
+    flaky: tagCoverage.filter((tag) => tag.flaky > 0).length,
+    skipped: tagCoverage.filter((tag) => tag.skipped > 0).length,
+  };
 }
 
 export function summarizeTestAreas(results: QaTestResult[]): QaTestAreaSummary[] {
