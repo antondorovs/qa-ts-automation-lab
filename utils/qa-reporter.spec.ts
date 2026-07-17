@@ -17,6 +17,7 @@ import {
   summarizeQualityGateChecks,
   summarizeReleaseBlockers,
   summarizeRun,
+  summarizeSkippedTests,
   summarizeSuiteHealth,
   summarizeSuiteHealthStatus,
   summarizeSuitePerformance,
@@ -737,7 +738,21 @@ test.describe('@utils @contract QA run intelligence', () => {
         tags: [],
       },
     ]);
+    expect(summarizeSkippedTests(skippedTests)).toEqual({
+      total: 2,
+      tagged: 1,
+      untagged: 1,
+      liveTagged: 1,
+    });
+    expect(report.skippedTestSummary).toEqual({
+      total: 2,
+      tagged: 1,
+      untagged: 1,
+      liveTagged: 1,
+    });
     expect(report.skippedTests).toEqual(skippedTests);
+    expect(markdown).toContain('## Skipped Test Summary');
+    expect(markdown).toContain('| 2 | 1 | 1 | 1 |');
     expect(markdown).toContain('## Skipped Tests');
     expect(markdown).toContain('| optional live lookup | api/live/public-apis.live.spec.ts | api, live |');
     expect(markdown).toContain('| disabled checkout scenario | playwright/checkout.spec.ts | untagged |');

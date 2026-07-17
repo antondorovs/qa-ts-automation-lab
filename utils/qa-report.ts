@@ -21,6 +21,7 @@ import {
   summarizeSuitePerformanceProfile,
   summarizeSlowTests,
   summarizeReleaseBlockers,
+  summarizeSkippedTests,
   summarizeTagCoverage,
   summarizeTagCoverageStatus,
   summarizeTestAreaStatus,
@@ -52,6 +53,7 @@ export function buildQaRunReport(
   const suitePerformance = summarizeSuitePerformance(tests, options.slowTestThresholdMs);
   const tagCoverage = summarizeTagCoverage(tests);
   const nonPassingExecutedTests = findNonPassingExecutedTests(tests);
+  const skippedTests = findSkippedTests(tests);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -94,7 +96,8 @@ export function buildQaRunReport(
       options.qualityGate?.maximumTestDurationMs,
     ),
     failedTests: findFailedTests(tests),
-    skippedTests: findSkippedTests(tests),
+    skippedTestSummary: summarizeSkippedTests(skippedTests),
+    skippedTests,
     untaggedTests: findUntaggedTests(tests),
     retriedTests: findRetriedTests(tests),
     flakyTests: findFlakyTests(tests),
@@ -396,6 +399,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.skippedTests.length) {
     lines.push(
+      '',
+      '## Skipped Test Summary',
+      '',
+      '| Total | Tagged | Untagged | Live-tagged |',
+      '| ---: | ---: | ---: | ---: |',
+      `| ${report.skippedTestSummary.total} | ${report.skippedTestSummary.tagged} | ${report.skippedTestSummary.untagged} | ${report.skippedTestSummary.liveTagged} |`,
       '',
       '## Skipped Tests',
       '',

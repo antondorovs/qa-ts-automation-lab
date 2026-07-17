@@ -138,6 +138,8 @@ The report keeps a dedicated inventory of skipped tests with their suite and nor
 
 This makes intentionally disabled scenarios and optional diagnostics visible without lowering the pass rate. Untagged skipped tests are labeled explicitly in the Markdown summary.
 
+The same section includes a skipped-test summary with total, tagged, untagged, and live-tagged counts before the detailed inventory.
+
 ## Test Area Summary
 
 The report groups suites by the first path segment, such as `api`, `playwright`, and `utils`. Each area shows status, total tests, executed tests, passed tests, failed tests, flaky tests, skipped tests, pass rate, and accumulated duration.
