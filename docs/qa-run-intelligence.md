@@ -74,6 +74,8 @@ The report lists every executed test whose final QA status is not `passed`. The 
 
 Skipped tests stay in their dedicated inventory so intentionally disabled diagnostics do not mix with executed non-pass outcomes.
 
+The same section includes a non-passing executed summary with total count, status split, and total duration before the detailed inventory.
+
 ## Execution Stability
 
 The report separates final pass rate from first-pass stability. It shows:

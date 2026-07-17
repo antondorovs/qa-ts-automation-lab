@@ -14,6 +14,7 @@ import {
   summarizeDurationProfile,
   summarizeDurationBudgetBreaches,
   summarizeExecutionStability,
+  summarizeNonPassingExecutedTests,
   summarizeSuiteHealth,
   summarizeSuiteHealthStatus,
   summarizeSuitePerformance,
@@ -50,6 +51,7 @@ export function buildQaRunReport(
   const suiteHealth = summarizeSuiteHealth(tests);
   const suitePerformance = summarizeSuitePerformance(tests, options.slowTestThresholdMs);
   const tagCoverage = summarizeTagCoverage(tests);
+  const nonPassingExecutedTests = findNonPassingExecutedTests(tests);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -96,7 +98,8 @@ export function buildQaRunReport(
     untaggedTests: findUntaggedTests(tests),
     retriedTests: findRetriedTests(tests),
     flakyTests: findFlakyTests(tests),
-    nonPassingExecutedTests: findNonPassingExecutedTests(tests),
+    nonPassingExecutedSummary: summarizeNonPassingExecutedTests(nonPassingExecutedTests),
+    nonPassingExecutedTests,
     tests,
   };
 }
@@ -348,6 +351,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.nonPassingExecutedTests.length) {
     lines.push(
+      '',
+      '## Non-Passing Executed Summary',
+      '',
+      '| Total | Failed | Timed out | Interrupted | Flaky | Total duration |',
+      '| ---: | ---: | ---: | ---: | ---: | ---: |',
+      `| ${report.nonPassingExecutedSummary.total} | ${report.nonPassingExecutedSummary.failed} | ${report.nonPassingExecutedSummary.timedOut} | ${report.nonPassingExecutedSummary.interrupted} | ${report.nonPassingExecutedSummary.flaky} | ${formatDuration(report.nonPassingExecutedSummary.totalDurationMs)} |`,
       '',
       '## Non-Passing Executed Tests',
       '',

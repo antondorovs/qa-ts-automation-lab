@@ -117,6 +117,15 @@ export type NonPassingExecutedTest = Pick<
   'id' | 'suite' | 'title' | 'status' | 'durationMs' | 'attempts' | 'tags'
 >;
 
+export type NonPassingExecutedSummary = {
+  total: number;
+  failed: number;
+  timedOut: number;
+  interrupted: number;
+  flaky: number;
+  totalDurationMs: number;
+};
+
 export type QaTagSummary = {
   tag: string;
   total: number;
@@ -264,6 +273,7 @@ export type QaRunReport = {
   untaggedTests: UntaggedTest[];
   retriedTests: RetriedTest[];
   flakyTests: FlakyTest[];
+  nonPassingExecutedSummary: NonPassingExecutedSummary;
   nonPassingExecutedTests: NonPassingExecutedTest[];
   tests: QaTestResult[];
 };
@@ -588,6 +598,19 @@ export function findNonPassingExecutedTests(results: QaTestResult[]): NonPassing
       attempts,
       tags,
     }));
+}
+
+export function summarizeNonPassingExecutedTests(
+  nonPassingExecutedTests: NonPassingExecutedTest[],
+): NonPassingExecutedSummary {
+  return {
+    total: nonPassingExecutedTests.length,
+    failed: countByStatus(nonPassingExecutedTests, STATUS.FAILED),
+    timedOut: countByStatus(nonPassingExecutedTests, STATUS.TIMED_OUT),
+    interrupted: countByStatus(nonPassingExecutedTests, STATUS.INTERRUPTED),
+    flaky: countByStatus(nonPassingExecutedTests, STATUS.FLAKY),
+    totalDurationMs: nonPassingExecutedTests.reduce((total, test) => total + test.durationMs, 0),
+  };
 }
 
 export function findReleaseBlockers(results: QaTestResult[]): QaTestResult[] {

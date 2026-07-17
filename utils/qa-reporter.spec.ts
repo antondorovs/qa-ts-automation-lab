@@ -13,6 +13,7 @@ import {
   summarizeDurationBudgetBreaches,
   summarizeDurationProfile,
   summarizeExecutionStability,
+  summarizeNonPassingExecutedTests,
   summarizeQualityGateChecks,
   summarizeReleaseBlockers,
   summarizeRun,
@@ -623,7 +624,25 @@ test.describe('@utils @contract QA run intelligence', () => {
       'interrupted setup',
       'flaky login',
     ]);
+    expect(summarizeNonPassingExecutedTests(nonPassingExecutedTests)).toEqual({
+      total: 4,
+      failed: 1,
+      timedOut: 1,
+      interrupted: 1,
+      flaky: 1,
+      totalDurationMs: 2300,
+    });
+    expect(report.nonPassingExecutedSummary).toEqual({
+      total: 4,
+      failed: 1,
+      timedOut: 1,
+      interrupted: 1,
+      flaky: 1,
+      totalDurationMs: 2300,
+    });
     expect(report.nonPassingExecutedTests).toEqual(nonPassingExecutedTests);
+    expect(markdown).toContain('## Non-Passing Executed Summary');
+    expect(markdown).toContain('| 4 | 1 | 1 | 1 | 1 | 2.30s |');
     expect(markdown).toContain('## Non-Passing Executed Tests');
     expect(markdown).toContain('| failed payment | utils/qa-reporter.spec.ts | failed | 1 | 700ms | payment |');
     expect(markdown).toContain('| timed out checkout | utils/qa-reporter.spec.ts | timedOut | 1 | 900ms | ui |');
