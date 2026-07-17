@@ -119,6 +119,13 @@ export type FlakyTest = Pick<
   'id' | 'suite' | 'title' | 'durationMs' | 'attempts' | 'tags'
 >;
 
+export type FlakyTestSummary = {
+  total: number;
+  maximumAttempts: number;
+  retryAttempts: number;
+  totalDurationMs: number;
+};
+
 export type NonPassingExecutedTest = Pick<
   QaTestResult,
   'id' | 'suite' | 'title' | 'status' | 'durationMs' | 'attempts' | 'tags'
@@ -280,6 +287,7 @@ export type QaRunReport = {
   skippedTests: SkippedTest[];
   untaggedTests: UntaggedTest[];
   retriedTests: RetriedTest[];
+  flakyTestSummary: FlakyTestSummary;
   flakyTests: FlakyTest[];
   nonPassingExecutedSummary: NonPassingExecutedSummary;
   nonPassingExecutedTests: NonPassingExecutedTest[];
@@ -594,6 +602,15 @@ export function findFlakyTests(results: QaTestResult[]): FlakyTest[] {
       attempts,
       tags,
     }));
+}
+
+export function summarizeFlakyTests(flakyTests: FlakyTest[]): FlakyTestSummary {
+  return {
+    total: flakyTests.length,
+    maximumAttempts: Math.max(0, ...flakyTests.map((test) => test.attempts)),
+    retryAttempts: flakyTests.reduce((total, test) => total + Math.max(0, test.attempts - 1), 0),
+    totalDurationMs: flakyTests.reduce((total, test) => total + test.durationMs, 0),
+  };
 }
 
 export function findNonPassingExecutedTests(results: QaTestResult[]): NonPassingExecutedTest[] {
