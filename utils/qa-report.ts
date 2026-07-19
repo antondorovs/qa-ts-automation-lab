@@ -16,6 +16,7 @@ import {
   summarizeExecutionStability,
   summarizeFlakyTests,
   summarizeNonPassingExecutedTests,
+  summarizeRetriedTests,
   summarizeSuiteHealth,
   summarizeSuiteHealthStatus,
   summarizeSuitePerformance,
@@ -56,6 +57,7 @@ export function buildQaRunReport(
   const nonPassingExecutedTests = findNonPassingExecutedTests(tests);
   const skippedTests = findSkippedTests(tests);
   const flakyTests = findFlakyTests(tests);
+  const retriedTests = findRetriedTests(tests);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -101,7 +103,8 @@ export function buildQaRunReport(
     skippedTestSummary: summarizeSkippedTests(skippedTests),
     skippedTests,
     untaggedTests: findUntaggedTests(tests),
-    retriedTests: findRetriedTests(tests),
+    retriedTestSummary: summarizeRetriedTests(retriedTests),
+    retriedTests,
     flakyTestSummary: summarizeFlakyTests(flakyTests),
     flakyTests,
     nonPassingExecutedSummary: summarizeNonPassingExecutedTests(nonPassingExecutedTests),
@@ -376,6 +379,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.retriedTests.length) {
     lines.push(
+      '',
+      '## Retried Test Summary',
+      '',
+      '| Total | Maximum attempts | Retry attempts | Total duration |',
+      '| ---: | ---: | ---: | ---: |',
+      `| ${report.retriedTestSummary.total} | ${report.retriedTestSummary.maximumAttempts} | ${report.retriedTestSummary.retryAttempts} | ${formatDuration(report.retriedTestSummary.totalDurationMs)} |`,
       '',
       '## Retried Tests',
       '',

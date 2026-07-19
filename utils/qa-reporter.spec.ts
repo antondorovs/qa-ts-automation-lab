@@ -17,6 +17,7 @@ import {
   summarizeNonPassingExecutedTests,
   summarizeQualityGateChecks,
   summarizeReleaseBlockers,
+  summarizeRetriedTests,
   summarizeRun,
   summarizeSkippedTests,
   summarizeSuiteHealth,
@@ -1070,7 +1071,21 @@ test.describe('@utils @contract QA run intelligence', () => {
         attempts: 2,
       },
     ]);
+    expect(summarizeRetriedTests(retriedTests)).toEqual({
+      total: 2,
+      maximumAttempts: 3,
+      retryAttempts: 3,
+      totalDurationMs: 200,
+    });
+    expect(report.retriedTestSummary).toEqual({
+      total: 2,
+      maximumAttempts: 3,
+      retryAttempts: 3,
+      totalDurationMs: 200,
+    });
     expect(report.retriedTests).toEqual(retriedTests);
+    expect(markdown).toContain('## Retried Test Summary');
+    expect(markdown).toContain('| 2 | 3 | 3 | 200ms |');
     expect(markdown).toContain('## Retried Tests');
     expect(markdown).toContain('| failed payment | utils/qa-reporter.spec.ts | 3 | failed | 100ms |');
     expect(markdown).toContain('| flaky checkout | utils/qa-reporter.spec.ts | 2 | flaky | 100ms |');

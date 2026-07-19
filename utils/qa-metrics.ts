@@ -114,6 +114,13 @@ export type RetriedTest = Pick<
   'id' | 'suite' | 'title' | 'status' | 'durationMs' | 'attempts'
 >;
 
+export type RetriedTestSummary = {
+  total: number;
+  maximumAttempts: number;
+  retryAttempts: number;
+  totalDurationMs: number;
+};
+
 export type FlakyTest = Pick<
   QaTestResult,
   'id' | 'suite' | 'title' | 'durationMs' | 'attempts' | 'tags'
@@ -286,6 +293,7 @@ export type QaRunReport = {
   skippedTestSummary: SkippedTestSummary;
   skippedTests: SkippedTest[];
   untaggedTests: UntaggedTest[];
+  retriedTestSummary: RetriedTestSummary;
   retriedTests: RetriedTest[];
   flakyTestSummary: FlakyTestSummary;
   flakyTests: FlakyTest[];
@@ -583,6 +591,15 @@ export function findRetriedTests(results: QaTestResult[]): RetriedTest[] {
       durationMs,
       attempts,
     }));
+}
+
+export function summarizeRetriedTests(retriedTests: RetriedTest[]): RetriedTestSummary {
+  return {
+    total: retriedTests.length,
+    maximumAttempts: Math.max(0, ...retriedTests.map((test) => test.attempts)),
+    retryAttempts: retriedTests.reduce((total, test) => total + Math.max(0, test.attempts - 1), 0),
+    totalDurationMs: retriedTests.reduce((total, test) => total + test.durationMs, 0),
+  };
 }
 
 export function findFlakyTests(results: QaTestResult[]): FlakyTest[] {
