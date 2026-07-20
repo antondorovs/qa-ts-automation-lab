@@ -29,6 +29,7 @@ import {
   summarizeTagCoverageStatus,
   summarizeTestAreaStatus,
   summarizeTestAreas,
+  summarizeUntaggedTests,
   type QaTestResult,
 } from './qa-metrics';
 import { buildQaRunReport, renderQaReportMarkdown } from './qa-report';
@@ -929,6 +930,10 @@ test.describe('@utils @contract QA run intelligence', () => {
         ...createResult('API draft', STATUS.PASSED),
         suite: 'api/users.api.spec.ts',
       },
+      {
+        ...createResult('billing draft', STATUS.FAILED),
+        suite: 'api/billing.api.spec.ts',
+      },
       createResult('classified contract', STATUS.PASSED, 100, ['contract']),
     ];
     const untaggedTests = findUntaggedTests(results);
@@ -940,6 +945,12 @@ test.describe('@utils @contract QA run intelligence', () => {
     const markdown = renderQaReportMarkdown(report);
 
     expect(untaggedTests).toEqual([
+      {
+        id: 'billing-draft',
+        suite: 'api/billing.api.spec.ts',
+        title: 'billing draft',
+        status: STATUS.FAILED,
+      },
       {
         id: 'api-draft',
         suite: 'api/users.api.spec.ts',
@@ -953,8 +964,23 @@ test.describe('@utils @contract QA run intelligence', () => {
         status: STATUS.SKIPPED,
       },
     ]);
+    expect(summarizeUntaggedTests(untaggedTests)).toEqual({
+      total: 3,
+      executed: 2,
+      skipped: 1,
+      nonPassing: 1,
+    });
+    expect(report.untaggedTestSummary).toEqual({
+      total: 3,
+      executed: 2,
+      skipped: 1,
+      nonPassing: 1,
+    });
     expect(report.untaggedTests).toEqual(untaggedTests);
+    expect(markdown).toContain('## Untagged Test Summary');
+    expect(markdown).toContain('| 3 | 2 | 1 | 1 |');
     expect(markdown).toContain('## Untagged Tests');
+    expect(markdown).toContain('| billing draft | api/billing.api.spec.ts | failed |');
     expect(markdown).toContain('| API draft | api/users.api.spec.ts | passed |');
     expect(markdown).toContain('| checkout draft | playwright/checkout.spec.ts | skipped |');
   });

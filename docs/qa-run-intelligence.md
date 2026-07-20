@@ -138,6 +138,8 @@ The report lists every test without normalized tags, including its suite and fin
 
 This turns the classification-rate metric into an actionable cleanup list instead of leaving reviewers to search the complete test result payload.
 
+The same section includes an untagged-test summary with total, executed, skipped, and non-passing counts before the detailed inventory.
+
 ## Skipped Test Inventory
 
 The report keeps a dedicated inventory of skipped tests with their suite and normalized tags. The list is sorted by suite and test title so repeated runs produce a stable review order.

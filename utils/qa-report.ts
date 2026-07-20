@@ -29,6 +29,7 @@ import {
   summarizeTagCoverageStatus,
   summarizeTestAreaStatus,
   summarizeTestAreas,
+  summarizeUntaggedTests,
   type QaReporterOptions,
   type QaRunReport,
   type QaTestResult,
@@ -60,6 +61,7 @@ export function buildQaRunReport(
   const flakyTests = findFlakyTests(tests);
   const retriedTests = findRetriedTests(tests);
   const failedTests = findFailedTests(tests);
+  const untaggedTests = findUntaggedTests(tests);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -105,7 +107,8 @@ export function buildQaRunReport(
     failedTests,
     skippedTestSummary: summarizeSkippedTests(skippedTests),
     skippedTests,
-    untaggedTests: findUntaggedTests(tests),
+    untaggedTestSummary: summarizeUntaggedTests(untaggedTests),
+    untaggedTests,
     retriedTestSummary: summarizeRetriedTests(retriedTests),
     retriedTests,
     flakyTestSummary: summarizeFlakyTests(flakyTests),
@@ -252,6 +255,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.untaggedTests.length) {
     lines.push(
+      '',
+      '## Untagged Test Summary',
+      '',
+      '| Total | Executed | Skipped | Non-passing |',
+      '| ---: | ---: | ---: | ---: |',
+      `| ${report.untaggedTestSummary.total} | ${report.untaggedTestSummary.executed} | ${report.untaggedTestSummary.skipped} | ${report.untaggedTestSummary.nonPassing} |`,
       '',
       '## Untagged Tests',
       '',

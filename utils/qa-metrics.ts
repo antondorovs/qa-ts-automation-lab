@@ -117,6 +117,13 @@ export type SkippedTestSummary = {
 
 export type UntaggedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status'>;
 
+export type UntaggedTestSummary = {
+  total: number;
+  executed: number;
+  skipped: number;
+  nonPassing: number;
+};
+
 export type RetriedTest = Pick<
   QaTestResult,
   'id' | 'suite' | 'title' | 'status' | 'durationMs' | 'attempts'
@@ -301,6 +308,7 @@ export type QaRunReport = {
   failedTests: FailedTest[];
   skippedTestSummary: SkippedTestSummary;
   skippedTests: SkippedTest[];
+  untaggedTestSummary: UntaggedTestSummary;
   untaggedTests: UntaggedTest[];
   retriedTestSummary: RetriedTestSummary;
   retriedTests: RetriedTest[];
@@ -591,6 +599,17 @@ export function findUntaggedTests(results: QaTestResult[]): UntaggedTest[] {
       || first.title.localeCompare(second.title)
     ))
     .map(({ id, suite, title, status }) => ({ id, suite, title, status }));
+}
+
+export function summarizeUntaggedTests(untaggedTests: UntaggedTest[]): UntaggedTestSummary {
+  return {
+    total: untaggedTests.length,
+    executed: untaggedTests.filter((test) => test.status !== STATUS.SKIPPED).length,
+    skipped: untaggedTests.filter((test) => test.status === STATUS.SKIPPED).length,
+    nonPassing: untaggedTests.filter((test) => (
+      test.status !== STATUS.PASSED && test.status !== STATUS.SKIPPED
+    )).length,
+  };
 }
 
 export function findRetriedTests(results: QaTestResult[]): RetriedTest[] {
