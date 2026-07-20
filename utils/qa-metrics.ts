@@ -278,6 +278,13 @@ export type QaReleaseBlockerSummary = {
   flaky: number;
 };
 
+export type QaRiskHotspotSummary = {
+  total: number;
+  low: number;
+  medium: number;
+  high: number;
+};
+
 export type QaRunReport = {
   generatedAt: string;
   runStatus: 'passed' | 'failed' | 'timedout' | 'interrupted';
@@ -290,6 +297,7 @@ export type QaRunReport = {
   stability: QaStabilitySummary;
   durationProfile: QaDurationProfile;
   regressionRisk: RegressionRiskSummary;
+  riskHotspotSummary: QaRiskHotspotSummary;
   riskHotspots: RegressionRiskHotspot[];
   tagCoverageStatusSummary: QaTagCoverageStatusSummary;
   tagCoverage: QaTagSummary[];
@@ -715,6 +723,15 @@ export function summarizeReleaseBlockers(results: QaTestResult[]): QaReleaseBloc
     timedOut: countByStatus(releaseBlockers, STATUS.TIMED_OUT),
     interrupted: countByStatus(releaseBlockers, STATUS.INTERRUPTED),
     flaky: countByStatus(releaseBlockers, STATUS.FLAKY),
+  };
+}
+
+export function summarizeRiskHotspots(riskHotspots: RegressionRiskHotspot[]): QaRiskHotspotSummary {
+  return {
+    total: riskHotspots.length,
+    low: riskHotspots.filter((hotspot) => hotspot.risk === 'low').length,
+    medium: riskHotspots.filter((hotspot) => hotspot.risk === 'medium').length,
+    high: riskHotspots.filter((hotspot) => hotspot.risk === 'high').length,
   };
 }
 

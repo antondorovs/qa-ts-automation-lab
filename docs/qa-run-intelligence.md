@@ -118,6 +118,8 @@ Each report converts current run signals into a regression risk score:
 
 Scores below six are low risk, scores from six to fourteen are medium risk, and scores of fifteen or more are high risk. The report includes a release recommendation and ranks suites with non-zero risk signals so investigation can start with the strongest hotspot.
 
+The report includes a risk-hotspot summary with total hotspot suites and low, medium, and high risk counts before the detailed hotspot table.
+
 ## Tag Coverage
 
 The report groups results by normalized Playwright tags and shows the total, executed, passed, failed, flaky, and skipped tests for each group. It also includes pass rate and accumulated duration.

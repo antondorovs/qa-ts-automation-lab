@@ -17,6 +17,7 @@ import {
   summarizeFailedTests,
   summarizeFlakyTests,
   summarizeNonPassingExecutedTests,
+  summarizeRiskHotspots,
   summarizeRetriedTests,
   summarizeSuiteHealth,
   summarizeSuiteHealthStatus,
@@ -62,6 +63,7 @@ export function buildQaRunReport(
   const retriedTests = findRetriedTests(tests);
   const failedTests = findFailedTests(tests);
   const untaggedTests = findUntaggedTests(tests);
+  const riskHotspots = buildRegressionRiskHotspots(tests, options.slowTestThresholdMs);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -83,7 +85,8 @@ export function buildQaRunReport(
     stability: summarizeExecutionStability(tests),
     durationProfile: summarizeDurationProfile(tests),
     regressionRisk,
-    riskHotspots: buildRegressionRiskHotspots(tests, options.slowTestThresholdMs),
+    riskHotspotSummary: summarizeRiskHotspots(riskHotspots),
+    riskHotspots,
     tagCoverageStatusSummary: summarizeTagCoverageStatus(tagCoverage),
     tagCoverage,
     classification: summarizeClassification(tests),
@@ -214,6 +217,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.riskHotspots.length) {
     lines.push(
+      '',
+      '### Risk Hotspot Summary',
+      '',
+      '| Total | Low | Medium | High |',
+      '| ---: | ---: | ---: | ---: |',
+      `| ${report.riskHotspotSummary.total} | ${report.riskHotspotSummary.low} | ${report.riskHotspotSummary.medium} | ${report.riskHotspotSummary.high} |`,
       '',
       '### Risk Hotspots',
       '',

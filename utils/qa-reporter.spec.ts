@@ -18,6 +18,7 @@ import {
   summarizeNonPassingExecutedTests,
   summarizeQualityGateChecks,
   summarizeReleaseBlockers,
+  summarizeRiskHotspots,
   summarizeRetriedTests,
   summarizeRun,
   summarizeSkippedTests,
@@ -578,6 +579,20 @@ test.describe('@utils @contract QA run intelligence', () => {
       { suite: 'playwright/login.spec.ts', score: 3 },
       { suite: 'api/live/public-apis.live.spec.ts', score: 1 },
     ]);
+    expect(summarizeRiskHotspots(report.riskHotspots)).toEqual({
+      total: 3,
+      low: 2,
+      medium: 1,
+      high: 0,
+    });
+    expect(report.riskHotspotSummary).toEqual({
+      total: 3,
+      low: 2,
+      medium: 1,
+      high: 0,
+    });
+    expect(markdown).toContain('### Risk Hotspot Summary');
+    expect(markdown).toContain('| 3 | 2 | 1 | 0 |');
     expect(report.releaseBlockers).toEqual([
       expect.objectContaining({
         title: 'failed checkout',
