@@ -98,6 +98,14 @@ export type FailedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' 
   error: string;
 };
 
+export type FailedTestSummary = {
+  total: number;
+  failed: number;
+  timedOut: number;
+  interrupted: number;
+  totalDurationMs: number;
+};
+
 export type SkippedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'tags'>;
 
 export type SkippedTestSummary = {
@@ -289,6 +297,7 @@ export type QaRunReport = {
   slowTests: SlowTest[];
   durationBudgetBreachSummary: DurationBudgetBreachSummary;
   durationBudgetBreaches: DurationBudgetBreach[];
+  failedTestSummary: FailedTestSummary;
   failedTests: FailedTest[];
   skippedTestSummary: SkippedTestSummary;
   skippedTests: SkippedTest[];
@@ -543,6 +552,16 @@ export function findFailedTests(results: QaTestResult[]): FailedTest[] {
       durationMs,
       error: error || 'No error message captured',
     }));
+}
+
+export function summarizeFailedTests(failedTests: FailedTest[]): FailedTestSummary {
+  return {
+    total: failedTests.length,
+    failed: failedTests.filter((test) => test.status === STATUS.FAILED).length,
+    timedOut: failedTests.filter((test) => test.status === STATUS.TIMED_OUT).length,
+    interrupted: failedTests.filter((test) => test.status === STATUS.INTERRUPTED).length,
+    totalDurationMs: failedTests.reduce((total, test) => total + test.durationMs, 0),
+  };
 }
 
 export function findSkippedTests(results: QaTestResult[]): SkippedTest[] {

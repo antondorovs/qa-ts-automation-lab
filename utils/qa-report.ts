@@ -14,6 +14,7 @@ import {
   summarizeDurationProfile,
   summarizeDurationBudgetBreaches,
   summarizeExecutionStability,
+  summarizeFailedTests,
   summarizeFlakyTests,
   summarizeNonPassingExecutedTests,
   summarizeRetriedTests,
@@ -58,6 +59,7 @@ export function buildQaRunReport(
   const skippedTests = findSkippedTests(tests);
   const flakyTests = findFlakyTests(tests);
   const retriedTests = findRetriedTests(tests);
+  const failedTests = findFailedTests(tests);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -99,7 +101,8 @@ export function buildQaRunReport(
       tests,
       options.qualityGate?.maximumTestDurationMs,
     ),
-    failedTests: findFailedTests(tests),
+    failedTestSummary: summarizeFailedTests(failedTests),
+    failedTests,
     skippedTestSummary: summarizeSkippedTests(skippedTests),
     skippedTests,
     untaggedTests: findUntaggedTests(tests),
@@ -436,6 +439,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (report.failedTests.length) {
     lines.push(
+      '',
+      '## Failure Summary',
+      '',
+      '| Total | Failed | Timed out | Interrupted | Total duration |',
+      '| ---: | ---: | ---: | ---: | ---: |',
+      `| ${report.failedTestSummary.total} | ${report.failedTestSummary.failed} | ${report.failedTestSummary.timedOut} | ${report.failedTestSummary.interrupted} | ${formatDuration(report.failedTestSummary.totalDurationMs)} |`,
       '',
       '## Failures',
       '',

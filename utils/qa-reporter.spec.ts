@@ -13,6 +13,7 @@ import {
   summarizeDurationBudgetBreaches,
   summarizeDurationProfile,
   summarizeExecutionStability,
+  summarizeFailedTests,
   summarizeFlakyTests,
   summarizeNonPassingExecutedTests,
   summarizeQualityGateChecks,
@@ -126,11 +127,13 @@ test.describe('@utils @contract QA run intelligence', () => {
   test('Markdown report should summarize failed quality-gate checks', () => {
     const report = buildQaRunReport([
       createResult('passing smoke', STATUS.PASSED),
-      createResult('broken contract', STATUS.FAILED),
+      createResult('broken contract', STATUS.FAILED, 200),
+      createResult('timed out checkout', STATUS.TIMED_OUT, 300),
+      createResult('interrupted setup', STATUS.INTERRUPTED, 400),
     ], {
       generatedAt: '2026-07-09T14:00:00.000Z',
       runStatus: 'failed',
-      durationMs: 200,
+      durationMs: 1000,
     });
     const markdown = renderQaReportMarkdown(report);
 
@@ -138,9 +141,25 @@ test.describe('@utils @contract QA run intelligence', () => {
       'pass rate',
       'failures',
     ]);
+    expect(summarizeFailedTests(report.failedTests)).toEqual({
+      total: 3,
+      failed: 1,
+      timedOut: 1,
+      interrupted: 1,
+      totalDurationMs: 900,
+    });
+    expect(report.failedTestSummary).toEqual({
+      total: 3,
+      failed: 1,
+      timedOut: 1,
+      interrupted: 1,
+      totalDurationMs: 900,
+    });
     expect(markdown).toContain('## Blocked Checks');
-    expect(markdown).toContain('| pass rate | >= 100% | 50% |');
-    expect(markdown).toContain('| failures | <= 0 | 1 |');
+    expect(markdown).toContain('| pass rate | >= 100% | 25% |');
+    expect(markdown).toContain('| failures | <= 0 | 3 |');
+    expect(markdown).toContain('## Failure Summary');
+    expect(markdown).toContain('| 3 | 1 | 1 | 1 | 900ms |');
   });
 
   test('quality gate check summary should be available in serialized reports', () => {

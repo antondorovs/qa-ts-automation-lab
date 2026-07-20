@@ -68,6 +68,8 @@ The same section includes a release-blocker summary with separate failed, timed-
 
 This puts every test-level release blocker in one place. Flaky tests remain visible even though they are intentionally excluded from the separate failure-error list.
 
+Failure details include a failure summary with total failed results, status split, and accumulated failed-test duration before the error messages.
+
 ## Non-Passing Executed Test Inventory
 
 The report lists every executed test whose final QA status is not `passed`. The inventory includes failed, timed-out, interrupted, and flaky tests with attempts, duration, and normalized tags.
