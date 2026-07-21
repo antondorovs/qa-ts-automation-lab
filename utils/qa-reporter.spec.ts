@@ -18,6 +18,7 @@ import {
   summarizeNonPassingExecutedTests,
   summarizeQualityGatePolicy,
   summarizeQualityGateChecks,
+  summarizeReleaseDecisionActions,
   summarizeReleaseBlockers,
   summarizeRiskHotspots,
   summarizeRetriedTests,
@@ -399,6 +400,11 @@ test.describe('@utils @contract QA run intelligence', () => {
       summary: 'Ready for release based on the configured quality gate.',
       actionItems: ['Review the generated QA summary before deployment.'],
     });
+    expect(report.releaseDecisionActionSummary).toEqual({
+      total: 1,
+      review: 1,
+      fix: 0,
+    });
     expect(report.stability).toEqual({
       executed: 2,
       firstPassPassed: 2,
@@ -527,6 +533,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 8 | 8 | 0 |');
     expect(markdown).toContain('## Release Decision');
     expect(markdown).toContain('Status: **ready**');
+    expect(markdown).toContain('### Release Decision Action Summary');
+    expect(markdown).toContain('| 1 | 1 | 0 |');
     expect(markdown).toContain('slow UI smoke');
     expect(markdown).toContain('## Regression Risk');
     expect(markdown).toContain('## Execution Stability');
@@ -1296,6 +1304,11 @@ test.describe('@utils @contract QA run intelligence', () => {
         'Fix pass rate: expected >= 100%, actual 50%.',
         'Fix failures: expected <= 0, actual 1.',
       ],
+    });
+    expect(summarizeReleaseDecisionActions(releaseDecision)).toEqual({
+      total: 2,
+      review: 0,
+      fix: 2,
     });
   });
 });

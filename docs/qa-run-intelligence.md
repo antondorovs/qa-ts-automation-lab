@@ -60,6 +60,8 @@ The report turns quality-gate checks into a release decision. When every configu
 
 When any check fails, the decision is `blocked`. Failed checks are stored separately in JSON and rendered as action items in Markdown, such as fixing pass rate, failure count, flaky tests, first-pass rate, missing tags, or duration thresholds.
 
+The release decision section includes an action summary with total, review, and fix action counts before the detailed action list.
+
 Blocked Markdown reports also include a compact failed-check table before the release decision. This gives reviewers the exact expected and actual values without scanning the full policy table.
 
 ## Release Blockers

@@ -278,6 +278,12 @@ export type QaReleaseDecision = {
   actionItems: string[];
 };
 
+export type QaReleaseDecisionActionSummary = {
+  total: number;
+  review: number;
+  fix: number;
+};
+
 export type QaReleaseBlockerSummary = {
   total: number;
   failed: number;
@@ -301,6 +307,7 @@ export type QaRunReport = {
   qualityGate: QualityGateResult;
   qualityGatePolicySummary: QaQualityGatePolicySummary;
   releaseDecision: QaReleaseDecision;
+  releaseDecisionActionSummary: QaReleaseDecisionActionSummary;
   releaseBlockers: QaTestResult[];
   releaseBlockerSummary: QaReleaseBlockerSummary;
   stability: QaStabilitySummary;
@@ -1022,6 +1029,16 @@ export function buildReleaseDecision(qualityGate: QualityGateResult): QaReleaseD
     actionItems: qualityGate.failedChecks.map((check) => (
       `Fix ${check.name}: expected ${check.expected}, actual ${check.actual}.`
     )),
+  };
+}
+
+export function summarizeReleaseDecisionActions(
+  releaseDecision: QaReleaseDecision,
+): QaReleaseDecisionActionSummary {
+  return {
+    total: releaseDecision.actionItems.length,
+    review: releaseDecision.actionItems.filter((item) => item.startsWith('Review ')).length,
+    fix: releaseDecision.actionItems.filter((item) => item.startsWith('Fix ')).length,
   };
 }
 

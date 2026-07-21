@@ -18,6 +18,7 @@ import {
   summarizeFlakyTests,
   summarizeNonPassingExecutedTests,
   summarizeQualityGatePolicy,
+  summarizeReleaseDecisionActions,
   summarizeRiskHotspots,
   summarizeRetriedTests,
   summarizeSuiteHealth,
@@ -65,6 +66,7 @@ export function buildQaRunReport(
   const failedTests = findFailedTests(tests);
   const untaggedTests = findUntaggedTests(tests);
   const riskHotspots = buildRegressionRiskHotspots(tests, options.slowTestThresholdMs);
+  const releaseDecision = buildReleaseDecision(qualityGate);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
       + qualityGate.summary.timedOut
@@ -81,7 +83,8 @@ export function buildQaRunReport(
     summary: qualityGate.summary,
     qualityGate,
     qualityGatePolicySummary: summarizeQualityGatePolicy(qualityGate.policy),
-    releaseDecision: buildReleaseDecision(qualityGate),
+    releaseDecision,
+    releaseDecisionActionSummary: summarizeReleaseDecisionActions(releaseDecision),
     releaseBlockers: findReleaseBlockers(tests),
     releaseBlockerSummary: summarizeReleaseBlockers(tests),
     stability: summarizeExecutionStability(tests),
@@ -207,6 +210,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     `Status: **${report.releaseDecision.status}**`,
     '',
     report.releaseDecision.summary,
+    '',
+    '### Release Decision Action Summary',
+    '',
+    '| Total actions | Review actions | Fix actions |',
+    '| ---: | ---: | ---: |',
+    `| ${report.releaseDecisionActionSummary.total} | ${report.releaseDecisionActionSummary.review} | ${report.releaseDecisionActionSummary.fix} |`,
     '',
     ...report.releaseDecision.actionItems.map((item) => `- ${item}`),
     '',
