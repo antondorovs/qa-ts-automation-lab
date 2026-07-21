@@ -65,6 +65,14 @@ export type QaQualityGateSummary = {
   failed: number;
 };
 
+export type QaQualityGatePolicySummary = {
+  configuredOptionalChecks: number;
+  durationChecks: number;
+  classificationChecks: number;
+  stabilityChecks: number;
+  requiredTags: number;
+};
+
 export type QualityGateResult = {
   status: 'ready' | 'blocked';
   policy: QualityGateOptions;
@@ -291,6 +299,7 @@ export type QaRunReport = {
   durationMs: number;
   summary: QaRunSummary;
   qualityGate: QualityGateResult;
+  qualityGatePolicySummary: QaQualityGatePolicySummary;
   releaseDecision: QaReleaseDecision;
   releaseBlockers: QaTestResult[];
   releaseBlockerSummary: QaReleaseBlockerSummary;
@@ -491,6 +500,32 @@ export function summarizeQualityGateChecks(checks: QualityGateCheck[]): QaQualit
     total: checks.length,
     passed,
     failed: checks.length - passed,
+  };
+}
+
+export function summarizeQualityGatePolicy(
+  policy: QualityGateOptions,
+): QaQualityGatePolicySummary {
+  const durationChecks = [
+    policy.maximumAverageDurationMs,
+    policy.maximumP95DurationMs,
+    policy.maximumTestDurationMs,
+  ].filter((value) => value !== undefined).length;
+  const classificationChecks = policy.minimumClassificationRate === undefined ? 0 : 1;
+  const stabilityChecks = policy.minimumFirstPassRate === undefined ? 0 : 1;
+  const skippedLimit = policy.maximumSkippedTests === undefined ? 0 : 1;
+  const requiredTags = policy.requiredTags?.length || 0;
+
+  return {
+    configuredOptionalChecks: durationChecks
+      + classificationChecks
+      + stabilityChecks
+      + skippedLimit
+      + (requiredTags > 0 ? 1 : 0),
+    durationChecks,
+    classificationChecks,
+    stabilityChecks,
+    requiredTags,
   };
 }
 

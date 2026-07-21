@@ -16,6 +16,7 @@ import {
   summarizeFailedTests,
   summarizeFlakyTests,
   summarizeNonPassingExecutedTests,
+  summarizeQualityGatePolicy,
   summarizeQualityGateChecks,
   summarizeReleaseBlockers,
   summarizeRiskHotspots,
@@ -378,6 +379,20 @@ test.describe('@utils @contract QA run intelligence', () => {
       maximumTestDurationMs: 2000,
       requiredTags: ['@smoke', 'contract'],
     });
+    expect(summarizeQualityGatePolicy(report.qualityGate.policy)).toEqual({
+      configuredOptionalChecks: 5,
+      durationChecks: 2,
+      classificationChecks: 1,
+      stabilityChecks: 0,
+      requiredTags: 2,
+    });
+    expect(report.qualityGatePolicySummary).toEqual({
+      configuredOptionalChecks: 5,
+      durationChecks: 2,
+      classificationChecks: 1,
+      stabilityChecks: 0,
+      requiredTags: 2,
+    });
     expect(report.qualityGate.failedChecks).toEqual([]);
     expect(report.releaseDecision).toEqual({
       status: 'ready',
@@ -499,6 +514,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
     expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 0% | 1.92s |');
+    expect(markdown).toContain('## Quality Gate Policy Summary');
+    expect(markdown).toContain('| 5 | 2 | 1 | 0 | 2 |');
     expect(markdown).toContain('## Quality Gate Policy');
     expect(markdown).toContain('| Maximum p95 duration | <= 2000ms |');
     expect(markdown).toContain('| Maximum test duration | <= 2000ms |');
