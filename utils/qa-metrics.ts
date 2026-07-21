@@ -73,6 +73,14 @@ export type QaQualityGatePolicySummary = {
   requiredTags: number;
 };
 
+export type QaFailedQualityGateCheckSummary = {
+  total: number;
+  resultChecks: number;
+  stabilityChecks: number;
+  coverageChecks: number;
+  durationChecks: number;
+};
+
 export type QualityGateResult = {
   status: 'ready' | 'blocked';
   policy: QualityGateOptions;
@@ -306,6 +314,7 @@ export type QaRunReport = {
   summary: QaRunSummary;
   qualityGate: QualityGateResult;
   qualityGatePolicySummary: QaQualityGatePolicySummary;
+  failedQualityGateCheckSummary: QaFailedQualityGateCheckSummary;
   releaseDecision: QaReleaseDecision;
   releaseDecisionActionSummary: QaReleaseDecisionActionSummary;
   releaseBlockers: QaTestResult[];
@@ -533,6 +542,30 @@ export function summarizeQualityGatePolicy(
     classificationChecks,
     stabilityChecks,
     requiredTags,
+  };
+}
+
+export function summarizeFailedQualityGateChecks(
+  checks: QualityGateCheck[],
+): QaFailedQualityGateCheckSummary {
+  return {
+    total: checks.length,
+    resultChecks: checks.filter((check) => (
+      check.name === 'pass rate' || check.name === 'failures'
+    )).length,
+    stabilityChecks: checks.filter((check) => (
+      check.name === 'flaky tests' || check.name === 'first-pass rate'
+    )).length,
+    coverageChecks: checks.filter((check) => (
+      check.name === 'skipped tests'
+      || check.name === 'classification rate'
+      || check.name === 'required tags'
+    )).length,
+    durationChecks: checks.filter((check) => (
+      check.name === 'average duration'
+      || check.name === 'p95 duration'
+      || check.name === 'maximum test duration'
+    )).length,
   };
 }
 

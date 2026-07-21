@@ -14,6 +14,7 @@ import {
   summarizeDurationProfile,
   summarizeExecutionStability,
   summarizeFailedTests,
+  summarizeFailedQualityGateChecks,
   summarizeFlakyTests,
   summarizeNonPassingExecutedTests,
   summarizeQualityGatePolicy,
@@ -145,6 +146,20 @@ test.describe('@utils @contract QA run intelligence', () => {
       'pass rate',
       'failures',
     ]);
+    expect(summarizeFailedQualityGateChecks(report.qualityGate.failedChecks)).toEqual({
+      total: 2,
+      resultChecks: 2,
+      stabilityChecks: 0,
+      coverageChecks: 0,
+      durationChecks: 0,
+    });
+    expect(report.failedQualityGateCheckSummary).toEqual({
+      total: 2,
+      resultChecks: 2,
+      stabilityChecks: 0,
+      coverageChecks: 0,
+      durationChecks: 0,
+    });
     expect(summarizeFailedTests(report.failedTests)).toEqual({
       total: 3,
       failed: 1,
@@ -159,6 +174,8 @@ test.describe('@utils @contract QA run intelligence', () => {
       interrupted: 1,
       totalDurationMs: 900,
     });
+    expect(markdown).toContain('## Blocked Check Summary');
+    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 0 |');
     expect(markdown).toContain('## Blocked Checks');
     expect(markdown).toContain('| pass rate | >= 100% | 25% |');
     expect(markdown).toContain('| failures | <= 0 | 3 |');

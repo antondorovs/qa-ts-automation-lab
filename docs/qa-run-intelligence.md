@@ -64,6 +64,8 @@ The release decision section includes an action summary with total, review, and 
 
 Blocked Markdown reports also include a compact failed-check table before the release decision. This gives reviewers the exact expected and actual values without scanning the full policy table.
 
+Blocked reports include a failed-check summary with result, stability, coverage, and duration check counts before the detailed failed-check table.
+
 ## Release Blockers
 
 The report keeps a dedicated inventory of failed, timed-out, interrupted, and flaky tests. Each entry includes its suite, final status, attempt count, and normalized tags.

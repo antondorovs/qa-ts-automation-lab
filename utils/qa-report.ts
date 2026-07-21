@@ -15,6 +15,7 @@ import {
   summarizeDurationBudgetBreaches,
   summarizeExecutionStability,
   summarizeFailedTests,
+  summarizeFailedQualityGateChecks,
   summarizeFlakyTests,
   summarizeNonPassingExecutedTests,
   summarizeQualityGatePolicy,
@@ -83,6 +84,7 @@ export function buildQaRunReport(
     summary: qualityGate.summary,
     qualityGate,
     qualityGatePolicySummary: summarizeQualityGatePolicy(qualityGate.policy),
+    failedQualityGateCheckSummary: summarizeFailedQualityGateChecks(qualityGate.failedChecks),
     releaseDecision,
     releaseDecisionActionSummary: summarizeReleaseDecisionActions(releaseDecision),
     releaseBlockers: findReleaseBlockers(tests),
@@ -192,6 +194,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
 
   if (qualityGate.failedChecks.length) {
     lines.push(
+      '',
+      '## Blocked Check Summary',
+      '',
+      '| Total | Result checks | Stability checks | Coverage checks | Duration checks |',
+      '| ---: | ---: | ---: | ---: | ---: |',
+      `| ${report.failedQualityGateCheckSummary.total} | ${report.failedQualityGateCheckSummary.resultChecks} | ${report.failedQualityGateCheckSummary.stabilityChecks} | ${report.failedQualityGateCheckSummary.coverageChecks} | ${report.failedQualityGateCheckSummary.durationChecks} |`,
       '',
       '## Blocked Checks',
       '',
