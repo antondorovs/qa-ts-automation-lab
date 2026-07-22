@@ -20,6 +20,7 @@ import {
   summarizeQualityGatePolicy,
   summarizeQualityGateChecks,
   summarizeReleaseDecisionActions,
+  summarizeReleaseReadiness,
   summarizeReleaseBlockers,
   summarizeRiskHotspots,
   summarizeRetriedTests,
@@ -550,6 +551,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 8 | 8 | 0 |');
     expect(markdown).toContain('## Release Decision');
     expect(markdown).toContain('Status: **ready**');
+    expect(markdown).toContain('### Release Readiness Summary');
+    expect(markdown).toContain('| ready | 0 | 0 | 0 | 2 |');
     expect(markdown).toContain('### Release Decision Action Summary');
     expect(markdown).toContain('| 1 | 1 | 0 |');
     expect(markdown).toContain('slow UI smoke');
@@ -1309,6 +1312,21 @@ test.describe('@utils @contract QA run intelligence', () => {
       maximumFlakyTests: 0,
     });
     const releaseDecision = buildReleaseDecision(qualityGate);
+    const releaseBlockerSummary = summarizeReleaseBlockers(qualityGate.summary.total ? [
+      createResult('stable smoke', STATUS.PASSED),
+      createResult('failed payment', STATUS.FAILED),
+    ] : []);
+    const nonPassingExecutedSummary = summarizeNonPassingExecutedTests([
+      {
+        id: 'failed-payment',
+        suite: 'utils/qa-reporter.spec.ts',
+        title: 'failed payment',
+        status: STATUS.FAILED,
+        durationMs: 100,
+        attempts: 1,
+        tags: [],
+      },
+    ]);
 
     expect(qualityGate.failedChecks.map((check) => check.name)).toEqual([
       'pass rate',
@@ -1326,6 +1344,28 @@ test.describe('@utils @contract QA run intelligence', () => {
       total: 2,
       review: 0,
       fix: 2,
+    });
+    expect(summarizeReleaseReadiness(
+      qualityGate,
+      releaseBlockerSummary,
+      nonPassingExecutedSummary,
+      {
+        risk: 'low',
+        score: 5,
+        recommendation: 'Review failures before release.',
+        signals: {
+          failed: 1,
+          flaky: 0,
+          slow: 0,
+          skipped: 0,
+        },
+      },
+    )).toEqual({
+      status: 'blocked',
+      qualityGateFailures: 2,
+      releaseBlockers: 1,
+      nonPassingExecuted: 1,
+      riskScore: 5,
     });
   });
 });

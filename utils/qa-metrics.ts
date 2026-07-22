@@ -292,6 +292,14 @@ export type QaReleaseDecisionActionSummary = {
   fix: number;
 };
 
+export type QaReleaseReadinessSummary = {
+  status: QualityGateResult['status'];
+  qualityGateFailures: number;
+  releaseBlockers: number;
+  nonPassingExecuted: number;
+  riskScore: number;
+};
+
 export type QaReleaseBlockerSummary = {
   total: number;
   failed: number;
@@ -317,6 +325,7 @@ export type QaRunReport = {
   failedQualityGateCheckSummary: QaFailedQualityGateCheckSummary;
   releaseDecision: QaReleaseDecision;
   releaseDecisionActionSummary: QaReleaseDecisionActionSummary;
+  releaseReadinessSummary: QaReleaseReadinessSummary;
   releaseBlockers: QaTestResult[];
   releaseBlockerSummary: QaReleaseBlockerSummary;
   stability: QaStabilitySummary;
@@ -1072,6 +1081,21 @@ export function summarizeReleaseDecisionActions(
     total: releaseDecision.actionItems.length,
     review: releaseDecision.actionItems.filter((item) => item.startsWith('Review ')).length,
     fix: releaseDecision.actionItems.filter((item) => item.startsWith('Fix ')).length,
+  };
+}
+
+export function summarizeReleaseReadiness(
+  qualityGate: QualityGateResult,
+  releaseBlockerSummary: QaReleaseBlockerSummary,
+  nonPassingExecutedSummary: NonPassingExecutedSummary,
+  regressionRisk: RegressionRiskSummary,
+): QaReleaseReadinessSummary {
+  return {
+    status: qualityGate.status,
+    qualityGateFailures: qualityGate.checkSummary.failed,
+    releaseBlockers: releaseBlockerSummary.total,
+    nonPassingExecuted: nonPassingExecutedSummary.total,
+    riskScore: regressionRisk.score,
   };
 }
 

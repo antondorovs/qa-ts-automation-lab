@@ -20,6 +20,7 @@ import {
   summarizeNonPassingExecutedTests,
   summarizeQualityGatePolicy,
   summarizeReleaseDecisionActions,
+  summarizeReleaseReadiness,
   summarizeRiskHotspots,
   summarizeRetriedTests,
   summarizeSuiteHealth,
@@ -67,6 +68,8 @@ export function buildQaRunReport(
   const failedTests = findFailedTests(tests);
   const untaggedTests = findUntaggedTests(tests);
   const riskHotspots = buildRegressionRiskHotspots(tests, options.slowTestThresholdMs);
+  const releaseBlockerSummary = summarizeReleaseBlockers(tests);
+  const nonPassingExecutedSummary = summarizeNonPassingExecutedTests(nonPassingExecutedTests);
   const releaseDecision = buildReleaseDecision(qualityGate);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
@@ -87,8 +90,14 @@ export function buildQaRunReport(
     failedQualityGateCheckSummary: summarizeFailedQualityGateChecks(qualityGate.failedChecks),
     releaseDecision,
     releaseDecisionActionSummary: summarizeReleaseDecisionActions(releaseDecision),
+    releaseReadinessSummary: summarizeReleaseReadiness(
+      qualityGate,
+      releaseBlockerSummary,
+      nonPassingExecutedSummary,
+      regressionRisk,
+    ),
     releaseBlockers: findReleaseBlockers(tests),
-    releaseBlockerSummary: summarizeReleaseBlockers(tests),
+    releaseBlockerSummary,
     stability: summarizeExecutionStability(tests),
     durationProfile: summarizeDurationProfile(tests),
     regressionRisk,
@@ -123,7 +132,7 @@ export function buildQaRunReport(
     retriedTests,
     flakyTestSummary: summarizeFlakyTests(flakyTests),
     flakyTests,
-    nonPassingExecutedSummary: summarizeNonPassingExecutedTests(nonPassingExecutedTests),
+    nonPassingExecutedSummary,
     nonPassingExecutedTests,
     tests,
   };
@@ -218,6 +227,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     `Status: **${report.releaseDecision.status}**`,
     '',
     report.releaseDecision.summary,
+    '',
+    '### Release Readiness Summary',
+    '',
+    '| Status | Quality gate failures | Release blockers | Non-passing executed | Risk score |',
+    '| --- | ---: | ---: | ---: | ---: |',
+    `| ${report.releaseReadinessSummary.status} | ${report.releaseReadinessSummary.qualityGateFailures} | ${report.releaseReadinessSummary.releaseBlockers} | ${report.releaseReadinessSummary.nonPassingExecuted} | ${report.releaseReadinessSummary.riskScore} |`,
     '',
     '### Release Decision Action Summary',
     '',
