@@ -172,7 +172,7 @@ The report groups tests by suite and marks each suite as `healthy` or `attention
 
 Suite health includes totals, executed tests, passed tests, failure counts, flaky counts, skipped tests, and pass rate. Suites needing attention are listed first so triage can start in the highest-risk area.
 
-The report also includes a suite-health summary with total, healthy, and attention suite counts before the detailed suite table.
+The report also includes a suite-health summary with total, healthy, and attention suite counts plus the attention rate before the detailed suite table.
 
 ## Suite Performance
 

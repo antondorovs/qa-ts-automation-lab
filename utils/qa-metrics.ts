@@ -258,6 +258,7 @@ export type QaSuiteHealthSummary = {
   total: number;
   healthy: number;
   attention: number;
+  attentionRate: number;
 };
 
 export type QaStabilitySummary = {
@@ -1008,10 +1009,13 @@ export function summarizeSuiteHealth(results: QaTestResult[]): QaSuiteHealth[] {
 }
 
 export function summarizeSuiteHealthStatus(suiteHealth: QaSuiteHealth[]): QaSuiteHealthSummary {
+  const attention = suiteHealth.filter((suite) => suite.status === 'attention').length;
+
   return {
     total: suiteHealth.length,
     healthy: suiteHealth.filter((suite) => suite.status === 'healthy').length,
-    attention: suiteHealth.filter((suite) => suite.status === 'attention').length,
+    attention,
+    attentionRate: suiteHealth.length ? percentage(attention, suiteHealth.length) : 0,
   };
 }
 
