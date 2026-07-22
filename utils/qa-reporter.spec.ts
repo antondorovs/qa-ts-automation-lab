@@ -11,6 +11,7 @@ import {
   findUntaggedTests,
   summarizeClassification,
   summarizeDurationBudgetBreaches,
+  summarizeDurationHealth,
   summarizeDurationProfile,
   summarizeExecutionStability,
   summarizeFailedTests,
@@ -538,6 +539,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
     expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 0% | 1.92s |');
+    expect(markdown).toContain('## Duration Health Summary');
+    expect(markdown).toContain('| 2 | 1.00s | 1 | 1 | 0 |');
     expect(markdown).toContain('## Quality Gate Policy Summary');
     expect(markdown).toContain('| 5 | 2 | 1 | 0 | 2 |');
     expect(markdown).toContain('## Quality Gate Policy');
@@ -1281,10 +1284,21 @@ test.describe('@utils @contract QA run intelligence', () => {
       createResult('disabled check', STATUS.SKIPPED, 0),
     ];
     const durationProfile = summarizeDurationProfile(results);
+    const slowTests = [
+      {
+        id: 'tail-check',
+        suite: 'utils/qa-reporter.spec.ts',
+        title: 'tail check',
+        status: STATUS.PASSED,
+        durationMs: 400,
+      },
+    ];
     const report = buildQaRunReport(results, {
       generatedAt: '2026-07-06T12:00:00.000Z',
       runStatus: 'passed',
       durationMs: 1000,
+    }, {
+      slowTestThresholdMs: 350,
     });
     const markdown = renderQaReportMarkdown(report);
 
@@ -1297,9 +1311,25 @@ test.describe('@utils @contract QA run intelligence', () => {
       p95DurationMs: 400,
       maximumDurationMs: 400,
     });
+    expect(summarizeDurationHealth(results, slowTests, [], 350)).toEqual({
+      executed: 4,
+      slowTestThresholdMs: 350,
+      withinSlowThreshold: 3,
+      slowTests: 1,
+      durationBudgetBreaches: 0,
+    });
+    expect(report.durationHealthSummary).toEqual({
+      executed: 4,
+      slowTestThresholdMs: 350,
+      withinSlowThreshold: 3,
+      slowTests: 1,
+      durationBudgetBreaches: 0,
+    });
     expect(report.durationProfile).toEqual(durationProfile);
     expect(markdown).toContain('## Execution Duration Profile');
     expect(markdown).toContain('| 4 | 1.00s | 100ms | 250ms | 250ms | 400ms | 400ms |');
+    expect(markdown).toContain('## Duration Health Summary');
+    expect(markdown).toContain('| 4 | 350ms | 3 | 1 | 0 |');
   });
 
   test('release decision should turn failed quality checks into action items', () => {

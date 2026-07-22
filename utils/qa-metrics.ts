@@ -280,6 +280,14 @@ export type QaDurationProfile = {
   maximumDurationMs: number;
 };
 
+export type QaDurationHealthSummary = {
+  executed: number;
+  slowTestThresholdMs: number;
+  withinSlowThreshold: number;
+  slowTests: number;
+  durationBudgetBreaches: number;
+};
+
 export type QaReleaseDecision = {
   status: QualityGateResult['status'];
   summary: string;
@@ -330,6 +338,7 @@ export type QaRunReport = {
   releaseBlockerSummary: QaReleaseBlockerSummary;
   stability: QaStabilitySummary;
   durationProfile: QaDurationProfile;
+  durationHealthSummary: QaDurationHealthSummary;
   regressionRisk: RegressionRiskSummary;
   riskHotspotSummary: QaRiskHotspotSummary;
   riskHotspots: RegressionRiskHotspot[];
@@ -1053,6 +1062,23 @@ export function summarizeDurationProfile(results: QaTestResult[]): QaDurationPro
     medianDurationMs,
     p95DurationMs: durations.length ? durations[Math.ceil(durations.length * 0.95) - 1] : 0,
     maximumDurationMs: durations.at(-1) || 0,
+  };
+}
+
+export function summarizeDurationHealth(
+  results: QaTestResult[],
+  slowTests: SlowTest[],
+  durationBudgetBreaches: DurationBudgetBreach[],
+  slowTestThresholdMs = 1000,
+): QaDurationHealthSummary {
+  const executed = results.filter((result) => result.status !== STATUS.SKIPPED).length;
+
+  return {
+    executed,
+    slowTestThresholdMs,
+    withinSlowThreshold: Math.max(0, executed - slowTests.length),
+    slowTests: slowTests.length,
+    durationBudgetBreaches: durationBudgetBreaches.length,
   };
 }
 

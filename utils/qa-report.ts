@@ -13,6 +13,7 @@ import {
   summarizeClassification,
   summarizeDurationProfile,
   summarizeDurationBudgetBreaches,
+  summarizeDurationHealth,
   summarizeExecutionStability,
   summarizeFailedTests,
   summarizeFailedQualityGateChecks,
@@ -67,6 +68,10 @@ export function buildQaRunReport(
   const retriedTests = findRetriedTests(tests);
   const failedTests = findFailedTests(tests);
   const untaggedTests = findUntaggedTests(tests);
+  const durationBudgetBreaches = findDurationBudgetBreaches(
+    tests,
+    options.qualityGate?.maximumTestDurationMs,
+  );
   const riskHotspots = buildRegressionRiskHotspots(tests, options.slowTestThresholdMs);
   const releaseBlockerSummary = summarizeReleaseBlockers(tests);
   const nonPassingExecutedSummary = summarizeNonPassingExecutedTests(nonPassingExecutedTests);
@@ -100,6 +105,12 @@ export function buildQaRunReport(
     releaseBlockerSummary,
     stability: summarizeExecutionStability(tests),
     durationProfile: summarizeDurationProfile(tests),
+    durationHealthSummary: summarizeDurationHealth(
+      tests,
+      slowTests,
+      durationBudgetBreaches,
+      options.slowTestThresholdMs,
+    ),
     regressionRisk,
     riskHotspotSummary: summarizeRiskHotspots(riskHotspots),
     riskHotspots,
@@ -118,10 +129,7 @@ export function buildQaRunReport(
       tests,
       options.qualityGate?.maximumTestDurationMs,
     ),
-    durationBudgetBreaches: findDurationBudgetBreaches(
-      tests,
-      options.qualityGate?.maximumTestDurationMs,
-    ),
+    durationBudgetBreaches,
     failedTestSummary: summarizeFailedTests(failedTests),
     failedTests,
     skippedTestSummary: summarizeSkippedTests(skippedTests),
@@ -164,6 +172,12 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     '| Executed | Total | Minimum | Average | Median | P95 | Maximum |',
     '| ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
     `| ${report.durationProfile.executed} | ${formatDuration(report.durationProfile.totalDurationMs)} | ${formatDuration(report.durationProfile.minimumDurationMs)} | ${formatDuration(report.durationProfile.averageDurationMs)} | ${formatDuration(report.durationProfile.medianDurationMs)} | ${formatDuration(report.durationProfile.p95DurationMs)} | ${formatDuration(report.durationProfile.maximumDurationMs)} |`,
+    '',
+    '## Duration Health Summary',
+    '',
+    '| Executed | Slow threshold | Within threshold | Slow tests | Budget breaches |',
+    '| ---: | ---: | ---: | ---: | ---: |',
+    `| ${report.durationHealthSummary.executed} | ${formatDuration(report.durationHealthSummary.slowTestThresholdMs)} | ${report.durationHealthSummary.withinSlowThreshold} | ${report.durationHealthSummary.slowTests} | ${report.durationHealthSummary.durationBudgetBreaches} |`,
     '',
     '## Quality Gate Policy Summary',
     '',

@@ -192,6 +192,8 @@ The report summarizes duration across executed tests with total, minimum, averag
 
 Minimum duration shows the fastest executed check, median duration represents a typical test, while the 95th percentile and maximum expose tail latency that an average can hide.
 
+The duration health summary shows how many executed tests stayed within the configured slow-test threshold, how many were slow, and how many exceeded the optional individual-test duration budget.
+
 Projects can set `maximumP95DurationMs` to block a run when the slowest five percent of executed tests exceed an acceptable duration. The threshold is optional and skipped tests remain excluded from the calculation.
 
 The optional `maximumTestDurationMs` threshold blocks a run when any executed test exceeds its duration budget. This catches a single severe outlier even when the average and p95 remain acceptable across a large suite.
