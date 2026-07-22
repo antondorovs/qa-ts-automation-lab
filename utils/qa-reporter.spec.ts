@@ -500,6 +500,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       total: 1,
       healthy: 1,
       attention: 0,
+      attentionRate: 0,
     });
     expect(report.suiteHealth).toEqual([
       {
@@ -578,7 +579,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 2 | 2 | 0 | 0 | 0 | 100% |');
     expect(markdown).toContain('## Test Area Summary');
     expect(markdown).toContain('## Test Area Status Summary');
-    expect(markdown).toContain('| 1 | 1 | 0 |');
+    expect(markdown).toContain('| Total areas | Healthy | Attention | Attention rate |');
+    expect(markdown).toContain('| 1 | 1 | 0 | 0% |');
     expect(markdown).toContain('| utils | healthy | 2 | 2 | 2 | 0 | 0 | 0 | 100% | 1.92s |');
     expect(markdown).toContain('## Suite Health');
     expect(markdown).toContain('## Suite Health Summary');
@@ -964,6 +966,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       total: 3,
       healthy: 1,
       attention: 2,
+      attentionRate: 66.67,
     });
   });
 

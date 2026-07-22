@@ -164,7 +164,7 @@ The report groups suites by the first path segment, such as `api`, `playwright`,
 
 Areas with failures or flaky tests are marked `attention` and sorted above healthy areas. This gives a quick release-level view before drilling into individual suites.
 
-The report includes a test-area status summary with total, healthy, and attention area counts before the detailed area table.
+The report includes a test-area status summary with total, healthy, and attention area counts plus the attention rate before the detailed area table.
 
 ## Suite Health
 

@@ -214,6 +214,7 @@ export type QaTestAreaStatusSummary = {
   total: number;
   healthy: number;
   attention: number;
+  attentionRate: number;
 };
 
 export type QaClassificationSummary = {
@@ -909,10 +910,13 @@ export function summarizeTestAreas(results: QaTestResult[]): QaTestAreaSummary[]
 }
 
 export function summarizeTestAreaStatus(testAreas: QaTestAreaSummary[]): QaTestAreaStatusSummary {
+  const attention = testAreas.filter((area) => area.status === 'attention').length;
+
   return {
     total: testAreas.length,
     healthy: testAreas.filter((area) => area.status === 'healthy').length,
-    attention: testAreas.filter((area) => area.status === 'attention').length,
+    attention,
+    attentionRate: testAreas.length ? percentage(attention, testAreas.length) : 0,
   };
 }
 
