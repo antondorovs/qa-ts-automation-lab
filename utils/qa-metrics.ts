@@ -129,6 +129,7 @@ export type SkippedTestSummary = {
   tagged: number;
   untagged: number;
   liveTagged: number;
+  liveTaggedRate: number;
 };
 
 export type UntaggedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status'>;
@@ -688,11 +689,14 @@ export function findSkippedTests(results: QaTestResult[]): SkippedTest[] {
 }
 
 export function summarizeSkippedTests(skippedTests: SkippedTest[]): SkippedTestSummary {
+  const liveTagged = skippedTests.filter((test) => test.tags.includes('live')).length;
+
   return {
     total: skippedTests.length,
     tagged: skippedTests.filter((test) => test.tags.length > 0).length,
     untagged: skippedTests.filter((test) => test.tags.length === 0).length,
-    liveTagged: skippedTests.filter((test) => test.tags.includes('live')).length,
+    liveTagged,
+    liveTaggedRate: skippedTests.length ? percentage(liveTagged, skippedTests.length) : 0,
   };
 }
 

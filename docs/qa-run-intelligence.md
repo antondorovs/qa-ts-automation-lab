@@ -156,7 +156,7 @@ The report keeps a dedicated inventory of skipped tests with their suite and nor
 
 This makes intentionally disabled scenarios and optional diagnostics visible without lowering the pass rate. Untagged skipped tests are labeled explicitly in the Markdown summary.
 
-The same section includes a skipped-test summary with total, tagged, untagged, and live-tagged counts before the detailed inventory.
+The same section includes a skipped-test summary with total, tagged, untagged, live-tagged count, and live-tagged rate before the detailed inventory.
 
 ## Test Area Summary
 
