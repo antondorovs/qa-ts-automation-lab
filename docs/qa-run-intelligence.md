@@ -138,7 +138,7 @@ The report includes a tag-coverage status summary with the total number of tag r
 
 ## Test Classification
 
-The report summarizes test classification hygiene across the whole run. It shows total tests, tagged tests, untagged tests, skipped tests, live-tagged diagnostics, and the overall classification rate.
+The report summarizes test classification hygiene across the whole run. It shows total tests, tagged tests, untagged tests, skipped tests, live-tagged diagnostics, the overall classification rate, and the untagged rate.
 
 This makes missing tags visible before they become a reporting blind spot. Live-tagged tests are counted separately because they are optional diagnostics rather than deterministic CI coverage.
 

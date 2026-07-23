@@ -227,6 +227,7 @@ export type QaClassificationSummary = {
   skipped: number;
   liveTagged: number;
   classificationRate: number;
+  untaggedRate: number;
 };
 
 export type QaSuitePerformance = {
@@ -934,14 +935,16 @@ export function summarizeTestAreaStatus(testAreas: QaTestAreaSummary[]): QaTestA
 
 export function summarizeClassification(results: QaTestResult[]): QaClassificationSummary {
   const tagged = results.filter((result) => result.tags.length > 0).length;
+  const untagged = results.length - tagged;
 
   return {
     total: results.length,
     tagged,
-    untagged: results.length - tagged,
+    untagged,
     skipped: countByStatus(results, STATUS.SKIPPED),
     liveTagged: results.filter((result) => result.tags.includes('live')).length,
     classificationRate: results.length ? percentage(tagged, results.length) : 100,
+    untaggedRate: results.length ? percentage(untagged, results.length) : 0,
   };
 }
 

@@ -481,6 +481,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       skipped: 0,
       liveTagged: 0,
       classificationRate: 100,
+      untaggedRate: 0,
     });
     expect(report.testAreas).toEqual([
       {
@@ -579,7 +580,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
     expect(markdown).toContain('## Test Classification');
-    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 0 | 100% |');
+    expect(markdown).toContain('| Total | Tagged | Untagged | Skipped | Live-tagged | Classification rate | Untagged rate |');
+    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 0 | 100% | 0% |');
     expect(markdown).toContain('## Test Area Summary');
     expect(markdown).toContain('## Test Area Status Summary');
     expect(markdown).toContain('| Total areas | Healthy | Attention | Attention rate |');
@@ -993,6 +995,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       skipped: 2,
       liveTagged: 1,
       classificationRate: 75,
+      untaggedRate: 25,
     });
   });
 

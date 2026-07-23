@@ -311,9 +311,9 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     '',
     '## Test Classification',
     '',
-    '| Total | Tagged | Untagged | Skipped | Live-tagged | Classification rate |',
-    '| ---: | ---: | ---: | ---: | ---: | ---: |',
-    `| ${report.classification.total} | ${report.classification.tagged} | ${report.classification.untagged} | ${report.classification.skipped} | ${report.classification.liveTagged} | ${report.classification.classificationRate}% |`,
+    '| Total | Tagged | Untagged | Skipped | Live-tagged | Classification rate | Untagged rate |',
+    '| ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+    `| ${report.classification.total} | ${report.classification.tagged} | ${report.classification.untagged} | ${report.classification.skipped} | ${report.classification.liveTagged} | ${report.classification.classificationRate}% | ${report.classification.untaggedRate}% |`,
   );
 
   if (report.untaggedTests.length) {
