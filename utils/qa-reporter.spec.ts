@@ -567,12 +567,15 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
     expect(report.tagCoverageStatusSummary).toEqual({
       total: 4,
+      attention: 0,
+      attentionRate: 0,
       failing: 0,
       flaky: 0,
       skipped: 0,
     });
     expect(markdown).toContain('## Tag Coverage Status Summary');
-    expect(markdown).toContain('| 4 | 0 | 0 | 0 |');
+    expect(markdown).toContain('| Tag rows | Attention tags | Attention rate | Failing tags | Flaky tags | Skipped tags |');
+    expect(markdown).toContain('| 4 | 0 | 0% | 0 | 0 | 0 |');
     expect(markdown).toContain('## Tag Coverage');
     expect(markdown).toContain('| smoke | 1 | 1 | 1 | 0 | 0 | 0 | 100% | 1.80s |');
     expect(markdown).toContain('## Test Classification');
@@ -787,6 +790,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     ]);
     expect(summarizeTagCoverageStatus(coverage)).toEqual({
       total: 4,
+      attention: 3,
+      attentionRate: 75,
       failing: 2,
       flaky: 0,
       skipped: 1,

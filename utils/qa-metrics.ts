@@ -192,6 +192,8 @@ export type QaTagSummary = {
 
 export type QaTagCoverageStatusSummary = {
   total: number;
+  attention: number;
+  attentionRate: number;
   failing: number;
   flaky: number;
   skipped: number;
@@ -863,8 +865,14 @@ export function summarizeTagCoverage(results: QaTestResult[]): QaTagSummary[] {
 export function summarizeTagCoverageStatus(
   tagCoverage: QaTagSummary[],
 ): QaTagCoverageStatusSummary {
+  const attention = tagCoverage.filter((tag) => (
+    tag.failures > 0 || tag.flaky > 0 || tag.skipped > 0
+  )).length;
+
   return {
     total: tagCoverage.length,
+    attention,
+    attentionRate: tagCoverage.length ? percentage(attention, tagCoverage.length) : 0,
     failing: tagCoverage.filter((tag) => tag.failures > 0).length,
     flaky: tagCoverage.filter((tag) => tag.flaky > 0).length,
     skipped: tagCoverage.filter((tag) => tag.skipped > 0).length,

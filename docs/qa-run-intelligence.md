@@ -134,7 +134,7 @@ The report groups results by normalized Playwright tags and shows the total, exe
 
 A test can contribute to multiple tag rows, such as `api` and `smoke`. Tests without tags are grouped under `untagged` so missing classification remains visible as the suite grows.
 
-The report includes a tag-coverage status summary with the total number of tag rows and how many contain failures, flaky tests, or skipped tests.
+The report includes a tag-coverage status summary with the total number of tag rows, how many need attention, the attention rate, and how many contain failures, flaky tests, or skipped tests.
 
 ## Test Classification
 
