@@ -139,6 +139,7 @@ export type UntaggedTestSummary = {
   executed: number;
   skipped: number;
   nonPassing: number;
+  nonPassingRate: number;
 };
 
 export type RetriedTest = Pick<
@@ -712,13 +713,16 @@ export function findUntaggedTests(results: QaTestResult[]): UntaggedTest[] {
 }
 
 export function summarizeUntaggedTests(untaggedTests: UntaggedTest[]): UntaggedTestSummary {
+  const nonPassing = untaggedTests.filter((test) => (
+    test.status !== STATUS.PASSED && test.status !== STATUS.SKIPPED
+  )).length;
+
   return {
     total: untaggedTests.length,
     executed: untaggedTests.filter((test) => test.status !== STATUS.SKIPPED).length,
     skipped: untaggedTests.filter((test) => test.status === STATUS.SKIPPED).length,
-    nonPassing: untaggedTests.filter((test) => (
-      test.status !== STATUS.PASSED && test.status !== STATUS.SKIPPED
-    )).length,
+    nonPassing,
+    nonPassingRate: untaggedTests.length ? percentage(nonPassing, untaggedTests.length) : 0,
   };
 }
 

@@ -1048,16 +1048,19 @@ test.describe('@utils @contract QA run intelligence', () => {
       executed: 2,
       skipped: 1,
       nonPassing: 1,
+      nonPassingRate: 33.33,
     });
     expect(report.untaggedTestSummary).toEqual({
       total: 3,
       executed: 2,
       skipped: 1,
       nonPassing: 1,
+      nonPassingRate: 33.33,
     });
     expect(report.untaggedTests).toEqual(untaggedTests);
     expect(markdown).toContain('## Untagged Test Summary');
-    expect(markdown).toContain('| 3 | 2 | 1 | 1 |');
+    expect(markdown).toContain('| Total | Executed | Skipped | Non-passing | Non-passing rate |');
+    expect(markdown).toContain('| 3 | 2 | 1 | 1 | 33.33% |');
     expect(markdown).toContain('## Untagged Tests');
     expect(markdown).toContain('| billing draft | api/billing.api.spec.ts | failed |');
     expect(markdown).toContain('| API draft | api/users.api.spec.ts | passed |');
