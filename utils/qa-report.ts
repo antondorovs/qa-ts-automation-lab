@@ -74,7 +74,10 @@ export function buildQaRunReport(
   );
   const riskHotspots = buildRegressionRiskHotspots(tests, options.slowTestThresholdMs);
   const releaseBlockerSummary = summarizeReleaseBlockers(tests);
-  const nonPassingExecutedSummary = summarizeNonPassingExecutedTests(nonPassingExecutedTests);
+  const nonPassingExecutedSummary = summarizeNonPassingExecutedTests(
+    nonPassingExecutedTests,
+    qualityGate.summary.executed,
+  );
   const releaseDecision = buildReleaseDecision(qualityGate);
   const regressionRisk = buildRegressionRiskSummary({
     failed: qualityGate.summary.failed
@@ -438,9 +441,9 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '',
       '## Non-Passing Executed Summary',
       '',
-      '| Total | Failed | Timed out | Interrupted | Flaky | Total duration |',
-      '| ---: | ---: | ---: | ---: | ---: | ---: |',
-      `| ${report.nonPassingExecutedSummary.total} | ${report.nonPassingExecutedSummary.failed} | ${report.nonPassingExecutedSummary.timedOut} | ${report.nonPassingExecutedSummary.interrupted} | ${report.nonPassingExecutedSummary.flaky} | ${formatDuration(report.nonPassingExecutedSummary.totalDurationMs)} |`,
+      '| Total | Failed | Timed out | Interrupted | Flaky | Non-passing rate | Total duration |',
+      '| ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+      `| ${report.nonPassingExecutedSummary.total} | ${report.nonPassingExecutedSummary.failed} | ${report.nonPassingExecutedSummary.timedOut} | ${report.nonPassingExecutedSummary.interrupted} | ${report.nonPassingExecutedSummary.flaky} | ${report.nonPassingExecutedSummary.nonPassingRate}% | ${formatDuration(report.nonPassingExecutedSummary.totalDurationMs)} |`,
       '',
       '## Non-Passing Executed Tests',
       '',

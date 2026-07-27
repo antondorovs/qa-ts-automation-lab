@@ -177,6 +177,7 @@ export type NonPassingExecutedSummary = {
   timedOut: number;
   interrupted: number;
   flaky: number;
+  nonPassingRate: number;
   totalDurationMs: number;
 };
 
@@ -806,6 +807,7 @@ export function findNonPassingExecutedTests(results: QaTestResult[]): NonPassing
 
 export function summarizeNonPassingExecutedTests(
   nonPassingExecutedTests: NonPassingExecutedTest[],
+  executed = nonPassingExecutedTests.length,
 ): NonPassingExecutedSummary {
   return {
     total: nonPassingExecutedTests.length,
@@ -813,6 +815,7 @@ export function summarizeNonPassingExecutedTests(
     timedOut: countByStatus(nonPassingExecutedTests, STATUS.TIMED_OUT),
     interrupted: countByStatus(nonPassingExecutedTests, STATUS.INTERRUPTED),
     flaky: countByStatus(nonPassingExecutedTests, STATUS.FLAKY),
+    nonPassingRate: executed ? percentage(nonPassingExecutedTests.length, executed) : 0,
     totalDurationMs: nonPassingExecutedTests.reduce((total, test) => total + test.durationMs, 0),
   };
 }
