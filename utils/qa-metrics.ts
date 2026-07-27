@@ -321,6 +321,7 @@ export type QaReleaseBlockerSummary = {
   timedOut: number;
   interrupted: number;
   flaky: number;
+  blockerRate: number;
 };
 
 export type QaRiskHotspotSummary = {
@@ -822,6 +823,7 @@ export function findReleaseBlockers(results: QaTestResult[]): QaTestResult[] {
 
 export function summarizeReleaseBlockers(results: QaTestResult[]): QaReleaseBlockerSummary {
   const releaseBlockers = findReleaseBlockers(results);
+  const executed = results.filter((result) => result.status !== STATUS.SKIPPED).length;
 
   return {
     total: releaseBlockers.length,
@@ -829,6 +831,7 @@ export function summarizeReleaseBlockers(results: QaTestResult[]): QaReleaseBloc
     timedOut: countByStatus(releaseBlockers, STATUS.TIMED_OUT),
     interrupted: countByStatus(releaseBlockers, STATUS.INTERRUPTED),
     flaky: countByStatus(releaseBlockers, STATUS.FLAKY),
+    blockerRate: executed ? percentage(releaseBlockers.length, executed) : 0,
   };
 }
 

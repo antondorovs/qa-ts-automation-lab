@@ -668,10 +668,12 @@ test.describe('@utils @contract QA run intelligence', () => {
       timedOut: 0,
       interrupted: 0,
       flaky: 1,
+      blockerRate: 100,
     });
     expect(markdown).toContain('## Release Blockers');
     expect(markdown).toContain('## Release Blocker Summary');
-    expect(markdown).toContain('| 2 | 1 | 0 | 0 | 1 |');
+    expect(markdown).toContain('| Total | Failed | Timed out | Interrupted | Flaky | Blocker rate |');
+    expect(markdown).toContain('| 2 | 1 | 0 | 0 | 1 | 100% |');
     expect(markdown).toContain('| failed checkout | playwright/checkout.spec.ts | failed | 1 | ui |');
     expect(markdown).toContain('| flaky login | playwright/login.spec.ts | flaky | 2 | ui |');
     expect(markdown).not.toContain('| skipped live API | api/live/public-apis.live.spec.ts | skipped |');
@@ -693,6 +695,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       timedOut: 1,
       interrupted: 1,
       flaky: 1,
+      blockerRate: 80,
     });
   });
 
