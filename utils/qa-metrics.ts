@@ -119,6 +119,7 @@ export type FailedTestSummary = {
   failed: number;
   timedOut: number;
   interrupted: number;
+  averageDurationMs: number;
   totalDurationMs: number;
 };
 
@@ -673,12 +674,15 @@ export function findFailedTests(results: QaTestResult[]): FailedTest[] {
 }
 
 export function summarizeFailedTests(failedTests: FailedTest[]): FailedTestSummary {
+  const totalDurationMs = failedTests.reduce((total, test) => total + test.durationMs, 0);
+
   return {
     total: failedTests.length,
     failed: failedTests.filter((test) => test.status === STATUS.FAILED).length,
     timedOut: failedTests.filter((test) => test.status === STATUS.TIMED_OUT).length,
     interrupted: failedTests.filter((test) => test.status === STATUS.INTERRUPTED).length,
-    totalDurationMs: failedTests.reduce((total, test) => total + test.durationMs, 0),
+    averageDurationMs: failedTests.length ? Math.round(totalDurationMs / failedTests.length) : 0,
+    totalDurationMs,
   };
 }
 
