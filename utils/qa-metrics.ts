@@ -95,6 +95,7 @@ export type SlowTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' | 
 export type SlowTestSummary = {
   total: number;
   thresholdMs: number;
+  averageDurationMs: number;
   maximumDurationMs: number;
 };
 
@@ -612,9 +613,12 @@ export function findSlowTests(results: QaTestResult[], thresholdMs = 1000): Slow
 }
 
 export function summarizeSlowTests(slowTests: SlowTest[], thresholdMs = 1000): SlowTestSummary {
+  const totalDurationMs = slowTests.reduce((total, test) => total + test.durationMs, 0);
+
   return {
     total: slowTests.length,
     thresholdMs,
+    averageDurationMs: slowTests.length ? Math.round(totalDurationMs / slowTests.length) : 0,
     maximumDurationMs: Math.max(0, ...slowTests.map((test) => test.durationMs)),
   };
 }

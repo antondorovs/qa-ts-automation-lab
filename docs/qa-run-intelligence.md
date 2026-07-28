@@ -202,7 +202,7 @@ When that threshold is configured, the report also lists every executed test tha
 
 The same section includes a duration-budget breach summary with total breaches, configured threshold, maximum duration, average amount over budget, and maximum amount over budget.
 
-When slow tests are present, the report includes a slow-test summary with the total count, configured threshold, and maximum duration before the detailed slow-test list.
+When slow tests are present, the report includes a slow-test summary with the total count, configured threshold, average duration, and maximum duration before the detailed slow-test list.
 
 ## CI Visibility
 
