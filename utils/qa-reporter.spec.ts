@@ -1292,17 +1292,20 @@ test.describe('@utils @contract QA run intelligence', () => {
       total: 2,
       maximumAttempts: 3,
       retryAttempts: 3,
+      averageDurationMs: 650,
       totalDurationMs: 1300,
     });
     expect(report.flakyTestSummary).toEqual({
       total: 2,
       maximumAttempts: 3,
       retryAttempts: 3,
+      averageDurationMs: 650,
       totalDurationMs: 1300,
     });
     expect(report.flakyTests).toEqual(flakyTests);
     expect(markdown).toContain('## Flaky Test Summary');
-    expect(markdown).toContain('| 2 | 3 | 3 | 1.30s |');
+    expect(markdown).toContain('| Total | Maximum attempts | Retry attempts | Average duration | Total duration |');
+    expect(markdown).toContain('| 2 | 3 | 3 | 650ms | 1.30s |');
     expect(markdown).toContain('## Flaky Tests');
     expect(markdown).toContain('| flaky payment | utils/qa-reporter.spec.ts | 3 | 900ms | payment, regression |');
     expect(markdown).toContain('| flaky checkout | utils/qa-reporter.spec.ts | 2 | 400ms | ui |');

@@ -166,6 +166,7 @@ export type FlakyTestSummary = {
   total: number;
   maximumAttempts: number;
   retryAttempts: number;
+  averageDurationMs: number;
   totalDurationMs: number;
 };
 
@@ -789,11 +790,14 @@ export function findFlakyTests(results: QaTestResult[]): FlakyTest[] {
 }
 
 export function summarizeFlakyTests(flakyTests: FlakyTest[]): FlakyTestSummary {
+  const totalDurationMs = flakyTests.reduce((total, test) => total + test.durationMs, 0);
+
   return {
     total: flakyTests.length,
     maximumAttempts: Math.max(0, ...flakyTests.map((test) => test.attempts)),
     retryAttempts: flakyTests.reduce((total, test) => total + Math.max(0, test.attempts - 1), 0),
-    totalDurationMs: flakyTests.reduce((total, test) => total + test.durationMs, 0),
+    averageDurationMs: flakyTests.length ? Math.round(totalDurationMs / flakyTests.length) : 0,
+    totalDurationMs,
   };
 }
 
