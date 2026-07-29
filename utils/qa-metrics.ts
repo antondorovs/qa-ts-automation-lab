@@ -182,6 +182,7 @@ export type NonPassingExecutedSummary = {
   interrupted: number;
   flaky: number;
   nonPassingRate: number;
+  averageDurationMs: number;
   totalDurationMs: number;
 };
 
@@ -826,6 +827,11 @@ export function summarizeNonPassingExecutedTests(
   nonPassingExecutedTests: NonPassingExecutedTest[],
   executed = nonPassingExecutedTests.length,
 ): NonPassingExecutedSummary {
+  const totalDurationMs = nonPassingExecutedTests.reduce(
+    (total, test) => total + test.durationMs,
+    0,
+  );
+
   return {
     total: nonPassingExecutedTests.length,
     failed: countByStatus(nonPassingExecutedTests, STATUS.FAILED),
@@ -833,7 +839,10 @@ export function summarizeNonPassingExecutedTests(
     interrupted: countByStatus(nonPassingExecutedTests, STATUS.INTERRUPTED),
     flaky: countByStatus(nonPassingExecutedTests, STATUS.FLAKY),
     nonPassingRate: executed ? percentage(nonPassingExecutedTests.length, executed) : 0,
-    totalDurationMs: nonPassingExecutedTests.reduce((total, test) => total + test.durationMs, 0),
+    averageDurationMs: nonPassingExecutedTests.length
+      ? Math.round(totalDurationMs / nonPassingExecutedTests.length)
+      : 0,
+    totalDurationMs,
   };
 }
 

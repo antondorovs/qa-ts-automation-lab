@@ -736,6 +736,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       interrupted: 1,
       flaky: 1,
       nonPassingRate: 80,
+      averageDurationMs: 575,
       totalDurationMs: 2300,
     });
     expect(report.nonPassingExecutedSummary).toEqual({
@@ -745,12 +746,13 @@ test.describe('@utils @contract QA run intelligence', () => {
       interrupted: 1,
       flaky: 1,
       nonPassingRate: 80,
+      averageDurationMs: 575,
       totalDurationMs: 2300,
     });
     expect(report.nonPassingExecutedTests).toEqual(nonPassingExecutedTests);
     expect(markdown).toContain('## Non-Passing Executed Summary');
-    expect(markdown).toContain('| Total | Failed | Timed out | Interrupted | Flaky | Non-passing rate | Total duration |');
-    expect(markdown).toContain('| 4 | 1 | 1 | 1 | 1 | 80% | 2.30s |');
+    expect(markdown).toContain('| Total | Failed | Timed out | Interrupted | Flaky | Non-passing rate | Average duration | Total duration |');
+    expect(markdown).toContain('| 4 | 1 | 1 | 1 | 1 | 80% | 575ms | 2.30s |');
     expect(markdown).toContain('## Non-Passing Executed Tests');
     expect(markdown).toContain('| failed payment | utils/qa-reporter.spec.ts | failed | 1 | 700ms | payment |');
     expect(markdown).toContain('| timed out checkout | utils/qa-reporter.spec.ts | timedOut | 1 | 900ms | ui |');
