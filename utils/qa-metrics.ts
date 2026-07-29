@@ -329,6 +329,8 @@ export type QaReleaseBlockerSummary = {
   interrupted: number;
   flaky: number;
   blockerRate: number;
+  averageDurationMs: number;
+  totalDurationMs: number;
 };
 
 export type QaRiskHotspotSummary = {
@@ -857,6 +859,7 @@ export function findReleaseBlockers(results: QaTestResult[]): QaTestResult[] {
 export function summarizeReleaseBlockers(results: QaTestResult[]): QaReleaseBlockerSummary {
   const releaseBlockers = findReleaseBlockers(results);
   const executed = results.filter((result) => result.status !== STATUS.SKIPPED).length;
+  const totalDurationMs = releaseBlockers.reduce((total, test) => total + test.durationMs, 0);
 
   return {
     total: releaseBlockers.length,
@@ -865,6 +868,8 @@ export function summarizeReleaseBlockers(results: QaTestResult[]): QaReleaseBloc
     interrupted: countByStatus(releaseBlockers, STATUS.INTERRUPTED),
     flaky: countByStatus(releaseBlockers, STATUS.FLAKY),
     blockerRate: executed ? percentage(releaseBlockers.length, executed) : 0,
+    averageDurationMs: releaseBlockers.length ? Math.round(totalDurationMs / releaseBlockers.length) : 0,
+    totalDurationMs,
   };
 }
 

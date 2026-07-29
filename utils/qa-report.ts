@@ -419,9 +419,9 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '',
       '## Release Blocker Summary',
       '',
-      '| Total | Failed | Timed out | Interrupted | Flaky | Blocker rate |',
-      '| ---: | ---: | ---: | ---: | ---: | ---: |',
-      `| ${report.releaseBlockerSummary.total} | ${report.releaseBlockerSummary.failed} | ${report.releaseBlockerSummary.timedOut} | ${report.releaseBlockerSummary.interrupted} | ${report.releaseBlockerSummary.flaky} | ${report.releaseBlockerSummary.blockerRate}% |`,
+      '| Total | Failed | Timed out | Interrupted | Flaky | Blocker rate | Average duration | Total duration |',
+      '| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+      `| ${report.releaseBlockerSummary.total} | ${report.releaseBlockerSummary.failed} | ${report.releaseBlockerSummary.timedOut} | ${report.releaseBlockerSummary.interrupted} | ${report.releaseBlockerSummary.flaky} | ${report.releaseBlockerSummary.blockerRate}% | ${formatDuration(report.releaseBlockerSummary.averageDurationMs)} | ${formatDuration(report.releaseBlockerSummary.totalDurationMs)} |`,
     );
 
     lines.push(
