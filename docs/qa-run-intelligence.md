@@ -105,7 +105,7 @@ The report lists every test that required more than one attempt, including its s
 
 This connects the run-level stability rate to concrete test cases so flaky or repeatedly failing scenarios can be investigated without searching through the full Playwright log.
 
-The same section includes a retried-test summary with total retried tests, maximum attempts, retry attempts, average duration, and total retried-test duration.
+The same section includes a retried-test summary with total retried tests, maximum attempts, retry attempts, average duration, maximum duration, and total retried-test duration.
 
 ## Flaky Test Inventory
 

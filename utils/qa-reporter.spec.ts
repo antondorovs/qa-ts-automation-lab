@@ -1225,6 +1225,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       maximumAttempts: 3,
       retryAttempts: 3,
       averageDurationMs: 100,
+      maximumDurationMs: 100,
       totalDurationMs: 200,
     });
     expect(report.retriedTestSummary).toEqual({
@@ -1232,11 +1233,12 @@ test.describe('@utils @contract QA run intelligence', () => {
       maximumAttempts: 3,
       retryAttempts: 3,
       averageDurationMs: 100,
+      maximumDurationMs: 100,
       totalDurationMs: 200,
     });
     expect(report.retriedTests).toEqual(retriedTests);
     expect(markdown).toContain('## Retried Test Summary');
-    expect(markdown).toContain('| 2 | 3 | 3 | 100ms | 200ms |');
+    expect(markdown).toContain('| 2 | 3 | 3 | 100ms | 100ms | 200ms |');
     expect(markdown).toContain('## Retried Tests');
     expect(markdown).toContain('| failed payment | utils/qa-reporter.spec.ts | 3 | failed | 100ms |');
     expect(markdown).toContain('| flaky checkout | utils/qa-reporter.spec.ts | 2 | flaky | 100ms |');
