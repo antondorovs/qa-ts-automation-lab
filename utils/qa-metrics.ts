@@ -332,6 +332,7 @@ export type QaReleaseBlockerSummary = {
   flaky: number;
   blockerRate: number;
   averageDurationMs: number;
+  maximumDurationMs: number;
   totalDurationMs: number;
 };
 
@@ -873,6 +874,7 @@ export function summarizeReleaseBlockers(results: QaTestResult[]): QaReleaseBloc
     flaky: countByStatus(releaseBlockers, STATUS.FLAKY),
     blockerRate: executed ? percentage(releaseBlockers.length, executed) : 0,
     averageDurationMs: releaseBlockers.length ? Math.round(totalDurationMs / releaseBlockers.length) : 0,
+    maximumDurationMs: Math.max(0, ...releaseBlockers.map((test) => test.durationMs)),
     totalDurationMs,
   };
 }
