@@ -184,6 +184,7 @@ export type NonPassingExecutedSummary = {
   flaky: number;
   nonPassingRate: number;
   averageDurationMs: number;
+  maximumDurationMs: number;
   totalDurationMs: number;
 };
 
@@ -848,6 +849,7 @@ export function summarizeNonPassingExecutedTests(
     averageDurationMs: nonPassingExecutedTests.length
       ? Math.round(totalDurationMs / nonPassingExecutedTests.length)
       : 0,
+    maximumDurationMs: Math.max(0, ...nonPassingExecutedTests.map((test) => test.durationMs)),
     totalDurationMs,
   };
 }
