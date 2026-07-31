@@ -154,6 +154,7 @@ export type RetriedTestSummary = {
   total: number;
   maximumAttempts: number;
   retryAttempts: number;
+  minimumDurationMs: number;
   averageDurationMs: number;
   maximumDurationMs: number;
   totalDurationMs: number;
@@ -776,6 +777,9 @@ export function summarizeRetriedTests(retriedTests: RetriedTest[]): RetriedTestS
     total: retriedTests.length,
     maximumAttempts: Math.max(0, ...retriedTests.map((test) => test.attempts)),
     retryAttempts: retriedTests.reduce((total, test) => total + Math.max(0, test.attempts - 1), 0),
+    minimumDurationMs: retriedTests.length
+      ? Math.min(...retriedTests.map((test) => test.durationMs))
+      : 0,
     averageDurationMs: retriedTests.length ? Math.round(totalDurationMs / retriedTests.length) : 0,
     maximumDurationMs: Math.max(0, ...retriedTests.map((test) => test.durationMs)),
     totalDurationMs,
