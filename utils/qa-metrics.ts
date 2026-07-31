@@ -184,6 +184,7 @@ export type NonPassingExecutedSummary = {
   interrupted: number;
   flaky: number;
   nonPassingRate: number;
+  minimumDurationMs: number;
   averageDurationMs: number;
   maximumDurationMs: number;
   totalDurationMs: number;
@@ -849,6 +850,9 @@ export function summarizeNonPassingExecutedTests(
     interrupted: countByStatus(nonPassingExecutedTests, STATUS.INTERRUPTED),
     flaky: countByStatus(nonPassingExecutedTests, STATUS.FLAKY),
     nonPassingRate: executed ? percentage(nonPassingExecutedTests.length, executed) : 0,
+    minimumDurationMs: nonPassingExecutedTests.length
+      ? Math.min(...nonPassingExecutedTests.map((test) => test.durationMs))
+      : 0,
     averageDurationMs: nonPassingExecutedTests.length
       ? Math.round(totalDurationMs / nonPassingExecutedTests.length)
       : 0,
