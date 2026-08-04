@@ -171,6 +171,7 @@ export type FlakyTestSummary = {
   retryAttempts: number;
   minimumDurationMs: number;
   averageDurationMs: number;
+  maximumDurationMs: number;
   totalDurationMs: number;
 };
 
@@ -818,6 +819,7 @@ export function summarizeFlakyTests(flakyTests: FlakyTest[]): FlakyTestSummary {
       ? Math.min(...flakyTests.map((test) => test.durationMs))
       : 0,
     averageDurationMs: flakyTests.length ? Math.round(totalDurationMs / flakyTests.length) : 0,
+    maximumDurationMs: Math.max(0, ...flakyTests.map((test) => test.durationMs)),
     totalDurationMs,
   };
 }
