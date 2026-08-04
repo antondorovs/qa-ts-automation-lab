@@ -113,7 +113,7 @@ The report keeps a separate inventory of tests whose final QA status is `flaky`.
 
 Flaky tests are sorted by attempts and duration so repeated instability stays visible even when the last retry passes.
 
-The same section includes a flaky-test summary with total flaky tests, maximum attempts, retry attempts, average flaky-test duration, and total flaky-test duration.
+The same section includes a flaky-test summary with total flaky tests, maximum attempts, retry attempts, minimum flaky-test duration, average flaky-test duration, and total flaky-test duration.
 
 ## Regression Risk
 
