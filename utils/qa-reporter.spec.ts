@@ -27,6 +27,7 @@ import {
   summarizeRetriedTests,
   summarizeRun,
   summarizeSkippedTests,
+  summarizeSlowTests,
   summarizeSuiteHealth,
   summarizeSuiteHealthStatus,
   summarizeSuitePerformance,
@@ -477,6 +478,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(report.slowTestSummary).toEqual({
       total: 1,
       thresholdMs: 1000,
+      minimumDurationMs: 1800,
       averageDurationMs: 1800,
       maximumDurationMs: 1800,
     });
@@ -603,8 +605,33 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 1 | 1 | 1.92s | 1.80s |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | 2 | 2 | 1 | 1.92s | 960ms | 1.80s |');
     expect(markdown).toContain('## Slow Test Summary');
-    expect(markdown).toContain('| Slow tests | Threshold | Average duration | Maximum duration |');
-    expect(markdown).toContain('| 1 | 1.00s | 1.80s | 1.80s |');
+    expect(markdown).toContain('| Slow tests | Threshold | Minimum duration | Average duration | Maximum duration |');
+    expect(markdown).toContain('| 1 | 1.00s | 1.80s | 1.80s | 1.80s |');
+  });
+
+  test('slow test summary should expose the duration range', () => {
+    expect(summarizeSlowTests([
+      {
+        id: 'slow-login',
+        suite: 'playwright/login.spec.ts',
+        title: 'slow login',
+        status: STATUS.PASSED,
+        durationMs: 1200,
+      },
+      {
+        id: 'slow-checkout',
+        suite: 'playwright/checkout.spec.ts',
+        title: 'slow checkout',
+        status: STATUS.PASSED,
+        durationMs: 1800,
+      },
+    ], 1000)).toEqual({
+      total: 2,
+      thresholdMs: 1000,
+      minimumDurationMs: 1200,
+      averageDurationMs: 1500,
+      maximumDurationMs: 1800,
+    });
   });
 
   test('report should rank the suites with the strongest regression signals first', () => {
