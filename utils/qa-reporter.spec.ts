@@ -481,6 +481,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       minimumDurationMs: 1800,
       averageDurationMs: 1800,
       maximumDurationMs: 1800,
+      totalDurationMs: 1800,
     });
     expect(report.classification).toEqual({
       total: 2,
@@ -605,8 +606,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| 1 | 1 | 1.92s | 1.80s |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | 2 | 2 | 1 | 1.92s | 960ms | 1.80s |');
     expect(markdown).toContain('## Slow Test Summary');
-    expect(markdown).toContain('| Slow tests | Threshold | Minimum duration | Average duration | Maximum duration |');
-    expect(markdown).toContain('| 1 | 1.00s | 1.80s | 1.80s | 1.80s |');
+    expect(markdown).toContain('| Slow tests | Threshold | Minimum duration | Average duration | Maximum duration | Total duration |');
+    expect(markdown).toContain('| 1 | 1.00s | 1.80s | 1.80s | 1.80s | 1.80s |');
   });
 
   test('slow test summary should expose the duration range', () => {
@@ -631,6 +632,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       minimumDurationMs: 1200,
       averageDurationMs: 1500,
       maximumDurationMs: 1800,
+      totalDurationMs: 3000,
     });
   });
 
