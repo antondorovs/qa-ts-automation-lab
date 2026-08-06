@@ -109,6 +109,7 @@ export type DurationBudgetBreach = Pick<
 export type DurationBudgetBreachSummary = {
   total: number;
   thresholdMs?: number;
+  minimumDurationMs: number;
   maximumDurationMs: number;
   averageOverBudgetMs: number;
   maximumOverBudgetMs: number;
@@ -682,6 +683,9 @@ export function summarizeDurationBudgetBreaches(
   return {
     total: breaches.length,
     thresholdMs: maximumDurationMs,
+    minimumDurationMs: breaches.length
+      ? Math.min(...breaches.map((test) => test.durationMs))
+      : 0,
     maximumDurationMs: maximumBreachDurationMs,
     averageOverBudgetMs: breaches.length ? Math.round(totalOverBudgetMs / breaches.length) : 0,
     maximumOverBudgetMs: maximumDurationMs === undefined

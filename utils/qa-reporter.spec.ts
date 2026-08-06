@@ -323,6 +323,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     const results = [
       createResult('fast contract', STATUS.PASSED, 100),
       createResult('outlier contract', STATUS.PASSED, 1200),
+      createResult('severe outlier', STATUS.PASSED, 1500),
       createResult('disabled diagnostic', STATUS.SKIPPED, 5000),
     ];
     const breaches = findDurationBudgetBreaches(results, 1000);
@@ -330,7 +331,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     const report = buildQaRunReport(results, {
       generatedAt: '2026-07-09T12:00:00.000Z',
       runStatus: 'passed',
-      durationMs: 6300,
+      durationMs: 7800,
     }, {
       qualityGate: {
         maximumTestDurationMs: 1000,
@@ -339,13 +340,21 @@ test.describe('@utils @contract QA run intelligence', () => {
     const markdown = renderQaReportMarkdown(report);
 
     expect(breachSummary).toEqual({
-      total: 1,
+      total: 2,
       thresholdMs: 1000,
-      maximumDurationMs: 1200,
-      averageOverBudgetMs: 200,
-      maximumOverBudgetMs: 200,
+      minimumDurationMs: 1200,
+      maximumDurationMs: 1500,
+      averageOverBudgetMs: 350,
+      maximumOverBudgetMs: 500,
     });
     expect(breaches).toEqual([
+      {
+        id: 'severe-outlier',
+        suite: 'utils/qa-reporter.spec.ts',
+        title: 'severe outlier',
+        status: STATUS.PASSED,
+        durationMs: 1500,
+      },
       {
         id: 'outlier-contract',
         suite: 'utils/qa-reporter.spec.ts',
@@ -357,9 +366,10 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(report.durationBudgetBreachSummary).toEqual(breachSummary);
     expect(report.durationBudgetBreaches).toEqual(breaches);
     expect(markdown).toContain('## Duration Budget Breach Summary');
-    expect(markdown).toContain('| Breaches | Threshold | Maximum duration | Average over budget | Maximum over budget |');
-    expect(markdown).toContain('| 1 | 1.00s | 1.20s | 200ms | 200ms |');
+    expect(markdown).toContain('| Breaches | Threshold | Minimum duration | Maximum duration | Average over budget | Maximum over budget |');
+    expect(markdown).toContain('| 2 | 1.00s | 1.20s | 1.50s | 350ms | 500ms |');
     expect(markdown).toContain('## Duration Budget Breaches');
+    expect(markdown).toContain('| severe outlier | utils/qa-reporter.spec.ts | passed | 1.50s |');
     expect(markdown).toContain('| outlier contract | utils/qa-reporter.spec.ts | passed | 1.20s |');
     expect(markdown).not.toContain('| disabled diagnostic | utils/qa-reporter.spec.ts | skipped | 5.00s |');
   });
