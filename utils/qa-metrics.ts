@@ -123,6 +123,7 @@ export type FailedTestSummary = {
   failed: number;
   timedOut: number;
   interrupted: number;
+  minimumDurationMs: number;
   averageDurationMs: number;
   totalDurationMs: number;
 };
@@ -709,6 +710,9 @@ export function summarizeFailedTests(failedTests: FailedTest[]): FailedTestSumma
     failed: failedTests.filter((test) => test.status === STATUS.FAILED).length,
     timedOut: failedTests.filter((test) => test.status === STATUS.TIMED_OUT).length,
     interrupted: failedTests.filter((test) => test.status === STATUS.INTERRUPTED).length,
+    minimumDurationMs: failedTests.length
+      ? Math.min(...failedTests.map((test) => test.durationMs))
+      : 0,
     averageDurationMs: failedTests.length ? Math.round(totalDurationMs / failedTests.length) : 0,
     totalDurationMs,
   };

@@ -168,6 +168,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       failed: 1,
       timedOut: 1,
       interrupted: 1,
+      minimumDurationMs: 200,
       averageDurationMs: 300,
       totalDurationMs: 900,
     });
@@ -176,6 +177,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       failed: 1,
       timedOut: 1,
       interrupted: 1,
+      minimumDurationMs: 200,
       averageDurationMs: 300,
       totalDurationMs: 900,
     });
@@ -185,8 +187,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| pass rate | >= 100% | 25% |');
     expect(markdown).toContain('| failures | <= 0 | 3 |');
     expect(markdown).toContain('## Failure Summary');
-    expect(markdown).toContain('| Total | Failed | Timed out | Interrupted | Average duration | Total duration |');
-    expect(markdown).toContain('| 3 | 1 | 1 | 1 | 300ms | 900ms |');
+    expect(markdown).toContain('| Total | Failed | Timed out | Interrupted | Minimum duration | Average duration | Total duration |');
+    expect(markdown).toContain('| 3 | 1 | 1 | 1 | 200ms | 300ms | 900ms |');
   });
 
   test('quality gate check summary should be available in serialized reports', () => {
