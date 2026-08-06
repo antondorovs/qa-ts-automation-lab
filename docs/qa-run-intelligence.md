@@ -76,7 +76,7 @@ The same section includes a release-blocker summary with separate failed, timed-
 
 This puts every test-level release blocker in one place. Flaky tests remain visible even though they are intentionally excluded from the separate failure-error list.
 
-Failure details include a failure summary with total failed results, status split, minimum and average failed-test duration, and accumulated failed-test duration before the error messages.
+Failure details include a failure summary with total failed results, status split, minimum, average, and maximum failed-test duration, and accumulated failed-test duration before the error messages.
 
 ## Non-Passing Executed Test Inventory
 

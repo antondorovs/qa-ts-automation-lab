@@ -125,6 +125,7 @@ export type FailedTestSummary = {
   interrupted: number;
   minimumDurationMs: number;
   averageDurationMs: number;
+  maximumDurationMs: number;
   totalDurationMs: number;
 };
 
@@ -714,6 +715,7 @@ export function summarizeFailedTests(failedTests: FailedTest[]): FailedTestSumma
       ? Math.min(...failedTests.map((test) => test.durationMs))
       : 0,
     averageDurationMs: failedTests.length ? Math.round(totalDurationMs / failedTests.length) : 0,
+    maximumDurationMs: Math.max(0, ...failedTests.map((test) => test.durationMs)),
     totalDurationMs,
   };
 }
