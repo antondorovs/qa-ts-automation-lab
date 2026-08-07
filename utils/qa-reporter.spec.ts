@@ -344,6 +344,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       thresholdMs: 1000,
       minimumDurationMs: 1200,
       maximumDurationMs: 1500,
+      minimumOverBudgetMs: 200,
       averageOverBudgetMs: 350,
       maximumOverBudgetMs: 500,
     });
@@ -366,8 +367,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(report.durationBudgetBreachSummary).toEqual(breachSummary);
     expect(report.durationBudgetBreaches).toEqual(breaches);
     expect(markdown).toContain('## Duration Budget Breach Summary');
-    expect(markdown).toContain('| Breaches | Threshold | Minimum duration | Maximum duration | Average over budget | Maximum over budget |');
-    expect(markdown).toContain('| 2 | 1.00s | 1.20s | 1.50s | 350ms | 500ms |');
+    expect(markdown).toContain('| Breaches | Threshold | Minimum duration | Maximum duration | Minimum over budget | Average over budget | Maximum over budget |');
+    expect(markdown).toContain('| 2 | 1.00s | 1.20s | 1.50s | 200ms | 350ms | 500ms |');
     expect(markdown).toContain('## Duration Budget Breaches');
     expect(markdown).toContain('| severe outlier | utils/qa-reporter.spec.ts | passed | 1.50s |');
     expect(markdown).toContain('| outlier contract | utils/qa-reporter.spec.ts | passed | 1.20s |');
