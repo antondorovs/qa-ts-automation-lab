@@ -108,6 +108,7 @@ export type DurationBudgetBreach = Pick<
 
 export type DurationBudgetBreachSummary = {
   total: number;
+  breachRate: number;
   thresholdMs?: number;
   minimumDurationMs: number;
   averageDurationMs: number;
@@ -679,6 +680,7 @@ export function summarizeDurationBudgetBreaches(
   maximumDurationMs?: number,
 ): DurationBudgetBreachSummary {
   const breaches = findDurationBudgetBreaches(results, maximumDurationMs);
+  const executed = results.filter((result) => result.status !== STATUS.SKIPPED).length;
   const totalBreachDurationMs = breaches.reduce((total, test) => total + test.durationMs, 0);
   const maximumBreachDurationMs = Math.max(0, ...breaches.map((test) => test.durationMs));
   const overBudgetDurations = maximumDurationMs === undefined
@@ -688,6 +690,7 @@ export function summarizeDurationBudgetBreaches(
 
   return {
     total: breaches.length,
+    breachRate: executed ? percentage(breaches.length, executed) : 0,
     thresholdMs: maximumDurationMs,
     minimumDurationMs: breaches.length
       ? Math.min(...breaches.map((test) => test.durationMs))
