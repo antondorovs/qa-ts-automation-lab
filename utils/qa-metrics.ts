@@ -107,6 +107,8 @@ export type DurationBudgetBreach = Pick<
 >;
 
 export type DurationBudgetBreachSummary = {
+  executed: number;
+  withinBudget: number;
   total: number;
   breachRate: number;
   thresholdMs?: number;
@@ -689,6 +691,8 @@ export function summarizeDurationBudgetBreaches(
   const totalOverBudgetMs = overBudgetDurations.reduce((total, durationMs) => total + durationMs, 0);
 
   return {
+    executed,
+    withinBudget: Math.max(0, executed - breaches.length),
     total: breaches.length,
     breachRate: executed ? percentage(breaches.length, executed) : 0,
     thresholdMs: maximumDurationMs,
