@@ -119,6 +119,7 @@ export type DurationBudgetBreachSummary = {
   totalDurationMs: number;
   minimumOverBudgetMs: number;
   averageOverBudgetMs: number;
+  averageOverBudgetRate: number;
   maximumOverBudgetMs: number;
   maximumOverBudgetRate: number;
   totalOverBudgetMs: number;
@@ -695,6 +696,7 @@ export function summarizeDurationBudgetBreaches(
   const maximumOverBudgetMs = maximumDurationMs === undefined
     ? 0
     : Math.max(0, maximumBreachDurationMs - maximumDurationMs);
+  const averageOverBudgetMs = breaches.length ? Math.round(totalOverBudgetMs / breaches.length) : 0;
 
   return {
     executed,
@@ -710,7 +712,10 @@ export function summarizeDurationBudgetBreaches(
     maximumDurationMs: maximumBreachDurationMs,
     totalDurationMs: totalBreachDurationMs,
     minimumOverBudgetMs: overBudgetDurations.length ? Math.min(...overBudgetDurations) : 0,
-    averageOverBudgetMs: breaches.length ? Math.round(totalOverBudgetMs / breaches.length) : 0,
+    averageOverBudgetMs,
+    averageOverBudgetRate: maximumDurationMs
+      ? percentage(averageOverBudgetMs, maximumDurationMs)
+      : 0,
     maximumOverBudgetMs,
     maximumOverBudgetRate: maximumDurationMs
       ? percentage(maximumOverBudgetMs, maximumDurationMs)
