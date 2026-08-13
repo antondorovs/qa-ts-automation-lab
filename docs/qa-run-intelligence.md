@@ -200,7 +200,7 @@ The optional `maximumTestDurationMs` threshold blocks a run when any executed te
 
 When that threshold is configured, the report also lists every executed test that exceeded the individual duration budget. The inventory keeps skipped diagnostics out of the breach list and sorts the longest over-budget tests first.
 
-The same section includes a duration-budget breach summary with executed and within-budget counts, the within-budget rate, total breaches, breach rate across executed tests, configured threshold, minimum, average, maximum, and total duration, plus minimum, average, maximum, and total amounts over budget.
+The same section includes a duration-budget breach summary with executed and within-budget counts, the within-budget rate, total breaches, breach rate across executed tests, configured threshold, minimum, average, maximum, and total duration, plus minimum, average, maximum, and total amounts over budget. The maximum over-budget rate expresses the worst excess as a percentage of the configured threshold.
 
 When slow tests are present, the report includes a slow-test summary with the total count, configured threshold, minimum, average, maximum, and total duration before the detailed slow-test list.
 
