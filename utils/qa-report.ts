@@ -406,10 +406,10 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
       '',
       '## Duration Budget Breaches',
       '',
-      '| Test | Suite | Status | Duration |',
-      '| --- | --- | --- | ---: |',
+      '| Test | Suite | Status | Duration | Over budget |',
+      '| --- | --- | --- | ---: | ---: |',
       ...report.durationBudgetBreaches.map((test) => (
-        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.status} | ${formatDuration(test.durationMs)} |`
+        `| ${escapeTable(test.title)} | ${escapeTable(test.suite)} | ${test.status} | ${formatDuration(test.durationMs)} | ${formatDuration(test.overBudgetMs)} |`
       )),
     );
   }

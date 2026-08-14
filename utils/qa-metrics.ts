@@ -104,7 +104,9 @@ export type SlowTestSummary = {
 export type DurationBudgetBreach = Pick<
   QaTestResult,
   'id' | 'suite' | 'title' | 'status' | 'durationMs'
->;
+> & {
+  overBudgetMs: number;
+};
 
 export type DurationBudgetBreachSummary = {
   executed: number;
@@ -678,6 +680,7 @@ export function findDurationBudgetBreaches(
       title,
       status,
       durationMs,
+      overBudgetMs: durationMs - maximumDurationMs,
     }));
 }
 
