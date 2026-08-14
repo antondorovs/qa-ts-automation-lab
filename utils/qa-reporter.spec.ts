@@ -366,6 +366,7 @@ test.describe('@utils @contract QA run intelligence', () => {
         status: STATUS.PASSED,
         durationMs: 1500,
         overBudgetMs: 500,
+        overBudgetRate: 50,
       },
       {
         id: 'outlier-contract',
@@ -374,6 +375,7 @@ test.describe('@utils @contract QA run intelligence', () => {
         status: STATUS.PASSED,
         durationMs: 1200,
         overBudgetMs: 200,
+        overBudgetRate: 20,
       },
     ]);
     expect(report.durationBudgetBreachSummary).toEqual(breachSummary);
@@ -382,9 +384,9 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| Executed | Within budget | Within budget rate | Breaches | Breach rate | Threshold | Minimum duration | Average duration | Maximum duration | Total duration | Minimum over budget | Minimum over budget rate | Average over budget | Average over budget rate | Maximum over budget | Maximum over budget rate | Total over budget |');
     expect(markdown).toContain('| 3 | 1 | 33.33% | 2 | 66.67% | 1.00s | 1.20s | 1.35s | 1.50s | 2.70s | 200ms | 20% | 350ms | 35% | 500ms | 50% | 700ms |');
     expect(markdown).toContain('## Duration Budget Breaches');
-    expect(markdown).toContain('| Test | Suite | Status | Duration | Over budget |');
-    expect(markdown).toContain('| severe outlier | utils/qa-reporter.spec.ts | passed | 1.50s | 500ms |');
-    expect(markdown).toContain('| outlier contract | utils/qa-reporter.spec.ts | passed | 1.20s | 200ms |');
+    expect(markdown).toContain('| Test | Suite | Status | Duration | Over budget | Over budget rate |');
+    expect(markdown).toContain('| severe outlier | utils/qa-reporter.spec.ts | passed | 1.50s | 500ms | 50% |');
+    expect(markdown).toContain('| outlier contract | utils/qa-reporter.spec.ts | passed | 1.20s | 200ms | 20% |');
     expect(markdown).not.toContain('| disabled diagnostic | utils/qa-reporter.spec.ts | skipped | 5.00s |');
   });
 

@@ -106,6 +106,7 @@ export type DurationBudgetBreach = Pick<
   'id' | 'suite' | 'title' | 'status' | 'durationMs'
 > & {
   overBudgetMs: number;
+  overBudgetRate: number;
 };
 
 export type DurationBudgetBreachSummary = {
@@ -681,6 +682,9 @@ export function findDurationBudgetBreaches(
       status,
       durationMs,
       overBudgetMs: durationMs - maximumDurationMs,
+      overBudgetRate: maximumDurationMs
+        ? percentage(durationMs - maximumDurationMs, maximumDurationMs)
+        : 0,
     }));
 }
 

@@ -198,7 +198,7 @@ Projects can set `maximumP95DurationMs` to block a run when the slowest five per
 
 The optional `maximumTestDurationMs` threshold blocks a run when any executed test exceeds its duration budget. This catches a single severe outlier even when the average and p95 remain acceptable across a large suite.
 
-When that threshold is configured, the report also lists every executed test that exceeded the individual duration budget. Each row includes both the full duration and its amount over budget. The inventory keeps skipped diagnostics out of the breach list and sorts the longest over-budget tests first.
+When that threshold is configured, the report also lists every executed test that exceeded the individual duration budget. Each row includes the full duration plus its absolute and percentage amounts over budget. The inventory keeps skipped diagnostics out of the breach list and sorts the longest over-budget tests first.
 
 The same section includes a duration-budget breach summary with executed and within-budget counts, the within-budget rate, total breaches, breach rate across executed tests, configured threshold, minimum, average, maximum, and total duration, plus minimum, average, maximum, and total amounts over budget. Minimum, average, and maximum over-budget rates express the full excess range as percentages of the configured threshold.
 
