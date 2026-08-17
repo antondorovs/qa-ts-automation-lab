@@ -105,6 +105,7 @@ export type DurationBudgetBreach = Pick<
   QaTestResult,
   'id' | 'suite' | 'title' | 'status' | 'durationMs'
 > & {
+  budgetUtilizationRate: number;
   overBudgetMs: number;
   overBudgetRate: number;
 };
@@ -681,6 +682,9 @@ export function findDurationBudgetBreaches(
       title,
       status,
       durationMs,
+      budgetUtilizationRate: maximumDurationMs
+        ? percentage(durationMs, maximumDurationMs)
+        : 0,
       overBudgetMs: durationMs - maximumDurationMs,
       overBudgetRate: maximumDurationMs
         ? percentage(durationMs - maximumDurationMs, maximumDurationMs)
