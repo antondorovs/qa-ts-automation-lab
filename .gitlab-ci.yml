@@ -5,6 +5,16 @@ stages:
 
 default:
   image: node:24-bookworm
+  retry:
+    max: 2
+    when:
+      - api_failure
+      - runner_system_failure
+      - runner_configuration_error
+      - runner_external_dependency_failure
+      - runner_interrupted
+      - scheduler_failure
+      - data_integrity_failure
   cache:
     key:
       files:
