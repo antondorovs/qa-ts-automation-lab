@@ -131,6 +131,7 @@ export type DurationBudgetBreachSummary = {
   maximumOverBudgetMs: number;
   maximumOverBudgetRate: number;
   totalOverBudgetMs: number;
+  overBudgetDurationRate: number;
 };
 
 export type FailedTest = Pick<QaTestResult, 'id' | 'suite' | 'title' | 'status' | 'durationMs'> & {
@@ -747,6 +748,9 @@ export function summarizeDurationBudgetBreaches(
       ? percentage(maximumOverBudgetMs, maximumDurationMs)
       : 0,
     totalOverBudgetMs,
+    overBudgetDurationRate: executedDurationMs
+      ? percentage(totalOverBudgetMs, executedDurationMs)
+      : 0,
   };
 }
 
