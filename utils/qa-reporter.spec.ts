@@ -343,6 +343,8 @@ test.describe('@utils @contract QA run intelligence', () => {
       executed: 3,
       withinBudget: 1,
       withinBudgetRate: 33.33,
+      totalBudgetMs: 3000,
+      budgetUtilizationRate: 93.33,
       total: 2,
       breachRate: 66.67,
       thresholdMs: 1000,
@@ -388,8 +390,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(report.durationBudgetBreachSummary).toEqual(breachSummary);
     expect(report.durationBudgetBreaches).toEqual(breaches);
     expect(markdown).toContain('## Duration Budget Breach Summary');
-    expect(markdown).toContain('| Executed | Within budget | Within budget rate | Breaches | Breach rate | Threshold | Minimum duration | Average duration | Maximum duration | Breach duration | Executed duration | Breach duration rate | Minimum over budget | Minimum over budget rate | Average over budget | Average over budget rate | Maximum over budget | Maximum over budget rate | Total over budget | Over-budget duration rate |');
-    expect(markdown).toContain('| 3 | 1 | 33.33% | 2 | 66.67% | 1.00s | 1.20s | 1.35s | 1.50s | 2.70s | 2.80s | 96.43% | 200ms | 20% | 350ms | 35% | 500ms | 50% | 700ms | 25% |');
+    expect(markdown).toContain('| Executed | Within budget | Within budget rate | Total budget | Budget utilization | Breaches | Breach rate | Threshold | Minimum duration | Average duration | Maximum duration | Breach duration | Executed duration | Breach duration rate | Minimum over budget | Minimum over budget rate | Average over budget | Average over budget rate | Maximum over budget | Maximum over budget rate | Total over budget | Over-budget duration rate |');
+    expect(markdown).toContain('| 3 | 1 | 33.33% | 3.00s | 93.33% | 2 | 66.67% | 1.00s | 1.20s | 1.35s | 1.50s | 2.70s | 2.80s | 96.43% | 200ms | 20% | 350ms | 35% | 500ms | 50% | 700ms | 25% |');
     expect(markdown).toContain('## Duration Budget Breaches');
     expect(markdown).toContain('| Test | Suite | Status | Duration | Budget | Budget utilization | Over budget | Over budget rate |');
     expect(markdown).toContain('| severe outlier | utils/qa-reporter.spec.ts | passed | 1.50s | 1.00s | 150% | 500ms | 50% |');
