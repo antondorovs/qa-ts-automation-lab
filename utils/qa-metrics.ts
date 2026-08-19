@@ -63,6 +63,7 @@ export type QaQualityGateSummary = {
   total: number;
   passed: number;
   failed: number;
+  passRate: number;
 };
 
 export type QaQualityGatePolicySummary = {
@@ -585,6 +586,7 @@ export function summarizeQualityGateChecks(checks: QualityGateCheck[]): QaQualit
     total: checks.length,
     passed,
     failed: checks.length - passed,
+    passRate: checks.length ? percentage(passed, checks.length) : 100,
   };
 }
 
