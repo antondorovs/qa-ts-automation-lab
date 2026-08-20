@@ -32,6 +32,7 @@ export type QaRunSummary = {
   flaky: number;
   timedOut: number;
   interrupted: number;
+  executionRate: number;
   passRate: number;
   failureRate: number;
   totalDurationMs: number;
@@ -467,6 +468,7 @@ export function summarizeRun(results: QaTestResult[]): QaRunSummary {
     flaky: countByStatus(results, STATUS.FLAKY),
     timedOut: countByStatus(results, STATUS.TIMED_OUT),
     interrupted: countByStatus(results, STATUS.INTERRUPTED),
+    executionRate: results.length ? percentage(executed, results.length) : 0,
     passRate: calculatePassRate(results),
     failureRate: calculateFailureRate(results),
     totalDurationMs,

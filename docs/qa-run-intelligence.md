@@ -24,7 +24,7 @@ The reporter records one final result per test:
 
 Skipped tests remain visible but are excluded from the pass-rate denominator. A test that fails first and passes on retry is reported as `flaky`, not `passed`.
 
-The Markdown summary shows both pass rate and failure rate for executed tests, so reviewers can see the healthy and unhealthy share of the run without recalculating skipped diagnostics.
+The Markdown summary shows the execution rate across all discovered tests alongside pass rate and failure rate for executed tests. Reviewers can see how much of the suite actually ran, plus the healthy and unhealthy share of those executions, without recalculating skipped diagnostics.
 
 The Markdown report also includes a final status breakdown for passed, failed, flaky, timed-out, interrupted, and skipped tests. This keeps interrupted infrastructure runs separate from assertion failures during triage.
 
