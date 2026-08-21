@@ -92,6 +92,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       passed: 1,
       skipped: 1,
       executionRate: 50,
+      skippedRate: 50,
       passRate: 100,
     });
   });
@@ -110,7 +111,7 @@ test.describe('@utils @contract QA run intelligence', () => {
 
     expect(report.summary.failureRate).toBe(50);
     expect(markdown).toContain('Failure rate');
-    expect(markdown).toContain('| 3 | 2 | 1 | 1 | 0 | 1 | 66.67% | 50% | 50% | 200ms |');
+    expect(markdown).toContain('| 3 | 2 | 1 | 1 | 0 | 1 | 66.67% | 33.33% | 50% | 50% | 200ms |');
   });
 
   test('Markdown report should include final status breakdown', () => {
@@ -593,7 +594,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     });
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
-    expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 100% | 0% | 1.92s |');
+    expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 0% | 100% | 0% | 1.92s |');
     expect(markdown).toContain('## Duration Health Summary');
     expect(markdown).toContain('| 2 | 1.00s | 1 | 1 | 0 |');
     expect(markdown).toContain('## Quality Gate Policy Summary');

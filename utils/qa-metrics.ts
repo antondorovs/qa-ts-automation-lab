@@ -33,6 +33,7 @@ export type QaRunSummary = {
   timedOut: number;
   interrupted: number;
   executionRate: number;
+  skippedRate: number;
   passRate: number;
   failureRate: number;
   totalDurationMs: number;
@@ -458,17 +459,19 @@ export function calculateFailureRate(results: QaTestResult[]): number {
 export function summarizeRun(results: QaTestResult[]): QaRunSummary {
   const totalDurationMs = results.reduce((sum, result) => sum + result.durationMs, 0);
   const executed = results.filter((result) => result.status !== STATUS.SKIPPED).length;
+  const skipped = countByStatus(results, STATUS.SKIPPED);
 
   return {
     total: results.length,
     executed,
     passed: countByStatus(results, STATUS.PASSED),
     failed: countByStatus(results, STATUS.FAILED),
-    skipped: countByStatus(results, STATUS.SKIPPED),
+    skipped,
     flaky: countByStatus(results, STATUS.FLAKY),
     timedOut: countByStatus(results, STATUS.TIMED_OUT),
     interrupted: countByStatus(results, STATUS.INTERRUPTED),
     executionRate: results.length ? percentage(executed, results.length) : 0,
+    skippedRate: results.length ? percentage(skipped, results.length) : 0,
     passRate: calculatePassRate(results),
     failureRate: calculateFailureRate(results),
     totalDurationMs,
