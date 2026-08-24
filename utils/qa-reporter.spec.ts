@@ -217,18 +217,21 @@ test.describe('@utils @contract QA run intelligence', () => {
       passed: 1,
       failed: 2,
       passRate: 33.33,
+      failureRate: 66.67,
     });
     expect(report.qualityGate.checkSummary).toEqual({
       total: 3,
       passed: 1,
       failed: 2,
       passRate: 33.33,
+      failureRate: 66.67,
     });
     expect(JSON.parse(JSON.stringify(report)).qualityGate.checkSummary).toEqual({
       total: 3,
       passed: 1,
       failed: 2,
       passRate: 33.33,
+      failureRate: 66.67,
     });
   });
 
@@ -610,8 +613,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('| Minimum classification rate | >= 100% |');
     expect(markdown).toContain('| Required tags | smoke, contract |');
     expect(markdown).toContain('## Quality Gate Summary');
-    expect(markdown).toContain('| Total checks | Passed | Failed | Pass rate |');
-    expect(markdown).toContain('| 8 | 8 | 0 | 100% |');
+    expect(markdown).toContain('| Total checks | Passed | Failed | Pass rate | Failure rate |');
+    expect(markdown).toContain('| 8 | 8 | 0 | 100% | 0% |');
     expect(markdown).toContain('## Release Decision');
     expect(markdown).toContain('Status: **ready**');
     expect(markdown).toContain('### Release Readiness Summary');

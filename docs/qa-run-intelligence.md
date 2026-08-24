@@ -48,7 +48,7 @@ Recording the policy next to the results makes the report easier to review later
 
 The Markdown report also includes a policy summary with optional check counts, duration-check count, classification-check count, stability-check count, and required-tag count before the detailed policy table.
 
-The JSON and Markdown reports also summarize how many quality-gate checks ran, how many passed, how many failed, and the resulting check pass rate. This keeps the release signal easy to scan when optional checks are enabled and makes partially blocked runs comparable without manual calculation.
+The JSON and Markdown reports also summarize how many quality-gate checks ran, how many passed, how many failed, and the resulting check pass and failure rates. This keeps the release signal easy to scan when optional checks are enabled and makes partially blocked runs comparable without manual calculation.
 
 Teams can set `maximumSkippedTests` when temporarily disabled coverage must stay below an explicit limit. The option is not enabled by default, so intentionally skipped live diagnostics remain visible without blocking the standard gate.
 

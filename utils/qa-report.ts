@@ -213,9 +213,9 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     '',
     '## Quality Gate Summary',
     '',
-    '| Total checks | Passed | Failed | Pass rate |',
-    '| ---: | ---: | ---: | ---: |',
-    `| ${qualityGate.checkSummary.total} | ${qualityGate.checkSummary.passed} | ${qualityGate.checkSummary.failed} | ${qualityGate.checkSummary.passRate}% |`,
+    '| Total checks | Passed | Failed | Pass rate | Failure rate |',
+    '| ---: | ---: | ---: | ---: | ---: |',
+    `| ${qualityGate.checkSummary.total} | ${qualityGate.checkSummary.passed} | ${qualityGate.checkSummary.failed} | ${qualityGate.checkSummary.passRate}% | ${qualityGate.checkSummary.failureRate}% |`,
   ];
 
   if (qualityGate.failedChecks.length) {
