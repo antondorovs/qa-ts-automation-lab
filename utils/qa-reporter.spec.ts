@@ -97,10 +97,11 @@ test.describe('@utils @contract QA run intelligence', () => {
     });
   });
 
-  test('Markdown summary should include failure rate for executed tests', () => {
+  test('Markdown summary should include failure and flaky rates for executed tests', () => {
     const report = buildQaRunReport([
       createResult('passing smoke', STATUS.PASSED),
       createResult('broken contract', STATUS.FAILED),
+      createResult('unstable checkout', STATUS.FLAKY),
       createResult('disabled live check', STATUS.SKIPPED),
     ], {
       generatedAt: '2026-07-09T13:00:00.000Z',
@@ -109,9 +110,11 @@ test.describe('@utils @contract QA run intelligence', () => {
     });
     const markdown = renderQaReportMarkdown(report);
 
-    expect(report.summary.failureRate).toBe(50);
+    expect(report.summary.failureRate).toBe(33.33);
+    expect(report.summary.flakyRate).toBe(33.33);
     expect(markdown).toContain('Failure rate');
-    expect(markdown).toContain('| 3 | 2 | 1 | 1 | 0 | 1 | 66.67% | 33.33% | 50% | 50% | 200ms |');
+    expect(markdown).toContain('Flaky rate');
+    expect(markdown).toContain('| 4 | 3 | 1 | 1 | 1 | 1 | 75% | 25% | 33.33% | 33.33% | 33.33% | 200ms |');
   });
 
   test('Markdown report should include final status breakdown', () => {
@@ -594,7 +597,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     });
     expect(serialized.tests[0].tags).toContain('api');
     expect(markdown).toContain('# QA Run Summary');
-    expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 0% | 100% | 0% | 1.92s |');
+    expect(markdown).toContain('| 2 | 2 | 2 | 0 | 0 | 0 | 100% | 0% | 100% | 0% | 0% | 1.92s |');
     expect(markdown).toContain('## Duration Health Summary');
     expect(markdown).toContain('| 2 | 1.00s | 1 | 1 | 0 |');
     expect(markdown).toContain('## Quality Gate Policy Summary');

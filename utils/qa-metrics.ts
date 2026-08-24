@@ -36,6 +36,7 @@ export type QaRunSummary = {
   skippedRate: number;
   passRate: number;
   failureRate: number;
+  flakyRate: number;
   totalDurationMs: number;
   averageDurationMs: number;
   suites: Record<string, number>;
@@ -460,6 +461,7 @@ export function summarizeRun(results: QaTestResult[]): QaRunSummary {
   const totalDurationMs = results.reduce((sum, result) => sum + result.durationMs, 0);
   const executed = results.filter((result) => result.status !== STATUS.SKIPPED).length;
   const skipped = countByStatus(results, STATUS.SKIPPED);
+  const flaky = countByStatus(results, STATUS.FLAKY);
 
   return {
     total: results.length,
@@ -467,13 +469,14 @@ export function summarizeRun(results: QaTestResult[]): QaRunSummary {
     passed: countByStatus(results, STATUS.PASSED),
     failed: countByStatus(results, STATUS.FAILED),
     skipped,
-    flaky: countByStatus(results, STATUS.FLAKY),
+    flaky,
     timedOut: countByStatus(results, STATUS.TIMED_OUT),
     interrupted: countByStatus(results, STATUS.INTERRUPTED),
     executionRate: results.length ? percentage(executed, results.length) : 0,
     skippedRate: results.length ? percentage(skipped, results.length) : 0,
     passRate: calculatePassRate(results),
     failureRate: calculateFailureRate(results),
+    flakyRate: executed ? percentage(flaky, executed) : 0,
     totalDurationMs,
     averageDurationMs: executed ? Math.round(totalDurationMs / executed) : 0,
     suites: countBy(results, (result) => result.suite || 'unknown'),
