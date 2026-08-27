@@ -354,6 +354,7 @@ export type QaReleaseDecisionActionSummary = {
 export type QaReleaseReadinessSummary = {
   status: QualityGateResult['status'];
   qualityGateChecks: number;
+  qualityGatePasses: number;
   qualityGateFailures: number;
   qualityGatePassRate: number;
   qualityGateFailureRate: number;
@@ -1308,6 +1309,7 @@ export function summarizeReleaseReadiness(
   return {
     status: qualityGate.status,
     qualityGateChecks: qualityGate.checkSummary.total,
+    qualityGatePasses: qualityGate.checkSummary.passed,
     qualityGateFailures: qualityGate.checkSummary.failed,
     qualityGatePassRate: qualityGate.checkSummary.passRate,
     qualityGateFailureRate: qualityGate.checkSummary.failureRate,

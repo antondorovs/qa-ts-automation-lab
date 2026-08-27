@@ -618,8 +618,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('## Release Decision');
     expect(markdown).toContain('Status: **ready**');
     expect(markdown).toContain('### Release Readiness Summary');
-    expect(markdown).toContain('| Status | Quality gate checks | Quality gate failures | Quality gate pass rate | Quality gate failure rate | Release blockers | Non-passing executed | Risk score |');
-    expect(markdown).toContain('| ready | 8 | 0 | 100% | 0% | 0 | 0 | 2 |');
+    expect(markdown).toContain('| Status | Quality gate checks | Quality gate passes | Quality gate failures | Quality gate pass rate | Quality gate failure rate | Release blockers | Non-passing executed | Risk score |');
+    expect(markdown).toContain('| ready | 8 | 8 | 0 | 100% | 0% | 0 | 0 | 2 |');
     expect(markdown).toContain('### Release Decision Action Summary');
     expect(markdown).toContain('| 1 | 1 | 0 |');
     expect(markdown).toContain('slow UI smoke');
@@ -1534,6 +1534,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     )).toEqual({
       status: 'blocked',
       qualityGateChecks: 3,
+      qualityGatePasses: 1,
       qualityGateFailures: 2,
       qualityGatePassRate: 33.33,
       qualityGateFailureRate: 66.67,
