@@ -362,6 +362,7 @@ export type QaReleaseReadinessSummary = {
   executedTests: number;
   executionRate: number;
   passedTests: number;
+  failedTests: number;
   flakyTests: number;
   flakyRate: number;
   skippedTests: number;
@@ -1325,6 +1326,7 @@ export function summarizeReleaseReadiness(
     executedTests: qualityGate.summary.executed,
     executionRate: qualityGate.summary.executionRate,
     passedTests: qualityGate.summary.passed,
+    failedTests: qualityGate.summary.failed,
     flakyTests: qualityGate.summary.flaky,
     flakyRate: qualityGate.summary.flakyRate,
     skippedTests: qualityGate.summary.skipped,
