@@ -60,7 +60,7 @@ The report turns quality-gate checks into a release decision. When every configu
 
 When any check fails, the decision is `blocked`. Failed checks are stored separately in JSON and rendered as action items in Markdown, such as fixing pass rate, failure count, flaky tests, first-pass rate, missing tags, or duration thresholds.
 
-The release decision section includes a readiness summary with the final status, total, passed, and failed quality-gate check counts, quality-gate pass and failure rates, total-, executed-, passed-, failed-, timed-out-, interrupted-, flaky-, and skipped-test counts, test-failure, execution, interrupted, flaky, and skipped rates, release-blocker count, non-passing executed count, and regression risk score. The interrupted rate uses executed tests as its denominator so an infrastructure interruption can be compared directly across runs with different suite sizes.
+The release decision section includes a readiness summary with the final status, total, passed, and failed quality-gate check counts, quality-gate pass and failure rates, total-, executed-, passed-, failed-, timed-out-, interrupted-, flaky-, and skipped-test counts, test-failure, execution, timed-out, interrupted, flaky, and skipped rates, release-blocker count, non-passing executed count, and regression risk score. The timed-out and interrupted rates use executed tests as their denominator so infrastructure signals can be compared directly across runs with different suite sizes.
 
 The release decision section includes an action summary with total, review, and fix action counts before the detailed action list.
 
