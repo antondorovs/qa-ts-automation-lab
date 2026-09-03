@@ -375,6 +375,7 @@ export type QaReleaseReadinessSummary = {
   skippedRate: number;
   releaseBlockers: number;
   nonPassingExecuted: number;
+  nonPassingExecutedRate: number;
   riskScore: number;
 };
 
@@ -1349,6 +1350,7 @@ export function summarizeReleaseReadiness(
     skippedRate: qualityGate.summary.skippedRate,
     releaseBlockers: releaseBlockerSummary.total,
     nonPassingExecuted: nonPassingExecutedSummary.total,
+    nonPassingExecutedRate: nonPassingExecutedSummary.nonPassingRate,
     riskScore: regressionRisk.score,
   };
 }
