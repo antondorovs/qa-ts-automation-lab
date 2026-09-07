@@ -376,6 +376,7 @@ export type QaReleaseReadinessSummary = {
   releaseBlockers: number;
   nonPassingExecuted: number;
   nonPassingExecutedRate: number;
+  riskLevel: RegressionRiskSummary['risk'];
   riskScore: number;
 };
 
@@ -1351,6 +1352,7 @@ export function summarizeReleaseReadiness(
     releaseBlockers: releaseBlockerSummary.total,
     nonPassingExecuted: nonPassingExecutedSummary.total,
     nonPassingExecutedRate: nonPassingExecutedSummary.nonPassingRate,
+    riskLevel: regressionRisk.risk,
     riskScore: regressionRisk.score,
   };
 }
