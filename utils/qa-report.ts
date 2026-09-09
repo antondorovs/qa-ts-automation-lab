@@ -87,6 +87,7 @@ export function buildQaRunReport(
     slow: slowTests.length,
     skipped: qualityGate.summary.skipped,
   });
+  const stability = summarizeExecutionStability(tests);
 
   return {
     generatedAt: metadata.generatedAt || new Date().toISOString(),
@@ -103,10 +104,11 @@ export function buildQaRunReport(
       releaseBlockerSummary,
       nonPassingExecutedSummary,
       regressionRisk,
+      stability,
     ),
     releaseBlockers: findReleaseBlockers(tests),
     releaseBlockerSummary,
-    stability: summarizeExecutionStability(tests),
+    stability,
     durationProfile: summarizeDurationProfile(tests),
     durationHealthSummary: summarizeDurationHealth(
       tests,
@@ -247,9 +249,9 @@ export function renderQaReportMarkdown(report: QaRunReport): string {
     '',
     '### Release Readiness Summary',
     '',
-    '| Status | Quality gate checks | Quality gate passes | Quality gate failures | Quality gate pass rate | Quality gate failure rate | Total tests | Executed tests | Execution rate | Passed tests | Test pass rate | Failed tests | Test failure rate | Timed out tests | Timed out rate | Interrupted tests | Interrupted rate | Flaky tests | Flaky rate | Skipped tests | Skipped rate | Release blockers | Release blocker rate | Non-passing executed | Non-passing executed rate | Risk level | Risk score |',
-    '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: |',
-    `| ${report.releaseReadinessSummary.status} | ${report.releaseReadinessSummary.qualityGateChecks} | ${report.releaseReadinessSummary.qualityGatePasses} | ${report.releaseReadinessSummary.qualityGateFailures} | ${report.releaseReadinessSummary.qualityGatePassRate}% | ${report.releaseReadinessSummary.qualityGateFailureRate}% | ${report.releaseReadinessSummary.totalTests} | ${report.releaseReadinessSummary.executedTests} | ${report.releaseReadinessSummary.executionRate}% | ${report.releaseReadinessSummary.passedTests} | ${report.releaseReadinessSummary.passRate}% | ${report.releaseReadinessSummary.failedTests} | ${report.releaseReadinessSummary.failureRate}% | ${report.releaseReadinessSummary.timedOutTests} | ${report.releaseReadinessSummary.timedOutRate}% | ${report.releaseReadinessSummary.interruptedTests} | ${report.releaseReadinessSummary.interruptedRate}% | ${report.releaseReadinessSummary.flakyTests} | ${report.releaseReadinessSummary.flakyRate}% | ${report.releaseReadinessSummary.skippedTests} | ${report.releaseReadinessSummary.skippedRate}% | ${report.releaseReadinessSummary.releaseBlockers} | ${report.releaseReadinessSummary.releaseBlockerRate}% | ${report.releaseReadinessSummary.nonPassingExecuted} | ${report.releaseReadinessSummary.nonPassingExecutedRate}% | ${report.releaseReadinessSummary.riskLevel} | ${report.releaseReadinessSummary.riskScore} |`,
+    '| Status | Quality gate checks | Quality gate passes | Quality gate failures | Quality gate pass rate | Quality gate failure rate | Total tests | Executed tests | Execution rate | First-pass rate | Passed tests | Test pass rate | Failed tests | Test failure rate | Timed out tests | Timed out rate | Interrupted tests | Interrupted rate | Flaky tests | Flaky rate | Skipped tests | Skipped rate | Release blockers | Release blocker rate | Non-passing executed | Non-passing executed rate | Risk level | Risk score |',
+    '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: |',
+    `| ${report.releaseReadinessSummary.status} | ${report.releaseReadinessSummary.qualityGateChecks} | ${report.releaseReadinessSummary.qualityGatePasses} | ${report.releaseReadinessSummary.qualityGateFailures} | ${report.releaseReadinessSummary.qualityGatePassRate}% | ${report.releaseReadinessSummary.qualityGateFailureRate}% | ${report.releaseReadinessSummary.totalTests} | ${report.releaseReadinessSummary.executedTests} | ${report.releaseReadinessSummary.executionRate}% | ${report.releaseReadinessSummary.firstPassRate}% | ${report.releaseReadinessSummary.passedTests} | ${report.releaseReadinessSummary.passRate}% | ${report.releaseReadinessSummary.failedTests} | ${report.releaseReadinessSummary.failureRate}% | ${report.releaseReadinessSummary.timedOutTests} | ${report.releaseReadinessSummary.timedOutRate}% | ${report.releaseReadinessSummary.interruptedTests} | ${report.releaseReadinessSummary.interruptedRate}% | ${report.releaseReadinessSummary.flakyTests} | ${report.releaseReadinessSummary.flakyRate}% | ${report.releaseReadinessSummary.skippedTests} | ${report.releaseReadinessSummary.skippedRate}% | ${report.releaseReadinessSummary.releaseBlockers} | ${report.releaseReadinessSummary.releaseBlockerRate}% | ${report.releaseReadinessSummary.nonPassingExecuted} | ${report.releaseReadinessSummary.nonPassingExecutedRate}% | ${report.releaseReadinessSummary.riskLevel} | ${report.releaseReadinessSummary.riskScore} |`,
     '',
     '### Release Decision Action Summary',
     '',

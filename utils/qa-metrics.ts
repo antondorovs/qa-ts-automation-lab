@@ -361,6 +361,7 @@ export type QaReleaseReadinessSummary = {
   totalTests: number;
   executedTests: number;
   executionRate: number;
+  firstPassRate: number;
   passedTests: number;
   passRate: number;
   failedTests: number;
@@ -1323,6 +1324,7 @@ export function summarizeReleaseReadiness(
   releaseBlockerSummary: QaReleaseBlockerSummary,
   nonPassingExecutedSummary: NonPassingExecutedSummary,
   regressionRisk: RegressionRiskSummary,
+  stability: QaStabilitySummary,
 ): QaReleaseReadinessSummary {
   return {
     status: qualityGate.status,
@@ -1334,6 +1336,7 @@ export function summarizeReleaseReadiness(
     totalTests: qualityGate.summary.total,
     executedTests: qualityGate.summary.executed,
     executionRate: qualityGate.summary.executionRate,
+    firstPassRate: stability.firstPassRate,
     passedTests: qualityGate.summary.passed,
     passRate: qualityGate.summary.passRate,
     failedTests: qualityGate.summary.failed,
