@@ -618,8 +618,8 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('## Release Decision');
     expect(markdown).toContain('Status: **ready**');
     expect(markdown).toContain('### Release Readiness Summary');
-    expect(markdown).toContain('| Status | Quality gate checks | Quality gate passes | Quality gate failures | Quality gate pass rate | Quality gate failure rate | Total tests | Executed tests | Execution rate | First-pass passed | First-pass rate | Passed tests | Test pass rate | Failed tests | Test failure rate | Timed out tests | Timed out rate | Interrupted tests | Interrupted rate | Flaky tests | Flaky rate | Skipped tests | Skipped rate | Release blockers | Release blocker rate | Non-passing executed | Non-passing executed rate | Risk level | Risk score |');
-    expect(markdown).toContain('| ready | 8 | 8 | 0 | 100% | 0% | 2 | 2 | 100% | 2 | 100% | 2 | 100% | 0 | 0% | 0 | 0% | 0 | 0% | 0 | 0% | 0 | 0% | 0 | 0% | 0 | 0% | low | 2 |');
+    expect(markdown).toContain('| Status | Quality gate checks | Quality gate passes | Quality gate failures | Quality gate pass rate | Quality gate failure rate | Total tests | Executed tests | Execution rate | First-pass passed | First-pass rate | Retried tests | Retry rate | Passed tests | Test pass rate | Failed tests | Test failure rate | Timed out tests | Timed out rate | Interrupted tests | Interrupted rate | Flaky tests | Flaky rate | Skipped tests | Skipped rate | Release blockers | Release blocker rate | Non-passing executed | Non-passing executed rate | Risk level | Risk score |');
+    expect(markdown).toContain('| ready | 8 | 8 | 0 | 100% | 0% | 2 | 2 | 100% | 2 | 100% | 0 | 0% | 2 | 100% | 0 | 0% | 0 | 0% | 0 | 0% | 0 | 0% | 0 | 0% | 0 | 0% | 0 | 0% | low | 2 |');
     expect(markdown).toContain('### Release Decision Action Summary');
     expect(markdown).toContain('| 1 | 1 | 0 |');
     expect(markdown).toContain('slow UI smoke');
@@ -1547,6 +1547,8 @@ test.describe('@utils @contract QA run intelligence', () => {
       executionRate: 100,
       firstPassPassed: 1,
       firstPassRate: 50,
+      retriedTests: 0,
+      retryRate: 0,
       passedTests: 1,
       passRate: 50,
       failedTests: 1,
