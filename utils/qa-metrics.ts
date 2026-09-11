@@ -315,6 +315,7 @@ export type QaStabilitySummary = {
   executed: number;
   firstPassPassed: number;
   retriedTests: number;
+  recoveredAfterRetry: number;
   retryAttempts: number;
   averageAttempts: number;
   retryRate: number;
@@ -1233,12 +1234,16 @@ export function summarizeExecutionStability(results: QaTestResult[]): QaStabilit
     result.status === STATUS.PASSED && result.attempts === 1
   )).length;
   const retriedTests = executedResults.filter((result) => result.attempts > 1).length;
+  const recoveredAfterRetry = executedResults.filter((result) => (
+    result.status === STATUS.PASSED && result.attempts > 1
+  )).length;
   const totalAttempts = executedResults.reduce((total, result) => total + result.attempts, 0);
 
   return {
     executed: executedResults.length,
     firstPassPassed,
     retriedTests,
+    recoveredAfterRetry,
     retryAttempts: executedResults.reduce(
       (total, result) => total + Math.max(0, result.attempts - 1),
       0,

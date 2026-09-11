@@ -484,6 +484,7 @@ test.describe('@utils @contract QA run intelligence', () => {
       executed: 2,
       firstPassPassed: 2,
       retriedTests: 0,
+      recoveredAfterRetry: 0,
       retryAttempts: 0,
       averageAttempts: 1,
       retryRate: 0,
@@ -625,7 +626,7 @@ test.describe('@utils @contract QA run intelligence', () => {
     expect(markdown).toContain('slow UI smoke');
     expect(markdown).toContain('## Regression Risk');
     expect(markdown).toContain('## Execution Stability');
-    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 1 | 0% | 100% |');
+    expect(markdown).toContain('| 2 | 2 | 0 | 0 | 0 | 1 | 0% | 100% |');
     expect(markdown).toContain('| utils/qa-reporter.spec.ts | low | 2 | 0 | 0 | 1 | 0 |');
     expect(report.tagCoverageStatusSummary).toEqual({
       total: 4,
@@ -1284,10 +1285,20 @@ test.describe('@utils @contract QA run intelligence', () => {
       executed: 3,
       firstPassPassed: 1,
       retriedTests: 2,
+      recoveredAfterRetry: 0,
       retryAttempts: 3,
       averageAttempts: 2,
       retryRate: 66.67,
       firstPassRate: 33.33,
+    });
+    expect(summarizeExecutionStability([
+      {
+        ...createResult('recovered checkout', STATUS.PASSED),
+        attempts: 2,
+      },
+    ])).toMatchObject({
+      retriedTests: 1,
+      recoveredAfterRetry: 1,
     });
     expect(retriedTests).toEqual([
       {
