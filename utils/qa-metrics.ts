@@ -367,6 +367,8 @@ export type QaReleaseReadinessSummary = {
   firstPassRate: number;
   retriedTests: number;
   retryRate: number;
+  recoveredAfterRetry: number;
+  recoveredAfterRetryRate: number;
   passedTests: number;
   passRate: number;
   failedTests: number;
@@ -1352,6 +1354,8 @@ export function summarizeReleaseReadiness(
     firstPassRate: stability.firstPassRate,
     retriedTests: stability.retriedTests,
     retryRate: stability.retryRate,
+    recoveredAfterRetry: stability.recoveredAfterRetry,
+    recoveredAfterRetryRate: stability.recoveredAfterRetryRate,
     passedTests: qualityGate.summary.passed,
     passRate: qualityGate.summary.passRate,
     failedTests: qualityGate.summary.failed,
