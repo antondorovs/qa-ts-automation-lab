@@ -317,6 +317,8 @@ export type QaStabilitySummary = {
   retriedTests: number;
   recoveredAfterRetry: number;
   recoveredAfterRetryRate: number;
+  unrecoveredRetries: number;
+  unrecoveredRetryRate: number;
   retryAttempts: number;
   averageAttempts: number;
   retryRate: number;
@@ -369,6 +371,8 @@ export type QaReleaseReadinessSummary = {
   retryRate: number;
   recoveredAfterRetry: number;
   recoveredAfterRetryRate: number;
+  unrecoveredRetries: number;
+  unrecoveredRetryRate: number;
   passedTests: number;
   passRate: number;
   failedTests: number;
@@ -1240,6 +1244,7 @@ export function summarizeExecutionStability(results: QaTestResult[]): QaStabilit
   const recoveredAfterRetry = executedResults.filter((result) => (
     result.status === STATUS.PASSED && result.attempts > 1
   )).length;
+  const unrecoveredRetries = retriedTests - recoveredAfterRetry;
   const totalAttempts = executedResults.reduce((total, result) => total + result.attempts, 0);
 
   return {
@@ -1249,6 +1254,10 @@ export function summarizeExecutionStability(results: QaTestResult[]): QaStabilit
     recoveredAfterRetry,
     recoveredAfterRetryRate: executedResults.length
       ? percentage(recoveredAfterRetry, executedResults.length)
+      : 0,
+    unrecoveredRetries,
+    unrecoveredRetryRate: executedResults.length
+      ? percentage(unrecoveredRetries, executedResults.length)
       : 0,
     retryAttempts: executedResults.reduce(
       (total, result) => total + Math.max(0, result.attempts - 1),
@@ -1356,6 +1365,8 @@ export function summarizeReleaseReadiness(
     retryRate: stability.retryRate,
     recoveredAfterRetry: stability.recoveredAfterRetry,
     recoveredAfterRetryRate: stability.recoveredAfterRetryRate,
+    unrecoveredRetries: stability.unrecoveredRetries,
+    unrecoveredRetryRate: stability.unrecoveredRetryRate,
     passedTests: qualityGate.summary.passed,
     passRate: qualityGate.summary.passRate,
     failedTests: qualityGate.summary.failed,
