@@ -183,6 +183,10 @@ export type RetriedTest = Pick<
 
 export type RetriedTestSummary = {
   total: number;
+  recoveredAfterRetry: number;
+  recoveredAfterRetryRate: number;
+  unrecoveredRetries: number;
+  unrecoveredRetryRate: number;
   maximumAttempts: number;
   retryAttempts: number;
   minimumDurationMs: number;
@@ -903,9 +907,19 @@ export function findRetriedTests(results: QaTestResult[]): RetriedTest[] {
 
 export function summarizeRetriedTests(retriedTests: RetriedTest[]): RetriedTestSummary {
   const totalDurationMs = retriedTests.reduce((total, test) => total + test.durationMs, 0);
+  const recoveredAfterRetry = retriedTests.filter((test) => test.status === STATUS.PASSED).length;
+  const unrecoveredRetries = retriedTests.length - recoveredAfterRetry;
 
   return {
     total: retriedTests.length,
+    recoveredAfterRetry,
+    recoveredAfterRetryRate: retriedTests.length
+      ? percentage(recoveredAfterRetry, retriedTests.length)
+      : 0,
+    unrecoveredRetries,
+    unrecoveredRetryRate: retriedTests.length
+      ? percentage(unrecoveredRetries, retriedTests.length)
+      : 0,
     maximumAttempts: Math.max(0, ...retriedTests.map((test) => test.attempts)),
     retryAttempts: retriedTests.reduce((total, test) => total + Math.max(0, test.attempts - 1), 0),
     minimumDurationMs: retriedTests.length
